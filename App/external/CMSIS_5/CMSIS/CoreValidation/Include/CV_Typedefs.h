@@ -21,6 +21,9 @@ typedef unsigned int    BOOL;
  #define __FALSE        0
 #endif
 
+#ifndef ENABLED
+ #define ENABLED        1
+#endif
 #ifndef DISABLED
  #define DISABLED       0
 #endif
