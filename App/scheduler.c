@@ -17,6 +17,7 @@
 #include "scheduler.h"
 #include "app/chFrScanner.h"
 #include "app/fm.h"
+#include "app/menu.h"
 #include "app/scanner.h"
 #include "audio.h"
 #include "functions.h"
@@ -93,4 +94,6 @@ void SysTick_Handler(void)
     DECREMENT(gVoxStopCountdown_10ms);
 
     DECREMENT(boot_counter_10ms);
+
+    DECREMENT(t9_timeout_counter); // T9 keyboard timeout
 }

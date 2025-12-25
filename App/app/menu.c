@@ -44,6 +44,27 @@
 
 uint8_t gUnlockAllTxConfCnt;
 
+// T9 keyboard character mappings for channel name input
+static const char T9_TABLE[][9] = {
+    " 0",        // KEY_0
+    "1-_",       // KEY_1
+    "2ABCabc",   // KEY_2
+    "3DEFdef",   // KEY_3
+    "4GHIghi",   // KEY_4
+    "5JKLjkl",   // KEY_5
+    "6MNOmno",   // KEY_6
+    "7PQRpqr",   // KEY_7
+    "8TUVtuv",   // KEY_8
+    "9WXYZwxyz", // KEY_9
+};
+
+// T9 keyboard state tracking
+static KEY_Code_t last_t9_key = KEY_INVALID;
+static uint8_t t9_cycle_index = 0;
+uint16_t t9_timeout_counter = 0; // 10ms unit counter (exposed for scheduler)
+
+#define T9_TIMEOUT_10MS 100 // 1000ms = 100 * 10ms
+
 
 void MENU_StartCssScan(void)
 {
@@ -1091,19 +1112,45 @@ static void MENU_Key_0_to_9(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     gBeepToPlay = BEEP_1KHZ_60MS_OPTIONAL;
 
     if (UI_MENU_GetCurrentMenuId() == MENU_MEM_NAME &&
-        edit_index >= 0) { // currently editing the channel name
+        edit_index >= 0) { // currently editing the channel name (T9 input mode)
 
-        if (edit_index < 10) {
-            if (Key <= KEY_9) {
-                edit[edit_index] = '0' + Key - KEY_0;
+        if (edit_index < 10 && Key <= KEY_9) {
+            // Get the character table for this key
+            const char *chars = T9_TABLE[Key];
+            const uint8_t num_chars = strlen(chars);
 
-                if (++edit_index >= 10) { // exit edit
-                    gFlagAcceptSetting = false;
-                    gAskForConfirmation = 1;
-                }
-
-                gRequestDisplayScreen = DISPLAY_MENU;
+            if (num_chars == 0) {
+                return; // No characters for this key
             }
+
+            // Check if same key pressed within timeout
+            if (Key == last_t9_key && t9_timeout_counter > 0) {
+                // Cycle to next character in sequence
+                t9_cycle_index = (t9_cycle_index + 1) % num_chars;
+            } else {
+                // Different key or timeout - advance to this character
+                if (Key != last_t9_key && last_t9_key != KEY_INVALID && t9_timeout_counter > 0) {
+                    // Different key pressed, move to next position
+                    if (++edit_index >= 10) { // exit edit
+                        gFlagAcceptSetting = false;
+                        gAskForConfirmation = 1;
+                        gRequestDisplayScreen = DISPLAY_MENU;
+                        last_t9_key = KEY_INVALID;
+                        t9_timeout_counter = 0;
+                        return;
+                    }
+                }
+                t9_cycle_index = 0;
+            }
+
+            // Set the character at current position
+            edit[edit_index] = chars[t9_cycle_index];
+
+            // Update state
+            last_t9_key = Key;
+            t9_timeout_counter = T9_TIMEOUT_10MS;
+
+            gRequestDisplayScreen = DISPLAY_MENU;
         }
 
         return;
@@ -1315,8 +1362,18 @@ static void MENU_Key_MENU(const bool bKeyPressed, const bool bKeyHeld)
             // make a copy so we can test for change when exiting the menu item
             memcpy(edit_original, edit, sizeof(edit_original));
 
+            // Reset T9 state for new editing session
+            last_t9_key = KEY_INVALID;
+            t9_cycle_index = 0;
+            t9_timeout_counter = 0;
+
             return;
         } else if (edit_index >= 0 && edit_index < 10) { // editing the channel name characters
+
+            // Reset T9 state when advancing to next character
+            last_t9_key = KEY_INVALID;
+            t9_cycle_index = 0;
+            t9_timeout_counter = 0;
 
             if (++edit_index < 10)
                 return; // next char
@@ -1431,6 +1488,11 @@ static void MENU_Key_UP_DOWN(bool bKeyPressed, bool bKeyHeld, int8_t Direction)
                 }
             }
             edit[edit_index] = (c < 32) ? 126 : (c > 126) ? 32 : c;
+
+            // Reset T9 state when using UP/DOWN to change character
+            last_t9_key = KEY_INVALID;
+            t9_cycle_index = 0;
+            t9_timeout_counter = 0;
 
             gRequestDisplayScreen = DISPLAY_MENU;
         }

@@ -21,6 +21,7 @@
 
 
 extern uint8_t gUnlockAllTxConfCnt;
+extern uint16_t t9_timeout_counter; // T9 keyboard timeout counter
 
 int MENU_GetLimits(uint8_t menu_id, int32_t *pMin, int32_t *pMax);
 void MENU_AcceptSetting(void);
