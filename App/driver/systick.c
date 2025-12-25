@@ -42,7 +42,7 @@ void SYSTICK_DelayUs(uint32_t Delay)
             Current = SysTick->VAL;
         } while (Current == Previous);
 
-        uint32_t Delta = ((Current < Previous) ? - Current : Start - Current);
+        uint32_t Delta = ((Current < Previous) ? -Current : Start - Current);
 
         elapsed_ticks += Delta + Previous;
 

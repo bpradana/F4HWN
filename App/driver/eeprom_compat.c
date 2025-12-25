@@ -28,14 +28,14 @@
 
 #define HOLE_ADDR 0x1000000
 
-typedef struct
-{
+typedef struct {
     uint32_t PY25Q16_Addr; // Sector address
     uint16_t EEPROM_Addr;
     uint16_t Size;
 } AddrMapping_t;
 
-#define _MK_MAPPING(PY25Q16_Addr, EEPROM_From, EEPROM_To) {PY25Q16_Addr, EEPROM_From, EEPROM_To - EEPROM_From}
+#define _MK_MAPPING(PY25Q16_Addr, EEPROM_From, EEPROM_To)                                          \
+    {PY25Q16_Addr, EEPROM_From, EEPROM_To - EEPROM_From}
 
 static const AddrMapping_t ADDR_MAPPINGS[] = {
     // Sorted by EEPROM addr
@@ -64,21 +64,18 @@ static const AddrMapping_t ADDR_MAPPINGS[] = {
     _MK_MAPPING(0x00c000, 0x1ff0, 0x2000),  //
 };
 
-static void AddrTranslate(uint16_t EEPROM_Addr, uint16_t Size, uint32_t *PY25Q16_Addr_out, uint16_t *Size_out, bool *End_out);
+static void AddrTranslate(uint16_t EEPROM_Addr, uint16_t Size, uint32_t *PY25Q16_Addr_out,
+                          uint16_t *Size_out, bool *End_out);
 
 void EEPROM_ReadBuffer(uint16_t Address, void *pBuffer, uint8_t Size)
 {
-    while (Size)
-    {
+    while (Size) {
         uint32_t PY_Addr;
         uint16_t PY_Size;
         AddrTranslate(Address, Size, &PY_Addr, &PY_Size, NULL);
-        if (PY_Addr >= HOLE_ADDR)
-        {
+        if (PY_Addr >= HOLE_ADDR) {
             memset(pBuffer, 0xff, PY_Size);
-        }
-        else
-        {
+        } else {
             PY25Q16_ReadBuffer(PY_Addr, pBuffer, PY_Size);
         }
         Address += PY_Size;
@@ -92,14 +89,12 @@ void EEPROM_WriteBuffer(uint16_t Address, const void *pBuffer)
     // Write 8 bytes!!
 
     uint16_t Size = 8;
-    while (Size)
-    {
+    while (Size) {
         uint32_t PY_Addr;
         uint16_t PY_Size;
         bool AppendFlag;
         AddrTranslate(Address, Size, &PY_Addr, &PY_Size, &AppendFlag);
-        if (PY_Addr < HOLE_ADDR)
-        {
+        if (PY_Addr < HOLE_ADDR) {
             PY25Q16_WriteBuffer(PY_Addr, pBuffer, PY_Size, AppendFlag);
         }
         Address += PY_Size;
@@ -108,14 +103,13 @@ void EEPROM_WriteBuffer(uint16_t Address, const void *pBuffer)
     }
 }
 
-static void AddrTranslate(uint16_t EEPROM_Addr, uint16_t Size, uint32_t *PY25Q16_Addr_out, uint16_t *Size_out, bool *End_out)
+static void AddrTranslate(uint16_t EEPROM_Addr, uint16_t Size, uint32_t *PY25Q16_Addr_out,
+                          uint16_t *Size_out, bool *End_out)
 {
     const AddrMapping_t *p = NULL;
-    for (uint32_t i = 0, N = sizeof(ADDR_MAPPINGS) / sizeof(AddrMapping_t); i < N; i++)
-    {
+    for (uint32_t i = 0, N = sizeof(ADDR_MAPPINGS) / sizeof(AddrMapping_t); i < N; i++) {
         p = ADDR_MAPPINGS + i;
-        if (p->EEPROM_Addr <= EEPROM_Addr && EEPROM_Addr < (p->EEPROM_Addr + p->Size))
-        {
+        if (p->EEPROM_Addr <= EEPROM_Addr && EEPROM_Addr < (p->EEPROM_Addr + p->Size)) {
             goto HIT;
         }
     }
@@ -127,16 +121,14 @@ static void AddrTranslate(uint16_t EEPROM_Addr, uint16_t Size, uint32_t *PY25Q16
 HIT:
     const uint16_t Off = EEPROM_Addr - p->EEPROM_Addr;
     const uint16_t Rem = p->Size - Off;
-    if (Size > Rem)
-    {
+    if (Size > Rem) {
         Size = Rem;
     }
 
     *PY25Q16_Addr_out = HOLE_ADDR == p->PY25Q16_Addr ? HOLE_ADDR : (p->PY25Q16_Addr + Off);
     *Size_out = Size;
 
-    if (End_out && HOLE_ADDR != p->PY25Q16_Addr)
-    {
+    if (End_out && HOLE_ADDR != p->PY25Q16_Addr) {
         *End_out = (Size == Rem);
     }
 }

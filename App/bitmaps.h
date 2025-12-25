@@ -17,7 +17,7 @@ extern const uint8_t gFontMute[12];
 extern const uint8_t gFontXB[2][6];
 extern const uint8_t gFontMO[2][6];
 extern const uint8_t gFontDWR[3][6];
-    extern const uint8_t gFontRO[2][6];
+extern const uint8_t gFontRO[2][6];
 extern const uint8_t gFontHold[2][5];
 
 extern const uint8_t BITMAP_BatteryLevel[2];
@@ -29,7 +29,7 @@ extern const uint8_t BITMAP_Ready[7];
 extern const uint8_t BITMAP_NotReady[7];
 */
 
-    extern const uint8_t gFontVox[2][6];
+extern const uint8_t gFontVox[2][6];
 
 extern const uint8_t BITMAP_Antenna[5];
 extern const uint8_t BITMAP_VFO_Default[7];

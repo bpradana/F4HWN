@@ -4,21 +4,21 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-// scan direction, if not equal SCAN_OFF indicates 
+// scan direction, if not equal SCAN_OFF indicates
 // that we are in a process of scanning channels/frequencies
-extern int8_t            gScanStateDir;
-extern bool              gScanKeepResult;
-extern bool              gScanPauseMode;
+extern int8_t gScanStateDir;
+extern bool gScanKeepResult;
+extern bool gScanPauseMode;
 
-extern uint32_t          gScanRangeStart;
-extern uint32_t          gScanRangeStop;
+extern uint32_t gScanRangeStart;
+extern uint32_t gScanRangeStop;
 
 void CHFRSCANNER_Found(void);
 void CHFRSCANNER_Stop(void);
 void CHFRSCANNER_Start(const bool storeBackupSettings, const int8_t scan_direction);
 void CHFRSCANNER_ContinueScanning(void);
 
-    extern uint32_t lastFoundFrqOrChan;
-    extern uint32_t lastFoundFrqOrChanOld;
+extern uint32_t lastFoundFrqOrChan;
+extern uint32_t lastFoundFrqOrChanOld;
 
 #endif

@@ -15,9 +15,9 @@
  */
 
 
-//#if !defined(ENABLE_OVERLAY)
-//  #include "ARMCM0.h"
-//#endif
+// #if !defined(ENABLE_OVERLAY)
+//   #include "ARMCM0.h"
+// #endif
 
 #include "app/aircopy.h"
 #include "audio.h"
@@ -33,7 +33,8 @@
 
 #include "screenshot.h"
 
-static const uint16_t Obfuscation[8] = { 0x6C16, 0xE614, 0x912E, 0x400D, 0x3521, 0x40D5, 0x0313, 0x80E9 };
+static const uint16_t Obfuscation[8] = {0x6C16, 0xE614, 0x912E, 0x400D,
+                                        0x3521, 0x40D5, 0x0313, 0x80E9};
 
 AIRCOPY_State_t gAircopyState;
 uint16_t gAirCopyBlockNumber;
@@ -44,11 +45,10 @@ uint16_t g_FSK_Buffer[36];
 
 static void AIRCOPY_clear()
 {
-    for (uint8_t i = 0; i < 15; i++)
-    {
+    for (uint8_t i = 0; i < 15; i++) {
         crc[i] = 0;
     }
-        getScreenShot(true);
+    getScreenShot(true);
 }
 
 bool AIRCOPY_SendMessage(void)
@@ -75,8 +75,8 @@ bool AIRCOPY_SendMessage(void)
 
     if (++gAirCopyBlockNumber >= 0x78) {
         gAircopyState = AIRCOPY_COMPLETE;
-            getScreenShot(false);
-        //NVIC_SystemReset();
+        getScreenShot(false);
+        // NVIC_SystemReset();
     }
 
     RADIO_SetTxParameters();
@@ -134,7 +134,7 @@ void AIRCOPY_StorePacket(void)
 
     if (Offset == 0x1E00) {
         gAircopyState = AIRCOPY_COMPLETE;
-            getScreenShot(false);
+        getScreenShot(false);
     }
 
     gAirCopyBlockNumber++;
@@ -255,4 +255,3 @@ void AIRCOPY_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
         break;
     }
 }
-

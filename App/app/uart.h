@@ -20,8 +20,7 @@
 
 #include <stdbool.h>
 
-enum
-{
+enum {
     UART_PORT_UART,
     UART_PORT_VCP,
 };
@@ -30,4 +29,3 @@ bool UART_IsCommandAvailable(uint32_t Port);
 void UART_HandleCommand(uint32_t Port);
 
 #endif
-

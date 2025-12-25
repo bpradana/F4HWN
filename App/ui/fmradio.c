@@ -36,17 +36,14 @@ void UI_DisplayFM(void)
 
     UI_PrintString("FM", 2, 0, 0, 8);
 
-    sprintf(String, "%d%s-%dM", 
-        BK1080_GetFreqLoLimit(gEeprom.FM_Band)/10,
-        gEeprom.FM_Band == 0 ? ".5" : "",
-        BK1080_GetFreqHiLimit(gEeprom.FM_Band)/10
-        );
-    
+    sprintf(String, "%d%s-%dM", BK1080_GetFreqLoLimit(gEeprom.FM_Band) / 10,
+            gEeprom.FM_Band == 0 ? ".5" : "", BK1080_GetFreqHiLimit(gEeprom.FM_Band) / 10);
+
     UI_PrintStringSmallNormal(String, 1, 0, 6);
 
-    //uint8_t spacings[] = {20,10,5};
-    //sprintf(String, "%d0k", spacings[gEeprom.FM_Space % 3]);
-    //UI_PrintStringSmallNormal(String, 127 - 4*7, 0, 6);
+    // uint8_t spacings[] = {20,10,5};
+    // sprintf(String, "%d0k", spacings[gEeprom.FM_Space % 3]);
+    // UI_PrintStringSmallNormal(String, 127 - 4*7, 0, 6);
 
     if (gAskToSave) {
         pPrintStr = "SAVE?";
@@ -82,13 +79,14 @@ void UI_DisplayFM(void)
         sprintf(String, "CH-%02u", gEeprom.FM_SelectedChannel + 1);
     } else {
         if (gInputBoxIndex == 0) {
-            sprintf(String, "%3d.%d", gEeprom.FM_FrequencyPlaying / 10, gEeprom.FM_FrequencyPlaying % 10);
+            sprintf(String, "%3d.%d", gEeprom.FM_FrequencyPlaying / 10,
+                    gEeprom.FM_FrequencyPlaying % 10);
         } else {
-            const char * ascii = INPUTBOX_GetAscii();
-            sprintf(String, "%.3s.%.1s",ascii, ascii + 3);
+            const char *ascii = INPUTBOX_GetAscii();
+            sprintf(String, "%.3s.%.1s", ascii, ascii + 3);
         }
 
-        UI_DisplayFrequency(String, 36, 1, gInputBoxIndex == 0);  // frequency
+        UI_DisplayFrequency(String, 36, 1, gInputBoxIndex == 0); // frequency
         ST7565_BlitFullScreen();
         return;
     }
@@ -97,4 +95,3 @@ void UI_DisplayFM(void)
 
     ST7565_BlitFullScreen();
 }
-

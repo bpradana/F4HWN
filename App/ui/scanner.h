@@ -20,4 +20,3 @@
 void UI_DisplayScanner(void);
 
 #endif
-

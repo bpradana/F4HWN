@@ -47,10 +47,9 @@ typedef enum KEY_Code_e KEY_Code_t;
 
 extern KEY_Code_t gKeyReading0;
 extern KEY_Code_t gKeyReading1;
-extern uint16_t   gDebounceCounter;
-extern bool       gWasFKeyPressed;
+extern uint16_t gDebounceCounter;
+extern bool gWasFKeyPressed;
 
 KEY_Code_t KEYBOARD_Poll(void);
 
 #endif
-

@@ -20,12 +20,11 @@
 #include <stdint.h>
 #include "driver/keyboard.h"
 
-enum BOOT_Mode_t
-{
+enum BOOT_Mode_t {
     BOOT_MODE_NORMAL = 0,
     BOOT_MODE_F_LOCK,
-        BOOT_MODE_RESCUE_OPS,
-        BOOT_MODE_AIRCOPY
+    BOOT_MODE_RESCUE_OPS,
+    BOOT_MODE_AIRCOPY
 };
 
 typedef enum BOOT_Mode_t BOOT_Mode_t;
@@ -34,4 +33,3 @@ BOOT_Mode_t BOOT_GetMode(void);
 void BOOT_ProcessMode(BOOT_Mode_t Mode);
 
 #endif
-

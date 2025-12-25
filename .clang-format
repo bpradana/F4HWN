@@ -1,0 +1,44 @@
+# Clang-Format configuration for F4HWN Firmware
+# Based on LLVM style with customizations for embedded C
+
+BasedOnStyle: LLVM
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Braces
+BreakBeforeBraces: Linux
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+# Spacing
+SpaceAfterCStyleCast: false
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Alignment
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignTrailingComments: true
+PointerAlignment: Right
+
+# Line breaks
+AllowAllParametersOfDeclarationOnNextLine: true
+BinPackParameters: true
+BreakBeforeBinaryOperators: None
+
+# Comments
+ReflowComments: true
+
+# Includes
+IncludeBlocks: Preserve
+SortIncludes: false
+
+# Other
+MaxEmptyLinesToKeep: 2
+KeepEmptyLinesAtTheStartOfBlocks: false

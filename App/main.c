@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>     // NULL
+#include <stdio.h> // NULL
 
 
 #include "audio.h"
@@ -26,10 +26,10 @@
 #include "settings.h"
 #include "version.h"
 
-        #include "app/action.h"
-        #include "ui/ui.h"
-        #include "app/spectrum.h"
-    #include "app/chFrScanner.h"
+#include "app/action.h"
+#include "ui/ui.h"
+#include "app/spectrum.h"
+#include "app/chFrScanner.h"
 
 #include "app/app.h"
 #include "app/dtmf.h"
@@ -40,7 +40,7 @@
 #include "driver/system.h"
 #include "driver/systick.h"
 #include "driver/py25q16.h"
-    #include "driver/uart.h"
+#include "driver/uart.h"
 #include "driver/vcp.h"
 #include "helper/battery.h"
 #include "helper/boot.h"
@@ -53,9 +53,7 @@
 
 void _putchar(__attribute__((unused)) char c)
 {
-
     UART_Send((uint8_t *)&c, 1);
-
 }
 
 void Main(void)
@@ -63,7 +61,7 @@ void Main(void)
     SYSTICK_Init();
     BOARD_Init();
 
-    boot_counter_10ms = 250;   // 2.5 sec
+    boot_counter_10ms = 250; // 2.5 sec
 
     UART_Init();
     UART_Send(UART_Version, strlen(UART_Version));
@@ -80,8 +78,8 @@ void Main(void)
 
     SETTINGS_InitEEPROM();
 
-        gDW = gEeprom.DUAL_WATCH;
-        gCB = gEeprom.CROSS_BAND_RX_TX;
+    gDW = gEeprom.DUAL_WATCH;
+    gCB = gEeprom.CROSS_BAND_RX_TX;
 
     SETTINGS_WriteBuildOptions();
     SETTINGS_LoadCalibration();
@@ -99,10 +97,9 @@ void Main(void)
     BATTERY_GetReadings(false);
 
 
-    BOOT_Mode_t  BootMode = BOOT_GetMode();
+    BOOT_Mode_t BootMode = BOOT_GetMode();
 
-    if (BootMode == BOOT_MODE_RESCUE_OPS)
-    {
+    if (BootMode == BOOT_MODE_RESCUE_OPS) {
         gEeprom.MENU_LOCK = !gEeprom.MENU_LOCK;
         SETTINGS_SaveSettings();
     }
@@ -117,43 +114,37 @@ void Main(void)
     }
     */
 
-    if (BootMode == BOOT_MODE_F_LOCK && gEeprom.MENU_LOCK == true)
-    {
+    if (BootMode == BOOT_MODE_F_LOCK && gEeprom.MENU_LOCK == true) {
         BootMode = BOOT_MODE_NORMAL;
     }
 
-    if (BootMode == BOOT_MODE_F_LOCK)
-    {
+    if (BootMode == BOOT_MODE_F_LOCK) {
+        gF_LOCK = true; // flag to say include the hidden menu items
+        gEeprom.KEY_LOCK = 0;
+        SETTINGS_SaveSettings();
+        gMenuCursor = 68; // move to hidden section, fix me if change... !!!
 
-        gF_LOCK = true;            // flag to say include the hidden menu items
-            gEeprom.KEY_LOCK = 0;
-            SETTINGS_SaveSettings();
-                gMenuCursor = 68; // move to hidden section, fix me if change... !!!
-
-                gMenuCursor += 1; // move to hidden section, fix me if change... !!!
-            gSubMenuSelection = gSetting_F_LOCK;
+        gMenuCursor += 1; // move to hidden section, fix me if change... !!!
+        gSubMenuSelection = gSetting_F_LOCK;
     }
 
     // count the number of menu items
     gMenuListCount = 0;
     while (MenuList[gMenuListCount].name[0] != '\0') {
-        if(!gF_LOCK && MenuList[gMenuListCount].menu_id == FIRST_HIDDEN_MENU_ITEM)
+        if (!gF_LOCK && MenuList[gMenuListCount].menu_id == FIRST_HIDDEN_MENU_ITEM)
             break;
 
         gMenuListCount++;
     }
 
     // wait for user to release all butts before moving on
-    if (GPIO_IsPttPressed() ||
-         KEYBOARD_Poll() != KEY_INVALID ||
-         BootMode != BOOT_MODE_NORMAL)
-    {   // keys are pressed
+    if (GPIO_IsPttPressed() || KEYBOARD_Poll() != KEY_INVALID ||
+        BootMode != BOOT_MODE_NORMAL) { // keys are pressed
         UI_DisplayReleaseKeys();
         BACKLIGHT_TurnOn();
 
         // 500ms
-        for (int i = 0; i < 50;)
-        {
+        for (int i = 0; i < 50;) {
             i = (!GPIO_IsPttPressed() && KEYBOARD_Poll() == KEY_INVALID) ? i + 1 : 0;
             SYSTEM_DelayMs(10);
         }
@@ -162,29 +153,25 @@ void Main(void)
         gDebounceCounter = 0;
     }
 
-    if (!gChargingWithTypeC && gBatteryDisplayLevel == 0)
-    {
+    if (!gChargingWithTypeC && gBatteryDisplayLevel == 0) {
         FUNCTION_Select(FUNCTION_POWER_SAVE);
 
         if (gEeprom.BACKLIGHT_TIME < 61) // backlight is not set to be always on
-            BACKLIGHT_TurnOff();    // turn the backlight OFF
+            BACKLIGHT_TurnOff();         // turn the backlight OFF
         else
-            BACKLIGHT_TurnOn();     // turn the backlight ON
+            BACKLIGHT_TurnOn(); // turn the backlight ON
 
         gReducedService = true;
-    }
-    else
-    {
+    } else {
         UI_DisplayWelcome();
 
         BACKLIGHT_TurnOn();
 
-        if (gEeprom.POWER_ON_DISPLAY_MODE != POWER_ON_DISPLAY_MODE_NONE && gEeprom.POWER_ON_DISPLAY_MODE != POWER_ON_DISPLAY_MODE_SOUND)
-        {   // 2.55 second boot-up screen
-            while (boot_counter_10ms > 0)
-            {
-                if (KEYBOARD_Poll() != KEY_INVALID)
-                {   // halt boot beeps
+        if (gEeprom.POWER_ON_DISPLAY_MODE != POWER_ON_DISPLAY_MODE_NONE &&
+            gEeprom.POWER_ON_DISPLAY_MODE !=
+                POWER_ON_DISPLAY_MODE_SOUND) { // 2.55 second boot-up screen
+            while (boot_counter_10ms > 0) {
+                if (KEYBOARD_Poll() != KEY_INVALID) { // halt boot beeps
                     boot_counter_10ms = 0;
                     break;
                 }
@@ -198,8 +185,6 @@ void Main(void)
         // GPIO_ClearBit(&GPIOA->DATA, GPIOA_PIN_VOICE_0);
 
         gUpdateStatus = true;
-
-
     }
 
     /*
@@ -240,34 +225,31 @@ void Main(void)
     }
     */
 
-        if (gEeprom.CURRENT_STATE == 2 || gEeprom.CURRENT_STATE == 5) {
-            gScanRangeStart = gScanRangeStart ? 0 : gTxVfo->pRX->Frequency;
-            gScanRangeStop = gEeprom.VfoInfo[!gEeprom.TX_VFO].freq_config_RX.Frequency;
-            if (gScanRangeStart > gScanRangeStop) {
-                SWAP(gScanRangeStart, gScanRangeStop);
-            }
+    if (gEeprom.CURRENT_STATE == 2 || gEeprom.CURRENT_STATE == 5) {
+        gScanRangeStart = gScanRangeStart ? 0 : gTxVfo->pRX->Frequency;
+        gScanRangeStop = gEeprom.VfoInfo[!gEeprom.TX_VFO].freq_config_RX.Frequency;
+        if (gScanRangeStart > gScanRangeStop) {
+            SWAP(gScanRangeStart, gScanRangeStop);
         }
+    }
 
-        if (gEeprom.CURRENT_STATE == 1) {
-            gEeprom.SCAN_LIST_DEFAULT = gEeprom.CURRENT_LIST;
-        }
+    if (gEeprom.CURRENT_STATE == 1) {
+        gEeprom.SCAN_LIST_DEFAULT = gEeprom.CURRENT_LIST;
+    }
 
-        if (gEeprom.CURRENT_STATE == 1 || gEeprom.CURRENT_STATE == 2) {
-            CHFRSCANNER_Start(true, SCAN_FWD);
-        }
-        else if (gEeprom.CURRENT_STATE == 3) {
-            ACTION_FM();
-            GUI_SelectNextDisplay(gRequestDisplayScreen);
-        }
-        else if (gEeprom.CURRENT_STATE == 4 || gEeprom.CURRENT_STATE == 5) {
-            APP_RunSpectrum();
-        }
-        
+    if (gEeprom.CURRENT_STATE == 1 || gEeprom.CURRENT_STATE == 2) {
+        CHFRSCANNER_Start(true, SCAN_FWD);
+    } else if (gEeprom.CURRENT_STATE == 3) {
+        ACTION_FM();
+        GUI_SelectNextDisplay(gRequestDisplayScreen);
+    } else if (gEeprom.CURRENT_STATE == 4 || gEeprom.CURRENT_STATE == 5) {
+        APP_RunSpectrum();
+    }
+
     while (true) {
         APP_Update();
 
         if (gNextTimeslice) {
-
             APP_TimeSlice10ms();
 
             if (gNextTimeslice_500ms) {

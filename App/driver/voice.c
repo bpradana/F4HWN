@@ -41,7 +41,8 @@ static inline void DMA_Init()
     LL_DMA_InitTypeDef InitStruct;
     //   LL_DMA_StructInit( &InitStruct) ;
     InitStruct.PeriphOrM2MSrcAddress = (uint32_t)DAC_Buf;
-    InitStruct.MemoryOrM2MDstAddress = LL_DAC_DMA_GetRegAddr(DAC1, DAC_CHANNEL, LL_DAC_DMA_REG_DATA_12BITS_RIGHT_ALIGNED);
+    InitStruct.MemoryOrM2MDstAddress =
+        LL_DAC_DMA_GetRegAddr(DAC1, DAC_CHANNEL, LL_DAC_DMA_REG_DATA_12BITS_RIGHT_ALIGNED);
     InitStruct.Direction = LL_DMA_DIRECTION_MEMORY_TO_PERIPH;
     InitStruct.Mode = LL_DMA_MODE_CIRCULAR;
     InitStruct.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT;
@@ -94,33 +95,28 @@ void VOICE_Start()
     LL_DAC_Enable(DAC1, DAC_CHANNEL);
     LL_TIM_DisableCounter(TIMx);
 
-    if (gVoiceBufLen > 0)
-    {
+    if (gVoiceBufLen > 0) {
         memcpy(DAC_Buf, gVoiceBuf[gVoiceBufReadIndex], VOICE_BUF_SIZE);
         VOICE_BUF_ForwardReadIndex();
         gVoiceBufLen--;
-    }
-    else
-    {
+    } else {
         memset(DAC_Buf, 0, VOICE_BUF_SIZE);
     }
-    if (gVoiceBufLen > 0)
-    {
+    if (gVoiceBufLen > 0) {
         memcpy(DAC_Buf + VOICE_BUF_SIZE,      //
                gVoiceBuf[gVoiceBufReadIndex], //
                VOICE_BUF_SIZE                 //
         );
         VOICE_BUF_ForwardReadIndex();
         gVoiceBufLen--;
-    }
-    else
-    {
+    } else {
         memset(DAC_Buf + VOICE_BUF_SIZE, 0, VOICE_BUF_SIZE);
     }
 
-    LL_DMA_ConfigAddresses(DMA1, DMA_CHANNEL, DAC_Buf,                                                         //
-                           LL_DAC_DMA_GetRegAddr(DAC1, DAC_CHANNEL, LL_DAC_DMA_REG_DATA_12BITS_RIGHT_ALIGNED), //
-                           LL_DMA_DIRECTION_MEMORY_TO_PERIPH                                                   //
+    LL_DMA_ConfigAddresses(
+        DMA1, DMA_CHANNEL, DAC_Buf,                                                         //
+        LL_DAC_DMA_GetRegAddr(DAC1, DAC_CHANNEL, LL_DAC_DMA_REG_DATA_12BITS_RIGHT_ALIGNED), //
+        LL_DMA_DIRECTION_MEMORY_TO_PERIPH                                                   //
     );
     LL_DMA_EnableChannel(DMA1, DMA_CHANNEL);
     LL_TIM_EnableCounter(TIMx);
@@ -135,34 +131,26 @@ void VOICE_Stop()
 
 void DMA1_Channel2_3_IRQHandler()
 {
-    if (LL_DMA_IsActiveFlag_HT3(DMA1))
-    {
+    if (LL_DMA_IsActiveFlag_HT3(DMA1)) {
         LL_DMA_ClearFlag_HT3(DMA1);
-        if (gVoiceBufLen > 0)
-        {
+        if (gVoiceBufLen > 0) {
             memcpy(DAC_Buf, gVoiceBuf[gVoiceBufReadIndex], VOICE_BUF_SIZE);
             VOICE_BUF_ForwardReadIndex();
             gVoiceBufLen--;
-        }
-        else
-        {
+        } else {
             memset(DAC_Buf, 0, VOICE_BUF_SIZE);
         }
     }
-    if (LL_DMA_IsActiveFlag_TC3(DMA1))
-    {
+    if (LL_DMA_IsActiveFlag_TC3(DMA1)) {
         LL_DMA_ClearFlag_TC3(DMA1);
-        if (gVoiceBufLen > 0)
-        {
+        if (gVoiceBufLen > 0) {
             memcpy(DAC_Buf + VOICE_BUF_SIZE,      //
                    gVoiceBuf[gVoiceBufReadIndex], //
                    VOICE_BUF_SIZE                 //
             );
             VOICE_BUF_ForwardReadIndex();
             gVoiceBufLen--;
-        }
-        else
-        {
+        } else {
             memset(DAC_Buf + VOICE_BUF_SIZE, 0, VOICE_BUF_SIZE);
         }
     }

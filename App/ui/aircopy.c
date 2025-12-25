@@ -26,18 +26,20 @@
 #include "ui/helper.h"
 #include "ui/inputbox.h"
 
-static void set_bit(uint8_t* array, int bit_index) {
+static void set_bit(uint8_t *array, int bit_index)
+{
     array[bit_index / 8] |= (1 << (bit_index % 8));
 }
 
-static int get_bit(uint8_t* array, int bit_index) {
+static int get_bit(uint8_t *array, int bit_index)
+{
     return (array[bit_index / 8] >> (bit_index % 8)) & 1;
 }
 
 void UI_DisplayAircopy(void)
 {
-    char String[16] = { 0 };
-    char *pPrintStr = { 0 };
+    char String[16] = {0};
+    char *pPrintStr = {0};
     uint16_t percent;
 
     UI_DisplayClear();
@@ -78,15 +80,13 @@ void UI_DisplayAircopy(void)
     }
 
     // Draw gauge
-    if(gAircopyStep != 0)
-    {
+    if (gAircopyStep != 0) {
         UI_PrintString(String, 2, 127, 5, 8);
 
         gFrameBuffer[4][1] = 0x3c;
         gFrameBuffer[4][2] = 0x42;
 
-        for(uint8_t i = 1; i <= 122; i++)
-        {
+        for (uint8_t i = 1; i <= 122; i++) {
             gFrameBuffer[4][2 + i] = 0x81;
         }
 
@@ -94,19 +94,15 @@ void UI_DisplayAircopy(void)
         gFrameBuffer[4][126] = 0x3c;
     }
 
-    if(gAirCopyBlockNumber + gErrorsDuringAirCopy != 0)
-    {
+    if (gAirCopyBlockNumber + gErrorsDuringAirCopy != 0) {
         // Check CRC
-        if(gErrorsDuringAirCopy != lErrorsDuringAirCopy)
-        {
+        if (gErrorsDuringAirCopy != lErrorsDuringAirCopy) {
             set_bit(crc, gAirCopyBlockNumber + gErrorsDuringAirCopy);
             lErrorsDuringAirCopy = gErrorsDuringAirCopy;
         }
 
-        for(uint8_t i = 0; i < (gAirCopyBlockNumber + gErrorsDuringAirCopy); i++)
-        {
-            if(get_bit(crc, i) == 0)
-            {
+        for (uint8_t i = 0; i < (gAirCopyBlockNumber + gErrorsDuringAirCopy); i++) {
+            if (get_bit(crc, i) == 0) {
                 gFrameBuffer[4][i + 4] = 0xbd;
             }
         }
@@ -114,4 +110,3 @@ void UI_DisplayAircopy(void)
 
     ST7565_BlitFullScreen();
 }
-

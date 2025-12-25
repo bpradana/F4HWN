@@ -27,7 +27,6 @@ void UART_Init(void);
 void UART_Send(const void *pBuffer, uint32_t Size);
 void UART_LogSend(const void *pBuffer, uint32_t Size);
 
-    bool UART_IsCableConnected(void);
+bool UART_IsCableConnected(void);
 
 #endif
-

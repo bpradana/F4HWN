@@ -19,8 +19,7 @@
 
 #include <stdint.h>
 
-enum DCS_CodeType_t
-{
+enum DCS_CodeType_t {
     CODE_TYPE_OFF = 0,
     CODE_TYPE_CONTINUOUS_TONE,
     CODE_TYPE_DIGITAL,
@@ -42,4 +41,3 @@ uint8_t DCS_GetCdcssCode(uint32_t Code);
 uint8_t DCS_GetCtcssCode(int Code);
 
 #endif
-

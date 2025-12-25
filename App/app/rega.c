@@ -9,18 +9,18 @@
  * There are two REGA ACTIONS: Test and Alarm.
  * The Test action sends out a fixed ZVEI tone sequence for testing purposes.
  * The Alarm action sends out a fixed ZVEI tone sequence for alarm purposes.
- * 
+ *
  * These actions can be assigned to a key in the settings menu.
- * 
+ *
  * The Test/Alarm function will perform the following actions:
  * - Set the radio to transmit mode
  * - Wait 100ms to allow the radio to switch to transmit mode and stabilize the tramsmitter
  * - Send out the ZVEI tone sequence
  * - Wait 100ms to allow the radio to finish transmitting
  * - Set the radio back to receive mode
- * 
+ *
  * The ZVEI tone squence for alarm is: 21414
- * The ZVEI tone squence for test is: 21301 
+ * The ZVEI tone squence for test is: 21301
  *
  * To save space the two tone sequences are stored as precalculated register values.
  * This avoids the need to calculate the register values at runtime.
@@ -62,11 +62,11 @@
 
 
 const uint16_t rega_alarm_tones[5] = {
-    1160,  // 2 1160Hz
-    1060,  // 1 1060Hz
-    1400,  // 4 1400Hz
-    1060,  // 1 1060Hz
-    1400,  // 4 1400Hz
+    1160, // 2 1160Hz
+    1060, // 1 1060Hz
+    1400, // 4 1400Hz
+    1060, // 1 1060Hz
+    1400, // 4 1400Hz
 };
 const uint16_t rega_test_tones[5] = {
     1160, // 2 1160Hz
@@ -83,14 +83,14 @@ char rega_message[16];
 void ACTION_RegaAlarm()
 {
     const char message[16] = "REGA Alarm";
-    REGA_TransmitZvei(rega_alarm_tones,message);
+    REGA_TransmitZvei(rega_alarm_tones, message);
 }
 
 // Tranmit the ZVEI tone sequence for test
 void ACTION_RegaTest()
 {
     const char message[16] = "REGA Test";
-    REGA_TransmitZvei(rega_test_tones,message);
+    REGA_TransmitZvei(rega_test_tones, message);
 }
 
 // Display the REGA message on the screen
@@ -105,10 +105,10 @@ void UI_DisplayREGA()
 // Configures the radio on VFO A with the required parameters
 // tones: array of 5 ZVEI tones
 // message: message to display on the screen
-void REGA_TransmitZvei(const uint16_t tones[],const char message[])
+void REGA_TransmitZvei(const uint16_t tones[], const char message[])
 {
     // Copy the message text
-    strncpy(rega_message,message,16);
+    strncpy(rega_message, message, 16);
     // Trigger the display
     gScreenToDisplay = DISPLAY_REGA;
 
@@ -130,7 +130,7 @@ void REGA_TransmitZvei(const uint16_t tones[],const char message[])
 
     // Set the REGA frequency, no offset
     gTxVfo->freq_config_RX.Frequency = REGA_FREQUENCY;
-    gTxVfo->freq_config_TX           = gTxVfo->freq_config_RX;
+    gTxVfo->freq_config_TX = gTxVfo->freq_config_RX;
     gTxVfo->TX_OFFSET_FREQUENCY = 0;
 
     // Set the modulation to FM narrow
@@ -139,7 +139,7 @@ void REGA_TransmitZvei(const uint16_t tones[],const char message[])
 
     // Set Tx Squelch Tone
     gTxVfo->freq_config_TX.CodeType = CODE_TYPE_CONTINUOUS_TONE;
-    gTxVfo->freq_config_TX.Code     = REGA_CTCSS_FREQ_INDEX;
+    gTxVfo->freq_config_TX.Code = REGA_CTCSS_FREQ_INDEX;
     BK4819_SetCTCSSFrequency(CTCSS_Options[gTxVfo->freq_config_TX.Code]);
     // Turn Rx squelch tone off
     gTxVfo->freq_config_RX.CodeType = CODE_TYPE_OFF;
@@ -164,8 +164,7 @@ void REGA_TransmitZvei(const uint16_t tones[],const char message[])
     SYSTEM_DelayMs(ZVEI_PRE_LENGTH_MS);
 
     // Send out the ZVEI2 tone sequence
-    for (int i = 0; i < ZVEI_NUM_TONES; i++)
-    {
+    for (int i = 0; i < ZVEI_NUM_TONES; i++) {
         BK4819_PlaySingleTone(tones[i], ZVEI_TONE_LENGTH_MS, 100, true);
         SYSTEM_DelayMs(ZVEI_PAUSE_LENGTH_MS);
     }

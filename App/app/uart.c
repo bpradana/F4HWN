@@ -18,9 +18,9 @@
 #include <string.h>
 
 #if !defined(ENABLE_OVERLAY)
-    #include "py32f0xx.h"
+#include "py32f0xx.h"
 #endif
-    #include "app/fm.h"
+#include "app/fm.h"
 #include "app/uart.h"
 #include "board.h"
 #include "py32f071_ll_dma.h"
@@ -44,7 +44,7 @@
 
 #define DMA_INDEX(x, y, z) (((x) + (y)) % (z))
 
-    #define DMA_CHANNEL LL_DMA_CHANNEL_2
+#define DMA_CHANNEL LL_DMA_CHANNEL_2
 
 // !! Make sure this is correct!
 #define MAX_REPLY_SIZE 144
@@ -55,7 +55,7 @@ typedef struct {
 } Header_t;
 
 typedef struct {
-    uint8_t  Padding[2];
+    uint8_t Padding[2];
     uint16_t ID;
 } Footer_t;
 
@@ -67,10 +67,10 @@ typedef struct {
 typedef struct {
     Header_t Header;
     struct {
-        char     Version[16];
-        bool     bHasCustomAesKey;
-        bool     bIsInLockScreen;
-        uint8_t  Padding[2];
+        char Version[16];
+        bool bHasCustomAesKey;
+        bool bIsInLockScreen;
+        uint8_t Padding[2];
         uint32_t Challenge[4];
     } Data;
 } REPLY_0514_t;
@@ -78,8 +78,8 @@ typedef struct {
 typedef struct {
     Header_t Header;
     uint16_t Offset;
-    uint8_t  Size;
-    uint8_t  Padding;
+    uint8_t Size;
+    uint8_t Padding;
     uint32_t Timestamp;
 } CMD_051B_t;
 
@@ -87,19 +87,19 @@ typedef struct {
     Header_t Header;
     struct {
         uint16_t Offset;
-        uint8_t  Size;
-        uint8_t  Padding;
-        uint8_t  Data[128];
+        uint8_t Size;
+        uint8_t Padding;
+        uint8_t Data[128];
     } Data;
 } REPLY_051B_t;
 
 typedef struct {
     Header_t Header;
     uint16_t Offset;
-    uint8_t  Size;
-    bool     bAllowPassword;
+    uint8_t Size;
+    bool bAllowPassword;
     uint32_t Timestamp;
-    uint8_t  Data[0];
+    uint8_t Data[0];
 } CMD_051D_t;
 
 typedef struct {
@@ -119,29 +119,24 @@ typedef struct {
 } REPLY_052D_t;
 
 
+static const uint8_t Obfuscation[16] = {0x16, 0x6C, 0x14, 0xE6, 0x2E, 0x91, 0x0D, 0x40,
+                                        0x21, 0x35, 0xD5, 0x40, 0x13, 0x03, 0xE9, 0x80};
 
-static const uint8_t Obfuscation[16] =
-{
-    0x16, 0x6C, 0x14, 0xE6, 0x2E, 0x91, 0x0D, 0x40, 0x21, 0x35, 0xD5, 0x40, 0x13, 0x03, 0xE9, 0x80
-};
-
-typedef union
-{
+typedef union {
     uint8_t Buffer[256];
-    struct
-    {
+    struct {
         Header_t Header;
         uint8_t Data[252];
     };
-} UART_Command_t __attribute__ ((aligned (4)));
+} UART_Command_t __attribute__((aligned(4)));
 
 
-    static uint32_t UART_Timestamp;
-    static UART_Command_t UART_Command;
-    static uint16_t gUART_WriteIndex;
-    static uint32_t VCP_Timestamp;
-    static UART_Command_t VCP_Command;
-    static uint16_t VCP_ReadIndex;
+static uint32_t UART_Timestamp;
+static UART_Command_t UART_Command;
+static uint16_t gUART_WriteIndex;
+static uint32_t VCP_Timestamp;
+static UART_Command_t VCP_Command;
+static uint16_t VCP_ReadIndex;
 
 // static bool     bIsEncrypted = true;
 #define bIsEncrypted true
@@ -151,8 +146,7 @@ static void SendReply_VCP(void *pReply, uint16_t Size)
     static uint8_t VCP_ReplyBuf[MAX_REPLY_SIZE + sizeof(Header_t) + sizeof(Footer_t)];
 
     // !!
-    if (Size > MAX_REPLY_SIZE)
-    {
+    if (Size > MAX_REPLY_SIZE) {
         return;
     }
 
@@ -162,9 +156,8 @@ static void SendReply_VCP(void *pReply, uint16_t Size)
     Footer_t *pFooter = (Footer_t *)(VCP_ReplyBuf + sizeof(Header_t) + Size);
     pReply = VCP_ReplyBuf + sizeof(Header_t);
 
-    if (bIsEncrypted)
-    {
-        uint8_t     *pBytes = (uint8_t *)pReply;
+    if (bIsEncrypted) {
+        uint8_t *pBytes = (uint8_t *)pReply;
         unsigned int i;
         for (i = 0; i < Size; i++)
             pBytes[i] ^= Obfuscation[i % 16];
@@ -175,14 +168,11 @@ static void SendReply_VCP(void *pReply, uint16_t Size)
 
     // VCP_Send((uint8_t *)&Header, sizeof(Header));
     // VCP_Send(pReply, Size);
-   
-    if (bIsEncrypted)
-    {
+
+    if (bIsEncrypted) {
         pFooter->Padding[0] = Obfuscation[(Size + 0) % 16] ^ 0xFF;
         pFooter->Padding[1] = Obfuscation[(Size + 1) % 16] ^ 0xFF;
-    }
-    else
-    {
+    } else {
         pFooter->Padding[0] = 0xFF;
         pFooter->Padding[1] = 0xFF;
     }
@@ -195,8 +185,7 @@ static void SendReply_VCP(void *pReply, uint16_t Size)
 
 static void SendReply(uint32_t Port, void *pReply, uint16_t Size)
 {
-    if (Port == UART_PORT_VCP)
-    {
+    if (Port == UART_PORT_VCP) {
         SendReply_VCP(pReply, Size);
         return;
     }
@@ -204,9 +193,8 @@ static void SendReply(uint32_t Port, void *pReply, uint16_t Size)
     Header_t Header;
     Footer_t Footer;
 
-    if (bIsEncrypted)
-    {
-        uint8_t     *pBytes = (uint8_t *)pReply;
+    if (bIsEncrypted) {
+        uint8_t *pBytes = (uint8_t *)pReply;
         unsigned int i;
         for (i = 0; i < Size; i++)
             pBytes[i] ^= Obfuscation[i % 16];
@@ -218,13 +206,10 @@ static void SendReply(uint32_t Port, void *pReply, uint16_t Size)
     UART_Send(&Header, sizeof(Header));
     UART_Send(pReply, Size);
 
-    if (bIsEncrypted)
-    {
+    if (bIsEncrypted) {
         Footer.Padding[0] = Obfuscation[(Size + 0) % 16] ^ 0xFF;
         Footer.Padding[1] = Obfuscation[(Size + 1) % 16] ^ 0xFF;
-    }
-    else
-    {
+    } else {
         Footer.Padding[0] = 0xFF;
         Footer.Padding[1] = 0xFF;
     }
@@ -257,20 +242,17 @@ static void CMD_0514(uint32_t Port, const uint8_t *pBuffer)
 {
     const CMD_0514_t *pCmd = (const CMD_0514_t *)pBuffer;
 
-    if(0) {}
-    else if (Port == UART_PORT_UART)
-    {
+    if (0) {
+    } else if (Port == UART_PORT_UART) {
         UART_Timestamp = pCmd->Timestamp;
-    }
-    else if (Port == UART_PORT_VCP)
-    {
+    } else if (Port == UART_PORT_VCP) {
         VCP_Timestamp = pCmd->Timestamp;
     }
 
     gFmRadioCountdown_500ms = fm_radio_countdown_500ms;
 
     gSerialConfigCountDown_500ms = 12; // 6 sec
-    
+
     // turn the LCD backlight off
     BACKLIGHT_TurnOff();
 
@@ -281,22 +263,17 @@ static void CMD_0514(uint32_t Port, const uint8_t *pBuffer)
 static void CMD_051B(uint32_t Port, const uint8_t *pBuffer)
 {
     const CMD_051B_t *pCmd = (const CMD_051B_t *)pBuffer;
-    REPLY_051B_t      Reply;
-    bool              bLocked = false;
+    REPLY_051B_t Reply;
+    bool bLocked = false;
 
     uint32_t Timestamp = 0;
 
-    if(0) {}
-    else if (Port == UART_PORT_UART)
-    {
+    if (0) {
+    } else if (Port == UART_PORT_UART) {
         Timestamp = UART_Timestamp;
-    }
-    else if (Port == UART_PORT_VCP)
-    {
+    } else if (Port == UART_PORT_VCP) {
         Timestamp = VCP_Timestamp;
-    }
-    else
-    {
+    } else {
         return;
     }
 
@@ -305,22 +282,21 @@ static void CMD_051B(uint32_t Port, const uint8_t *pBuffer)
 
     gSerialConfigCountDown_500ms = 12; // 6 sec
 
-        gFmRadioCountdown_500ms = fm_radio_countdown_500ms;
+    gFmRadioCountdown_500ms = fm_radio_countdown_500ms;
 
     memset(&Reply, 0, sizeof(Reply));
-    Reply.Header.ID   = 0x051C;
+    Reply.Header.ID = 0x051C;
     Reply.Header.Size = pCmd->Size + 4;
     Reply.Data.Offset = pCmd->Offset;
-    Reply.Data.Size   = pCmd->Size;
+    Reply.Data.Size = pCmd->Size;
 
     if (bHasCustomAesKey)
         bLocked = gIsLocked;
 
-    if (!bLocked)
-    {
+    if (!bLocked) {
         EEPROM_ReadBuffer(pCmd->Offset, Reply.Data.Data, pCmd->Size);
     }
-    
+
     SendReply(Port, &Reply, pCmd->Size + 8);
 }
 
@@ -334,17 +310,12 @@ static void CMD_051D(uint32_t Port, const uint8_t *pBuffer)
 
     uint32_t Timestamp = 0;
 
-    if(0) {}
-    else if (Port == UART_PORT_UART)
-    {
+    if (0) {
+    } else if (Port == UART_PORT_UART) {
         Timestamp = UART_Timestamp;
-    }
-    else if (Port == UART_PORT_VCP)
-    {
+    } else if (Port == UART_PORT_VCP) {
         Timestamp = VCP_Timestamp;
-    }
-    else
-    {
+    } else {
         return;
     }
 
@@ -352,30 +323,27 @@ static void CMD_051D(uint32_t Port, const uint8_t *pBuffer)
         return;
 
     gSerialConfigCountDown_500ms = 12; // 6 sec
-    
+
     bReloadEeprom = false;
 
-        gFmRadioCountdown_500ms = fm_radio_countdown_500ms;
+    gFmRadioCountdown_500ms = fm_radio_countdown_500ms;
 
-    Reply.Header.ID   = 0x051E;
+    Reply.Header.ID = 0x051E;
     Reply.Header.Size = sizeof(Reply.Data);
     Reply.Data.Offset = pCmd->Offset;
 
     bIsLocked = bHasCustomAesKey ? gIsLocked : false;
 
-    if (!bIsLocked)
-    {
+    if (!bIsLocked) {
         unsigned int i;
-        for (i = 0; i < (pCmd->Size / 8); i++)
-        {
+        for (i = 0; i < (pCmd->Size / 8); i++) {
             const uint16_t Offset = pCmd->Offset + (i * 8U);
 
             if (Offset >= 0x0F30 && Offset < 0x0F40)
                 if (!gIsLocked)
                     bReloadEeprom = true;
 
-            if ((Offset < 0x0E98 || Offset >= 0x0EA0) || !bIsInLockScreen || pCmd->bAllowPassword)
-            {    
+            if ((Offset < 0x0E98 || Offset >= 0x0EA0) || !bIsInLockScreen || pCmd->bAllowPassword) {
                 EEPROM_WriteBuffer(Offset, &pCmd->Data[i * 8U]);
             }
         }
@@ -386,7 +354,6 @@ static void CMD_051D(uint32_t Port, const uint8_t *pBuffer)
 
     SendReply(Port, &Reply, sizeof(Reply));
 }
-
 
 
 bool UART_IsCommandAvailable(uint32_t Port)
@@ -402,30 +369,24 @@ bool UART_IsCommandAvailable(uint32_t Port)
     uint16_t *pReadPointer;
     UART_Command_t *pUART_Command;
 
-    if(0){}
-    else if (Port == UART_PORT_UART)
-    {
+    if (0) {
+    } else if (Port == UART_PORT_UART) {
         DmaLength = sizeof(UART_DMA_Buffer) - LL_DMA_GetDataLength(DMA1, DMA_CHANNEL);
         ReadBuf = UART_DMA_Buffer;
         ReadBufSize = sizeof(UART_DMA_Buffer);
         pReadPointer = &gUART_WriteIndex;
         pUART_Command = &UART_Command;
-    }
-    else if (Port == UART_PORT_VCP)
-    {
+    } else if (Port == UART_PORT_VCP) {
         DmaLength = VCP_RxBufPointer;
         ReadBuf = VCP_RxBuf;
         ReadBufSize = sizeof(VCP_RxBuf);
         pReadPointer = &VCP_ReadIndex;
         pUART_Command = &VCP_Command;
-    }
-    else
-    {
+    } else {
         return false;
     }
 
-    while (1)
-    {
+    while (1) {
         if ((*pReadPointer) == DmaLength)
             return false;
 
@@ -450,10 +411,9 @@ bool UART_IsCommandAvailable(uint32_t Port)
     }
 
     Index = DMA_INDEX(*pReadPointer, 2, ReadBufSize);
-    Size  = (ReadBuf[DMA_INDEX(Index, 1, ReadBufSize)] << 8) | ReadBuf[Index];
+    Size = (ReadBuf[DMA_INDEX(Index, 1, ReadBufSize)] << 8) | ReadBuf[Index];
 
-    if ((Size + 8u) > ReadBufSize)
-    {
+    if ((Size + 8u) > ReadBufSize) {
         *pReadPointer = DmaLength;
         return false;
     }
@@ -461,31 +421,26 @@ bool UART_IsCommandAvailable(uint32_t Port)
     if (CommandLength < (Size + 8))
         return false;
 
-    Index     = DMA_INDEX(Index, 2, ReadBufSize);
+    Index = DMA_INDEX(Index, 2, ReadBufSize);
     TailIndex = DMA_INDEX(Index, Size + 2, ReadBufSize);
 
-    if (ReadBuf[TailIndex] != 0xDC || ReadBuf[DMA_INDEX(TailIndex, 1, ReadBufSize)] != 0xBA)
-    {
+    if (ReadBuf[TailIndex] != 0xDC || ReadBuf[DMA_INDEX(TailIndex, 1, ReadBufSize)] != 0xBA) {
         *pReadPointer = DmaLength;
         return false;
     }
 
-    if (TailIndex < Index)
-    {
+    if (TailIndex < Index) {
         const uint16_t ChunkSize = ReadBufSize - Index;
         memcpy(pUART_Command->Buffer, ReadBuf + Index, ChunkSize);
         memcpy(pUART_Command->Buffer + ChunkSize, ReadBuf, TailIndex);
-    }
-    else
+    } else
         memcpy(pUART_Command->Buffer, ReadBuf + Index, TailIndex - Index);
 
     TailIndex = DMA_INDEX(TailIndex, 2, ReadBufSize);
-    if (TailIndex < (*pReadPointer))
-    {
+    if (TailIndex < (*pReadPointer)) {
         memset(ReadBuf + (*pReadPointer), 0, ReadBufSize - (*pReadPointer));
         memset(ReadBuf, 0, TailIndex);
-    }
-    else
+    } else
         memset(ReadBuf + (*pReadPointer), 0, TailIndex - (*pReadPointer));
 
     *pReadPointer = TailIndex;
@@ -498,8 +453,7 @@ bool UART_IsCommandAvailable(uint32_t Port)
         bIsEncrypted = true;
     -- */
 
-    if (bIsEncrypted)
-    {
+    if (bIsEncrypted) {
         unsigned int i;
         for (i = 0; i < (Size + 2u); i++)
             pUART_Command->Buffer[i] ^= Obfuscation[i % 16];
@@ -514,46 +468,40 @@ void UART_HandleCommand(uint32_t Port)
 {
     UART_Command_t *pUART_Command;
 
-    if (0) {}
-    else if (Port == UART_PORT_UART)
-    {
+    if (0) {
+    } else if (Port == UART_PORT_UART) {
         pUART_Command = &UART_Command;
-    }
-    else if (Port == UART_PORT_VCP)
-    {
+    } else if (Port == UART_PORT_VCP) {
         pUART_Command = &VCP_Command;
-    }
-    else
-    {
+    } else {
         return;
     }
 
-    switch (pUART_Command->Header.ID)
-    {
-        case 0x0514:
-            CMD_0514(Port, pUART_Command->Buffer);
-            break;
+    switch (pUART_Command->Header.ID) {
+    case 0x0514:
+        CMD_0514(Port, pUART_Command->Buffer);
+        break;
 
-        case 0x051B:
-            CMD_051B(Port, pUART_Command->Buffer);
-            break;
+    case 0x051B:
+        CMD_051B(Port, pUART_Command->Buffer);
+        break;
 
-        case 0x051D:
-            CMD_051D(Port, pUART_Command->Buffer);
-            break;
+    case 0x051D:
+        CMD_051D(Port, pUART_Command->Buffer);
+        break;
 
-        case 0x051F:    // Not implementing non-authentic command
-            break;
+    case 0x051F: // Not implementing non-authentic command
+        break;
 
-        case 0x0521:    // Not implementing non-authentic command
-            break;
+    case 0x0521: // Not implementing non-authentic command
+        break;
 
 
-        case 0x05DD: // reset
-                NVIC_SystemReset();
-            break;
+    case 0x05DD: // reset
+        NVIC_SystemReset();
+        break;
 
     } // switch
 
-        gUART_LockScreenshot = 20; // lock screenshot
+    gUART_LockScreenshot = 20; // lock screenshot
 }

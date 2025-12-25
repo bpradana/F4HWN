@@ -24,59 +24,55 @@
 #define BX4819_band1_lower 1800000
 #define BX4819_band2_upper 130000000
 
-const freq_band_table_t BX4819_band1 = {BX4819_band1_lower,  63000000};
+const freq_band_table_t BX4819_band1 = {BX4819_band1_lower, 63000000};
 const freq_band_table_t BX4819_band2 = {84000000, BX4819_band2_upper};
 
-const freq_band_table_t frequencyBandTable[] =
-{
-        // extended range
-        [BAND1_50MHz ]={.lower =  BX4819_band1_lower, .upper =  10800000},
-        [BAND7_470MHz]={.lower = 47000000, .upper = BX4819_band2_upper},
-        [BAND2_108MHz]={.lower = 10800000,  .upper = 13700000},
-        [BAND3_137MHz]={.lower = 13700000,  .upper = 17400000},
-        [BAND4_174MHz]={.lower = 17400000,  .upper = 35000000},
-        [BAND5_350MHz]={.lower = 35000000,  .upper = 40000000},
-        [BAND6_400MHz]={.lower = 40000000,  .upper = 47000000}
-};
-
+const freq_band_table_t frequencyBandTable[] = {
+    // extended range
+    [BAND1_50MHz] = {.lower = BX4819_band1_lower, .upper = 10800000},
+    [BAND7_470MHz] = {.lower = 47000000, .upper = BX4819_band2_upper},
+    [BAND2_108MHz] = {.lower = 10800000, .upper = 13700000},
+    [BAND3_137MHz] = {.lower = 13700000, .upper = 17400000},
+    [BAND4_174MHz] = {.lower = 17400000, .upper = 35000000},
+    [BAND5_350MHz] = {.lower = 35000000, .upper = 40000000},
+    [BAND6_400MHz] = {.lower = 40000000, .upper = 47000000}};
 
 
 // this order of steps has to be preserved for backwards compatibility with other/stock firmwares
 const uint16_t gStepFrequencyTable[] = {
-// standard steps
-    [STEP_2_5kHz]   = 250,
-    [STEP_5kHz]     = 500,
-    [STEP_6_25kHz]  = 625,
-    [STEP_10kHz]    = 1000,
-    [STEP_12_5kHz]  = 1250,
-    [STEP_25kHz]    = 2500,
-    [STEP_8_33kHz]  = 833,
-// custom steps
-    [STEP_0_01kHz]  = 1,
-    [STEP_0_05kHz]  = 5,
-    [STEP_0_1kHz]   = 10,
-    [STEP_0_25kHz]  = 25,
-    [STEP_0_5kHz]   = 50,
-    [STEP_1kHz]     = 100,
-    [STEP_1_25kHz]  = 125,
-    [STEP_9kHz]     = 900,
-    [STEP_15kHz]    = 1500,
-    [STEP_20kHz]    = 2000,
-    [STEP_30kHz]    = 3000,
-    [STEP_50kHz]    = 5000,
-    [STEP_100kHz]   = 10000,
-    [STEP_125kHz]   = 12500,
-    [STEP_200kHz]   = 20000,
-    [STEP_250kHz]   = 25000,
-    [STEP_500kHz]   = 50000
-};
+    // standard steps
+    [STEP_2_5kHz] = 250,
+    [STEP_5kHz] = 500,
+    [STEP_6_25kHz] = 625,
+    [STEP_10kHz] = 1000,
+    [STEP_12_5kHz] = 1250,
+    [STEP_25kHz] = 2500,
+    [STEP_8_33kHz] = 833,
+    // custom steps
+    [STEP_0_01kHz] = 1,
+    [STEP_0_05kHz] = 5,
+    [STEP_0_1kHz] = 10,
+    [STEP_0_25kHz] = 25,
+    [STEP_0_5kHz] = 50,
+    [STEP_1kHz] = 100,
+    [STEP_1_25kHz] = 125,
+    [STEP_9kHz] = 900,
+    [STEP_15kHz] = 1500,
+    [STEP_20kHz] = 2000,
+    [STEP_30kHz] = 3000,
+    [STEP_50kHz] = 5000,
+    [STEP_100kHz] = 10000,
+    [STEP_125kHz] = 12500,
+    [STEP_200kHz] = 20000,
+    [STEP_250kHz] = 25000,
+    [STEP_500kHz] = 50000};
 
 
 const STEP_Setting_t StepSortedIndexes[] = {
-    STEP_0_01kHz, STEP_0_05kHz, STEP_0_1kHz, STEP_0_25kHz, STEP_0_5kHz, STEP_1kHz, STEP_1_25kHz, STEP_2_5kHz, STEP_5kHz, STEP_6_25kHz,
-    STEP_8_33kHz, STEP_9kHz, STEP_10kHz, STEP_12_5kHz, STEP_15kHz, STEP_20kHz, STEP_25kHz, STEP_30kHz, STEP_50kHz, STEP_100kHz,
-    STEP_125kHz, STEP_200kHz, STEP_250kHz, STEP_500kHz
-};
+    STEP_0_01kHz, STEP_0_05kHz, STEP_0_1kHz, STEP_0_25kHz, STEP_0_5kHz,  STEP_1kHz,
+    STEP_1_25kHz, STEP_2_5kHz,  STEP_5kHz,   STEP_6_25kHz, STEP_8_33kHz, STEP_9kHz,
+    STEP_10kHz,   STEP_12_5kHz, STEP_15kHz,  STEP_20kHz,   STEP_25kHz,   STEP_30kHz,
+    STEP_50kHz,   STEP_100kHz,  STEP_125kHz, STEP_200kHz,  STEP_250kHz,  STEP_500kHz};
 
 STEP_Setting_t FREQUENCY_GetStepIdxFromSortedIdx(uint8_t sortedIdx)
 {
@@ -85,8 +81,8 @@ STEP_Setting_t FREQUENCY_GetStepIdxFromSortedIdx(uint8_t sortedIdx)
 
 uint32_t FREQUENCY_GetSortedIdxFromStepIdx(uint8_t stepIdx)
 {
-    for(uint8_t i = 0; i < ARRAY_SIZE(gStepFrequencyTable); i++)
-        if(StepSortedIndexes[i] == stepIdx)
+    for (uint8_t i = 0; i < ARRAY_SIZE(gStepFrequencyTable); i++)
+        if (StepSortedIndexes[i] == stepIdx)
             return i;
     return 0;
 }
@@ -103,7 +99,9 @@ FREQUENCY_Band_t FREQUENCY_GetBand(uint32_t Frequency)
     return BAND1_50MHz;
 }
 
-uint8_t FREQUENCY_CalculateOutputPower(uint8_t TxpLow, uint8_t TxpMid, uint8_t TxpHigh, int32_t LowerLimit, int32_t Middle, int32_t UpperLimit, int32_t Frequency)
+uint8_t FREQUENCY_CalculateOutputPower(uint8_t TxpLow, uint8_t TxpMid, uint8_t TxpHigh,
+                                       int32_t LowerLimit, int32_t Middle, int32_t UpperLimit,
+                                       int32_t Frequency)
 {
     if (Frequency <= LowerLimit)
         return TxpLow;
@@ -111,8 +109,7 @@ uint8_t FREQUENCY_CalculateOutputPower(uint8_t TxpLow, uint8_t TxpMid, uint8_t T
     if (UpperLimit <= Frequency)
         return TxpHigh;
 
-    if (Frequency <= Middle)
-    {
+    if (Frequency <= Middle) {
         TxpMid += ((TxpMid - TxpLow) * (Frequency - LowerLimit)) / (Middle - LowerLimit);
         return TxpMid;
     }
@@ -125,113 +122,116 @@ uint8_t FREQUENCY_CalculateOutputPower(uint8_t TxpLow, uint8_t TxpMid, uint8_t T
 
 uint32_t FREQUENCY_RoundToStep(uint32_t freq, uint16_t step)
 {
-    if(step == 833) {
-        uint32_t base = freq/2500*2500;
-        int chno = (freq - base) / 700;    // convert entered aviation 8.33Khz channel number scheme to actual frequency. 
+    if (step == 833) {
+        uint32_t base = freq / 2500 * 2500;
+        int chno =
+            (freq - base) /
+            700; // convert entered aviation 8.33Khz channel number scheme to actual frequency.
         return base + (chno * 833) + (chno == 3);
     }
 
-    if(step == 1)
+    if (step == 1)
         return freq;
-    if(step >= 1000) 
-        step = step/2;
+    if (step >= 1000)
+        step = step / 2;
     return (freq + (step + 1) / 2) / step * step;
 }
 
 int32_t TX_freq_check(const uint32_t Frequency)
-{   // return '0' if TX frequency is allowed
+{ // return '0' if TX frequency is allowed
     // otherwise return '-1'
 
-    if (Frequency < frequencyBandTable[0].lower || Frequency > frequencyBandTable[BAND_N_ELEM - 1].upper)
-        return -1;  // not allowed outside this range
+    if (Frequency < frequencyBandTable[0].lower ||
+        Frequency > frequencyBandTable[BAND_N_ELEM - 1].upper)
+        return -1; // not allowed outside this range
 
     if (Frequency >= BX4819_band1.upper && Frequency < BX4819_band2.lower)
-        return -1;  // BX chip does not work in this range
+        return -1; // BX chip does not work in this range
 
-    switch (gSetting_F_LOCK)
-    {
-        case F_LOCK_DEF:
-            if (Frequency >= frequencyBandTable[BAND3_137MHz].lower && Frequency < frequencyBandTable[BAND3_137MHz].upper)
+    switch (gSetting_F_LOCK) {
+    case F_LOCK_DEF:
+        if (Frequency >= frequencyBandTable[BAND3_137MHz].lower &&
+            Frequency < frequencyBandTable[BAND3_137MHz].upper)
+            return 0;
+        if (Frequency >= frequencyBandTable[BAND4_174MHz].lower &&
+            Frequency < frequencyBandTable[BAND4_174MHz].upper)
+            return 0;
+        if (Frequency >= frequencyBandTable[BAND5_350MHz].lower &&
+            Frequency < frequencyBandTable[BAND5_350MHz].upper)
+            if (gSetting_350EN)
                 return 0;
-            if (Frequency >= frequencyBandTable[BAND4_174MHz].lower && Frequency < frequencyBandTable[BAND4_174MHz].upper)
-                    return 0;
-            if (Frequency >= frequencyBandTable[BAND5_350MHz].lower && Frequency < frequencyBandTable[BAND5_350MHz].upper)
-                if (gSetting_350EN)                
-                    return 0;
-            if (Frequency >= frequencyBandTable[BAND6_400MHz].lower && Frequency < frequencyBandTable[BAND6_400MHz].upper)
-                return 0;
-            if (Frequency >= frequencyBandTable[BAND7_470MHz].lower && Frequency <= 60000000)
-                    return 0;
-            break;
+        if (Frequency >= frequencyBandTable[BAND6_400MHz].lower &&
+            Frequency < frequencyBandTable[BAND6_400MHz].upper)
+            return 0;
+        if (Frequency >= frequencyBandTable[BAND7_470MHz].lower && Frequency <= 60000000)
+            return 0;
+        break;
 
-        case F_LOCK_FCC:
-            if (Frequency >= 14400000 && Frequency < 14800000)
-                return 0;
-            if (Frequency >= 42000000 && Frequency < 45000000)
-                return 0;
-            break;
+    case F_LOCK_FCC:
+        if (Frequency >= 14400000 && Frequency < 14800000)
+            return 0;
+        if (Frequency >= 42000000 && Frequency < 45000000)
+            return 0;
+        break;
 
-        case F_LOCK_CE:
-            if (Frequency >= 14400000 && Frequency < 14600000)
-                return 0;
-            if (Frequency >= 43000000 && Frequency < 44000000)
-                return 0;
-            break;
+    case F_LOCK_CE:
+        if (Frequency >= 14400000 && Frequency < 14600000)
+            return 0;
+        if (Frequency >= 43000000 && Frequency < 44000000)
+            return 0;
+        break;
 
-        case F_LOCK_GB:
-            if (Frequency >= 14400000 && Frequency < 14800000)
-                return 0;
-            if (Frequency >= 43000000 && Frequency < 44000000)
-                return 0;
-            break;
+    case F_LOCK_GB:
+        if (Frequency >= 14400000 && Frequency < 14800000)
+            return 0;
+        if (Frequency >= 43000000 && Frequency < 44000000)
+            return 0;
+        break;
 
-        case F_LOCK_430:
-            if (Frequency >= frequencyBandTable[BAND3_137MHz].lower && Frequency < 17400000)
-                return 0;
-            if (Frequency >= 40000000 && Frequency < 43000000)
-                return 0;
-            break;
+    case F_LOCK_430:
+        if (Frequency >= frequencyBandTable[BAND3_137MHz].lower && Frequency < 17400000)
+            return 0;
+        if (Frequency >= 40000000 && Frequency < 43000000)
+            return 0;
+        break;
 
-        case F_LOCK_438:
-            if (Frequency >= frequencyBandTable[BAND3_137MHz].lower && Frequency < 17400000)
-                return 0;
-            if (Frequency >= 40000000 && Frequency < 43800000)
-                return 0;
-            break;
+    case F_LOCK_438:
+        if (Frequency >= frequencyBandTable[BAND3_137MHz].lower && Frequency < 17400000)
+            return 0;
+        if (Frequency >= 40000000 && Frequency < 43800000)
+            return 0;
+        break;
 
-        case F_LOCK_PMR:
-            if (Frequency >= 44600625 && Frequency <= 44619375)
-                return 0;
-            break;
+    case F_LOCK_PMR:
+        if (Frequency >= 44600625 && Frequency <= 44619375)
+            return 0;
+        break;
 
-        case F_LOCK_GMRS_FRS_MURS:
-            // https://forums.radioreference.com/threads/the-great-unofficial-radioreference-frs-gmrs-murs-fact-sheet.275370/
-            if ((Frequency >= 46255000 && Frequency <= 46272500) ||
-                (Frequency >= 46755000 && Frequency <= 46772500)) // FRS/GMRS
-                return 0;
-            if (Frequency == 15182000 || 
-                Frequency == 15188000 || 
-                Frequency == 15194000 || 
-                Frequency == 15457000 || 
-                Frequency == 15460000) // MURS
-                return 0;
-            break;
+    case F_LOCK_GMRS_FRS_MURS:
+        // https://forums.radioreference.com/threads/the-great-unofficial-radioreference-frs-gmrs-murs-fact-sheet.275370/
+        if ((Frequency >= 46255000 && Frequency <= 46272500) ||
+            (Frequency >= 46755000 && Frequency <= 46772500)) // FRS/GMRS
+            return 0;
+        if (Frequency == 15182000 || Frequency == 15188000 || Frequency == 15194000 ||
+            Frequency == 15457000 || Frequency == 15460000) // MURS
+            return 0;
+        break;
 
-        case F_LOCK_CA:
-            if (Frequency >= 14400000 && Frequency < 14800000)
-                return 0;
-            if (Frequency >= 43000000 && Frequency < 45000000)
-                return 0;
-            break;
+    case F_LOCK_CA:
+        if (Frequency >= 14400000 && Frequency < 14800000)
+            return 0;
+        if (Frequency >= 43000000 && Frequency < 45000000)
+            return 0;
+        break;
 
-        case F_LOCK_ALL:
-            break;
+    case F_LOCK_ALL:
+        break;
 
-        case F_LOCK_NONE:
-            for (uint32_t i = 0; i < ARRAY_SIZE(frequencyBandTable); i++)
-                if (Frequency >= frequencyBandTable[i].lower && Frequency < frequencyBandTable[i].upper)
-                    return 0;
-            break;
+    case F_LOCK_NONE:
+        for (uint32_t i = 0; i < ARRAY_SIZE(frequencyBandTable); i++)
+            if (Frequency >= frequencyBandTable[i].lower && Frequency < frequencyBandTable[i].upper)
+                return 0;
+        break;
     }
 
     // dis-allowed TX frequency
@@ -239,14 +239,15 @@ int32_t TX_freq_check(const uint32_t Frequency)
 }
 
 int32_t RX_freq_check(const uint32_t Frequency)
-{   // return '0' if RX frequency is allowed
+{ // return '0' if RX frequency is allowed
     // otherwise return '-1'
 
-    if (Frequency < frequencyBandTable[0].lower || Frequency > frequencyBandTable[BAND_N_ELEM - 1].upper)
+    if (Frequency < frequencyBandTable[0].lower ||
+        Frequency > frequencyBandTable[BAND_N_ELEM - 1].upper)
         return -1;
 
     if (Frequency >= BX4819_band1.upper && Frequency < BX4819_band2.lower)
         return -1;
 
-    return 0;   // OK frequency
+    return 0; // OK frequency
 }

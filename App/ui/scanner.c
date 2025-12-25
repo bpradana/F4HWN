@@ -26,14 +26,15 @@
 
 void UI_DisplayScanner(void)
 {
-    char  String[16] = {0};
+    char String[16] = {0};
     char *pPrintStr = String;
     bool bCentered;
     uint8_t Start;
 
     UI_DisplayClear();
 
-    if (gScanSingleFrequency || (gScanCssState != SCAN_CSS_STATE_OFF && gScanCssState != SCAN_CSS_STATE_FAILED)) {
+    if (gScanSingleFrequency ||
+        (gScanCssState != SCAN_CSS_STATE_OFF && gScanCssState != SCAN_CSS_STATE_FAILED)) {
         sprintf(String, "FREQ:%u.%05u", gScanFrequency / 100000, gScanFrequency % 100000);
         pPrintStr = String;
     } else {
@@ -45,7 +46,8 @@ void UI_DisplayScanner(void)
     if (gScanCssState < SCAN_CSS_STATE_FOUND || !gScanUseCssResult) {
         pPrintStr = "CTC:******";
     } else if (gScanCssResultType == CODE_TYPE_CONTINUOUS_TONE) {
-        sprintf(String, "CTC:%u.%uHz", CTCSS_Options[gScanCssResultCode] / 10, CTCSS_Options[gScanCssResultCode] % 10);
+        sprintf(String, "CTC:%u.%uHz", CTCSS_Options[gScanCssResultCode] / 10,
+                CTCSS_Options[gScanCssResultCode] % 10);
         pPrintStr = String;
     } else {
         sprintf(String, "DCS:D%03oN", DCS_Options[gScanCssResultCode]);
@@ -56,10 +58,10 @@ void UI_DisplayScanner(void)
     memset(String, 0, sizeof(String));
     if (gScannerSaveState == SCAN_SAVE_CHANNEL) {
         pPrintStr = "SAVE?";
-        Start     = 0;
+        Start = 0;
         bCentered = 1;
     } else {
-        Start     = 2;
+        Start = 2;
         bCentered = 0;
 
         if (gScannerSaveState == SCAN_SAVE_CHAN_SEL) {

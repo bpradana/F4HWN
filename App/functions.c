@@ -17,11 +17,11 @@
 #include <string.h>
 
 #include "app/dtmf.h"
-    #include "app/fm.h"
+#include "app/fm.h"
 #include "audio.h"
 #include "dcs.h"
 #include "driver/backlight.h"
-    #include "driver/bk1080.h"
+#include "driver/bk1080.h"
 #include "driver/bk4819.h"
 #include "driver/gpio.h"
 #include "driver/system.h"
@@ -39,31 +39,30 @@ FUNCTION_Type_t gCurrentFunction;
 
 bool FUNCTION_IsRx()
 {
-    return gCurrentFunction == FUNCTION_MONITOR ||
-           gCurrentFunction == FUNCTION_INCOMING ||
+    return gCurrentFunction == FUNCTION_MONITOR || gCurrentFunction == FUNCTION_INCOMING ||
            gCurrentFunction == FUNCTION_RECEIVE;
 }
 
 void FUNCTION_Init(void)
 {
     g_CxCSS_TAIL_Found = false;
-    g_CDCSS_Lost       = false;
-    g_CTCSS_Lost       = false;
+    g_CDCSS_Lost = false;
+    g_CTCSS_Lost = false;
 
-    g_SquelchLost      = false;
+    g_SquelchLost = false;
 
-    gFlagTailNoteEliminationComplete   = false;
+    gFlagTailNoteEliminationComplete = false;
     gTailNoteEliminationCountdown_10ms = 0;
-    gFoundCTCSS                        = false;
-    gFoundCDCSS                        = false;
-    gFoundCTCSSCountdown_10ms          = 0;
-    gFoundCDCSSCountdown_10ms          = 0;
-    gEndOfRxDetectedMaybe              = false;
+    gFoundCTCSS = false;
+    gFoundCDCSS = false;
+    gFoundCTCSSCountdown_10ms = 0;
+    gFoundCDCSSCountdown_10ms = 0;
+    gEndOfRxDetectedMaybe = false;
 
-    gCurrentCodeType = (gRxVfo->Modulation != MODULATION_FM) ? CODE_TYPE_OFF : gRxVfo->pRX->CodeType;
+    gCurrentCodeType =
+        (gRxVfo->Modulation != MODULATION_FM) ? CODE_TYPE_OFF : gRxVfo->pRX->CodeType;
 
-    g_VOX_Lost     = false;
-
+    g_VOX_Lost = false;
 
 
     gUpdateStatus = true;
@@ -71,7 +70,6 @@ void FUNCTION_Init(void)
 
 void FUNCTION_Foreground(const FUNCTION_Type_t PreviousFunction)
 {
-
     if (PreviousFunction == FUNCTION_TRANSMIT) {
         ST7565_FixInterfGlitch();
         gVFO_RSSI_bar_level[0] = 0;
@@ -86,15 +84,13 @@ void FUNCTION_Foreground(const FUNCTION_Type_t PreviousFunction)
     gUpdateStatus = true;
 }
 
-void FUNCTION_PowerSave() {
-        if(gWakeUp)
-        {
-            gPowerSave_10ms = gEeprom.BATTERY_SAVE * 200; // deep sleep now indexed on BatSav
-        }
-        else
-        {
-            gPowerSave_10ms = gEeprom.BATTERY_SAVE * 10;
-        }
+void FUNCTION_PowerSave()
+{
+    if (gWakeUp) {
+        gPowerSave_10ms = gEeprom.BATTERY_SAVE * 200; // deep sleep now indexed on BatSav
+    } else {
+        gPowerSave_10ms = gEeprom.BATTERY_SAVE * 10;
+    }
     gPowerSaveCountdownExpired = false;
 
     gRxIdleMode = true;
@@ -108,7 +104,7 @@ void FUNCTION_PowerSave() {
 
     gUpdateStatus = true;
 
-    if (gScreenToDisplay != DISPLAY_MENU)     // 1of11 .. don't close the menu
+    if (gScreenToDisplay != DISPLAY_MENU) // 1of11 .. don't close the menu
         GUI_SelectNextDisplay(DISPLAY_MAIN);
 }
 
@@ -125,8 +121,7 @@ void FUNCTION_Transmit()
     if (gFmRadioMode)
         BK1080_Init0();
 
-    if (gAlarmState == ALARM_STATE_SITE_ALARM)
-    {
+    if (gAlarmState == ALARM_STATE_SITE_ALARM) {
         GUI_DisplayScreen();
 
         AUDIO_AudioPathOff();
@@ -185,7 +180,6 @@ void FUNCTION_Transmit()
 }
 
 
-
 void FUNCTION_Select(FUNCTION_Type_t Function)
 {
     const FUNCTION_Type_t PreviousFunction = gCurrentFunction;
@@ -242,8 +236,8 @@ void FUNCTION_Select(FUNCTION_Type_t Function)
     }
 
     gBatterySaveCountdown_10ms = battery_save_count_10ms;
-    gSchedulePowerSave         = false;
+    gSchedulePowerSave = false;
 
-    if(Function != FUNCTION_INCOMING)
+    if (Function != FUNCTION_INCOMING)
         gFM_RestoreCountdown_10ms = 0;
 }

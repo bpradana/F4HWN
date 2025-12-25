@@ -35,7 +35,7 @@ enum POWER_OnDisplayMode_t {
 typedef enum POWER_OnDisplayMode_t POWER_OnDisplayMode_t;
 
 enum TxLockModes_t {
-    F_LOCK_DEF, //all default frequencies + configurable
+    F_LOCK_DEF, // all default frequencies + configurable
     F_LOCK_FCC,
     F_LOCK_CA,
     F_LOCK_CE,
@@ -44,7 +44,7 @@ enum TxLockModes_t {
     F_LOCK_438,
     F_LOCK_PMR,
     F_LOCK_GMRS_FRS_MURS,
-    F_LOCK_ALL, // disable TX on all frequencies
+    F_LOCK_ALL,  // disable TX on all frequencies
     F_LOCK_NONE, // enable TX on all frequencies
     F_LOCK_LEN
 };
@@ -57,17 +57,9 @@ enum {
 };
 */
 
-enum {
-    CROSS_BAND_OFF = 0,
-    CROSS_BAND_CHAN_A,
-    CROSS_BAND_CHAN_B
-};
+enum { CROSS_BAND_OFF = 0, CROSS_BAND_CHAN_A, CROSS_BAND_CHAN_B };
 
-enum {
-    DUAL_WATCH_OFF = 0,
-    DUAL_WATCH_CHAN_A,
-    DUAL_WATCH_CHAN_B
-};
+enum { DUAL_WATCH_OFF = 0, DUAL_WATCH_CHAN_A, DUAL_WATCH_CHAN_B };
 
 enum {
     TX_OFFSET_FREQUENCY_DIRECTION_OFF = 0,
@@ -100,160 +92,149 @@ enum ACTION_OPT_t {
     ACTION_OPT_A_B,
     ACTION_OPT_VFO_MR,
     ACTION_OPT_SWITCH_DEMODUL,
-    ACTION_OPT_BLMIN_TMP_OFF, //BackLight Minimum Temporay OFF
+    ACTION_OPT_BLMIN_TMP_OFF, // BackLight Minimum Temporay OFF
     ACTION_OPT_RXMODE,
     ACTION_OPT_MAINONLY,
     ACTION_OPT_PTT,
     ACTION_OPT_WN,
     ACTION_OPT_BACKLIGHT,
     ACTION_OPT_MUTE,
-        ACTION_OPT_POWER_HIGH,
-        ACTION_OPT_REMOVE_OFFSET,
+    ACTION_OPT_POWER_HIGH,
+    ACTION_OPT_REMOVE_OFFSET,
     ACTION_OPT_LEN
 };
 
 
-enum ALARM_Mode_t {
-    ALARM_MODE_SITE = 0,
-    ALARM_MODE_TONE
-};
+enum ALARM_Mode_t { ALARM_MODE_SITE = 0, ALARM_MODE_TONE };
 typedef enum ALARM_Mode_t ALARM_Mode_t;
 
-enum ROGER_Mode_t {
-    ROGER_MODE_OFF = 0,
-    ROGER_MODE_ROGER,
-    ROGER_MODE_MDC
-};
+enum ROGER_Mode_t { ROGER_MODE_OFF = 0, ROGER_MODE_ROGER, ROGER_MODE_MDC };
 typedef enum ROGER_Mode_t ROGER_Mode_t;
 
-enum CHANNEL_DisplayMode_t {
-    MDF_FREQUENCY = 0,
-    MDF_CHANNEL,
-    MDF_NAME,
-    MDF_NAME_FREQ
-};
+enum CHANNEL_DisplayMode_t { MDF_FREQUENCY = 0, MDF_CHANNEL, MDF_NAME, MDF_NAME_FREQ };
 typedef enum CHANNEL_DisplayMode_t CHANNEL_DisplayMode_t;
 
 typedef struct {
-    uint8_t               ScreenChannel[2]; // current channels set in the radio (memory or frequency channels)
-    uint8_t               FreqChannel[2]; // last frequency channels used
-    uint8_t               MrChannel[2]; // last memory channels used
+    uint8_t ScreenChannel[2]; // current channels set in the radio (memory or frequency channels)
+    uint8_t FreqChannel[2];   // last frequency channels used
+    uint8_t MrChannel[2];     // last memory channels used
 
-    // The actual VFO index (0-upper/1-lower) that is now used for RX, 
+    // The actual VFO index (0-upper/1-lower) that is now used for RX,
     // It is being alternated by dual watch, and flipped by crossband
-    uint8_t               RX_VFO;
+    uint8_t RX_VFO;
 
     // The main VFO index (0-upper/1-lower) selected by the user
-    // 
-    uint8_t               TX_VFO;
+    //
+    uint8_t TX_VFO;
 
-    uint8_t               field7_0xa;
-    uint8_t               field8_0xb;
+    uint8_t field7_0xa;
+    uint8_t field8_0xb;
 
-    uint16_t          FM_SelectedFrequency;
-    uint8_t           FM_SelectedChannel;
-    bool              FM_IsMrMode;
-    uint16_t          FM_FrequencyPlaying;
-    uint8_t           FM_Band  : 2;
-    //uint8_t         FM_Space : 2;
+    uint16_t FM_SelectedFrequency;
+    uint8_t FM_SelectedChannel;
+    bool FM_IsMrMode;
+    uint16_t FM_FrequencyPlaying;
+    uint8_t FM_Band : 2;
+    // uint8_t         FM_Space : 2;
 
-    uint8_t               SQUELCH_LEVEL;
-    uint8_t               TX_TIMEOUT_TIMER;
-    bool                  KEY_LOCK;
-    bool                  KEY_LOCK_PTT;
-    bool                  MENU_LOCK;
-    uint8_t               SET_KEY;
-    bool                  VOX_SWITCH;
-    uint8_t               VOX_LEVEL;
-    bool                  BEEP_CONTROL;
-    uint8_t               CHANNEL_DISPLAY_MODE;
-    bool                  TAIL_TONE_ELIMINATION;
-    bool                  VFO_OPEN;
-    uint8_t               DUAL_WATCH;
-    uint8_t               CROSS_BAND_RX_TX;
-    uint8_t               BATTERY_SAVE;
-    uint8_t               BACKLIGHT_TIME;
-    uint8_t               SCAN_RESUME_MODE;
-    uint8_t               SCAN_LIST_DEFAULT;
-    bool                  SCAN_LIST_ENABLED[3];
-    uint8_t               SCANLIST_PRIORITY_CH1[3];
-    uint8_t               SCANLIST_PRIORITY_CH2[3];
-//#ifdef ENABLE_FEAT_F4HWN_RESUME_STATE // Fix me !!! What the hell is this?
-    uint8_t               CURRENT_STATE;
-    uint8_t               CURRENT_LIST;
-//#endif                                // Fix me !!! What the hell is this?
+    uint8_t SQUELCH_LEVEL;
+    uint8_t TX_TIMEOUT_TIMER;
+    bool KEY_LOCK;
+    bool KEY_LOCK_PTT;
+    bool MENU_LOCK;
+    uint8_t SET_KEY;
+    bool VOX_SWITCH;
+    uint8_t VOX_LEVEL;
+    bool BEEP_CONTROL;
+    uint8_t CHANNEL_DISPLAY_MODE;
+    bool TAIL_TONE_ELIMINATION;
+    bool VFO_OPEN;
+    uint8_t DUAL_WATCH;
+    uint8_t CROSS_BAND_RX_TX;
+    uint8_t BATTERY_SAVE;
+    uint8_t BACKLIGHT_TIME;
+    uint8_t SCAN_RESUME_MODE;
+    uint8_t SCAN_LIST_DEFAULT;
+    bool SCAN_LIST_ENABLED[3];
+    uint8_t SCANLIST_PRIORITY_CH1[3];
+    uint8_t SCANLIST_PRIORITY_CH2[3];
+    // #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE // Fix me !!! What the hell is this?
+    uint8_t CURRENT_STATE;
+    uint8_t CURRENT_LIST;
+    // #endif                                // Fix me !!! What the hell is this?
 
-    uint8_t               field29_0x26;
-    uint8_t               field30_0x27;
-    
-    uint8_t               field37_0x32;
-    uint8_t               field38_0x33;
+    uint8_t field29_0x26;
+    uint8_t field30_0x27;
 
-    uint8_t               AUTO_KEYPAD_LOCK;
-    ALARM_Mode_t      ALARM_MODE;
+    uint8_t field37_0x32;
+    uint8_t field38_0x33;
+
+    uint8_t AUTO_KEYPAD_LOCK;
+    ALARM_Mode_t ALARM_MODE;
     POWER_OnDisplayMode_t POWER_ON_DISPLAY_MODE;
-    ROGER_Mode_t          ROGER;
-    uint8_t               REPEATER_TAIL_TONE_ELIMINATION;
-    uint8_t               KEY_1_SHORT_PRESS_ACTION;
-    uint8_t               KEY_1_LONG_PRESS_ACTION;
-    uint8_t               KEY_2_SHORT_PRESS_ACTION;
-    uint8_t               KEY_2_LONG_PRESS_ACTION;
-    uint8_t               MIC_SENSITIVITY;
-    uint8_t               MIC_SENSITIVITY_TUNING;
-    uint8_t               CHAN_1_CALL;
-    char                  DTMF_UP_CODE[16];
+    ROGER_Mode_t ROGER;
+    uint8_t REPEATER_TAIL_TONE_ELIMINATION;
+    uint8_t KEY_1_SHORT_PRESS_ACTION;
+    uint8_t KEY_1_LONG_PRESS_ACTION;
+    uint8_t KEY_2_SHORT_PRESS_ACTION;
+    uint8_t KEY_2_LONG_PRESS_ACTION;
+    uint8_t MIC_SENSITIVITY;
+    uint8_t MIC_SENSITIVITY_TUNING;
+    uint8_t CHAN_1_CALL;
+    char DTMF_UP_CODE[16];
 
-    uint8_t               field57_0x6c;
-    uint8_t               field58_0x6d;
+    uint8_t field57_0x6c;
+    uint8_t field58_0x6d;
 
-    char                  DTMF_DOWN_CODE[16];
+    char DTMF_DOWN_CODE[16];
 
-    uint8_t               field60_0x7e;
-    uint8_t               field61_0x7f;
+    uint8_t field60_0x7e;
+    uint8_t field61_0x7f;
 
-    uint16_t              DTMF_PRELOAD_TIME;
-    uint16_t              DTMF_FIRST_CODE_PERSIST_TIME;
-    uint16_t              DTMF_HASH_CODE_PERSIST_TIME;
-    uint16_t              DTMF_CODE_PERSIST_TIME;
-    uint16_t              DTMF_CODE_INTERVAL_TIME;
-    bool                  DTMF_SIDE_TONE;
-    int16_t               BK4819_XTAL_FREQ_LOW;
-    uint8_t               VOLUME_GAIN;
-        uint8_t           VOLUME_GAIN_BACKUP;
-    uint8_t               DAC_GAIN;
+    uint16_t DTMF_PRELOAD_TIME;
+    uint16_t DTMF_FIRST_CODE_PERSIST_TIME;
+    uint16_t DTMF_HASH_CODE_PERSIST_TIME;
+    uint16_t DTMF_CODE_PERSIST_TIME;
+    uint16_t DTMF_CODE_INTERVAL_TIME;
+    bool DTMF_SIDE_TONE;
+    int16_t BK4819_XTAL_FREQ_LOW;
+    uint8_t VOLUME_GAIN;
+    uint8_t VOLUME_GAIN_BACKUP;
+    uint8_t DAC_GAIN;
 
-    VFO_Info_t            VfoInfo[2];
-    uint32_t              POWER_ON_PASSWORD;
-    uint16_t              VOX1_THRESHOLD;
-    uint16_t              VOX0_THRESHOLD;
+    VFO_Info_t VfoInfo[2];
+    uint32_t POWER_ON_PASSWORD;
+    uint16_t VOX1_THRESHOLD;
+    uint16_t VOX0_THRESHOLD;
 
-    uint8_t               field77_0x95;
-    uint8_t               field78_0x96;
-    uint8_t               field79_0x97;
+    uint8_t field77_0x95;
+    uint8_t field78_0x96;
+    uint8_t field79_0x97;
 
-    uint8_t               KEY_M_LONG_PRESS_ACTION;
-    uint8_t               BACKLIGHT_MIN;
-    uint8_t               BACKLIGHT_MAX;
-    BATTERY_Type_t        BATTERY_TYPE;
-    uint8_t               S0_LEVEL;
-    uint8_t               S9_LEVEL;
+    uint8_t KEY_M_LONG_PRESS_ACTION;
+    uint8_t BACKLIGHT_MIN;
+    uint8_t BACKLIGHT_MAX;
+    BATTERY_Type_t BATTERY_TYPE;
+    uint8_t S0_LEVEL;
+    uint8_t S9_LEVEL;
 } EEPROM_Config_t;
 
 extern EEPROM_Config_t gEeprom;
 
-void     SETTINGS_InitEEPROM(void);
-void     SETTINGS_LoadCalibration(void);
+void SETTINGS_InitEEPROM(void);
+void SETTINGS_LoadCalibration(void);
 uint32_t SETTINGS_FetchChannelFrequency(const int channel);
-void     SETTINGS_FetchChannelName(char *s, const int channel);
-void     SETTINGS_FactoryReset(bool bIsAll);
-    void SETTINGS_SaveFM(void);
+void SETTINGS_FetchChannelName(char *s, const int channel);
+void SETTINGS_FactoryReset(bool bIsAll);
+void SETTINGS_SaveFM(void);
 void SETTINGS_SaveVfoIndices(void);
 void SETTINGS_SaveSettings(void);
-void SETTINGS_SaveChannelName(uint8_t channel, const char * name);
+void SETTINGS_SaveChannelName(uint8_t channel, const char *name);
 void SETTINGS_SaveChannel(uint8_t Channel, uint8_t VFO, const VFO_Info_t *pVFO, uint8_t Mode);
-void SETTINGS_SaveBatteryCalibration(const uint16_t * batteryCalibration);
-void SETTINGS_UpdateChannel(uint8_t channel, const VFO_Info_t *pVFO, bool keep, bool check, bool save);
+void SETTINGS_SaveBatteryCalibration(const uint16_t *batteryCalibration);
+void SETTINGS_UpdateChannel(uint8_t channel, const VFO_Info_t *pVFO, bool keep, bool check,
+                            bool save);
 void SETTINGS_WriteBuildOptions(void);
-    void SETTINGS_WriteCurrentState(void);
-    void SETTINGS_ResetTxLock(void);
+void SETTINGS_WriteCurrentState(void);
+void SETTINGS_ResetTxLock(void);
 #endif

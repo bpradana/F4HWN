@@ -27,7 +27,7 @@ enum center_line_t {
     CENTER_LINE_CHARGE_DATA
 };
 
-enum Vfo_txtr_mode{
+enum Vfo_txtr_mode {
     VFO_MODE_NONE = 0,
     VFO_MODE_TX = 1,
     VFO_MODE_RX = 2,

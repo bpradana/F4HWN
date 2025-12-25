@@ -44,4 +44,3 @@ void SPI_ToggleMasterMode(volatile uint32_t *pCr, bool bIsMaster);
 void SPI_Enable(volatile uint32_t *pCR);
 
 #endif
-

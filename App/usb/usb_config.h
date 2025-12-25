@@ -8,10 +8,10 @@
 
 /* ================ USB common Configuration ================ */
 
-#define CONFIG_USB_PRINTF(...) //printf(__VA_ARGS__)
+#define CONFIG_USB_PRINTF(...) // printf(__VA_ARGS__)
 
 #define usb_malloc(size) malloc(size)
-#define usb_free(ptr)    free(ptr)
+#define usb_free(ptr) free(ptr)
 
 #ifndef CONFIG_USB_DBG_LEVEL
 #define CONFIG_USB_DBG_LEVEL USB_DBG_ERROR
@@ -82,12 +82,11 @@
 /* ================ USB Device Port Configuration ================*/
 #include "py32f0xx.h"
 
-#define USBD_IRQn       USB_IRQn
+#define USBD_IRQn USB_IRQn
 
 #define USBD_IRQHandler USB_IRQHandler
 
-typedef struct
-{
+typedef struct {
     uint8_t *buf;
     const uint32_t size;
     volatile uint32_t *write_pointer;

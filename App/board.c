@@ -17,7 +17,7 @@
 
 #include <string.h>
 
-    #include "app/fm.h"
+#include "app/fm.h"
 #include "board.h"
 #include "py32f071_ll_bus.h"
 #include "py32f071_ll_gpio.h"
@@ -25,7 +25,7 @@
 #include "py32f071_ll_adc.h"
 #include "driver/voice.h"
 #include "driver/backlight.h"
-    #include "driver/bk1080.h"
+#include "driver/bk1080.h"
 
 #include "driver/crc.h"
 #include "driver/py25q16.h"
@@ -41,11 +41,10 @@
 
 void BOARD_GPIO_Init(void)
 {
-    LL_IOP_GRP1_EnableClock(
-        LL_IOP_GRP1_PERIPH_GPIOA   //
-        | LL_IOP_GRP1_PERIPH_GPIOB //
-        | LL_IOP_GRP1_PERIPH_GPIOC //
-        | LL_IOP_GRP1_PERIPH_GPIOF //
+    LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA   //
+                            | LL_IOP_GRP1_PERIPH_GPIOB //
+                            | LL_IOP_GRP1_PERIPH_GPIOC //
+                            | LL_IOP_GRP1_PERIPH_GPIOF //
     );
 
     LL_GPIO_InitTypeDef InitStruct;
@@ -103,9 +102,8 @@ void BOARD_GPIO_Init(void)
 
     // Backlight: PF8
     // BK4819 CS: PF9
-    InitStruct.Pin = LL_GPIO_PIN_9 | LL_GPIO_PIN_8  ;
+    InitStruct.Pin = LL_GPIO_PIN_9 | LL_GPIO_PIN_8;
     LL_GPIO_Init(GPIOF, &InitStruct);
-
 }
 
 void BOARD_ADC_Init(void)
@@ -157,5 +155,4 @@ void BOARD_Init(void)
     BK1080_Init0();
 
     CRC_Init();
-
 }

@@ -25,9 +25,9 @@
 #include "settings.h"
 #include "external/printf/printf.h"
 
-    #include "driver/system.h"
-    #include "audio.h"
-    #include "misc.h"
+#include "driver/system.h"
+#include "audio.h"
+#include "misc.h"
 
 #define PWM_FREQ 240
 #define DUTY_CYCLE_LEVELS 64
@@ -44,9 +44,9 @@ static uint32_t dutyCycle[DUTY_CYCLE_LEVELS];
 uint16_t gBacklightCountdown_500ms = 0;
 bool backlightOn;
 
-    const uint8_t value[] = {0, 3, 6, 9, 15, 24, 38, 62, 100, 159, 255};
+const uint8_t value[] = {0, 3, 6, 9, 15, 24, 38, 62, 100, 159, 255};
 
-    uint16_t gSleepModeCountdown_500ms = 0;
+uint16_t gSleepModeCountdown_500ms = 0;
 
 void BACKLIGHT_InitHardware()
 {
@@ -63,7 +63,7 @@ void BACKLIGHT_InitHardware()
     LL_TIM_EnableDMAReq_UPDATE(TIMx);
     LL_TIM_EnableUpdateEvent(TIMx);
 
-    LL_DMA_DisableChannel(DMA1, DMA_CHANNEL) ;
+    LL_DMA_DisableChannel(DMA1, DMA_CHANNEL);
     LL_SYSCFG_SetDMARemap(DMA1, DMA_CHANNEL, LL_SYSCFG_DMA_MAP_TIM7_UP);
 
     LL_DMA_ConfigTransfer(DMA1, DMA_CHANNEL,                //
@@ -83,8 +83,8 @@ void BACKLIGHT_InitHardware()
 
 static void BACKLIGHT_Sound(void)
 {
-    if (gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_SOUND || gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_ALL)
-    {
+    if (gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_SOUND ||
+        gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_ALL) {
         AUDIO_PlayBeep(BEEP_880HZ_60MS_DOUBLE_BEEP);
         AUDIO_PlayBeep(BEEP_880HZ_60MS_DOUBLE_BEEP);
     }
@@ -95,39 +95,36 @@ static void BACKLIGHT_Sound(void)
 
 void BACKLIGHT_TurnOn(void)
 {
-        gSleepModeCountdown_500ms = gSetting_set_off * 120;
+    gSleepModeCountdown_500ms = gSetting_set_off * 120;
 
-        gBacklightBrightnessOld = BACKLIGHT_GetBrightness();
+    gBacklightBrightnessOld = BACKLIGHT_GetBrightness();
 
     if (gEeprom.BACKLIGHT_TIME == 0) {
         BACKLIGHT_TurnOff();
-            if(gK5startup == true) 
-            {
-                BACKLIGHT_Sound();
-            }
+        if (gK5startup == true) {
+            BACKLIGHT_Sound();
+        }
         return;
     }
 
     backlightOn = true;
 
-    if(gK5startup == true) {
-            BACKLIGHT_SetBrightness(gEeprom.BACKLIGHT_MAX);
+    if (gK5startup == true) {
+        BACKLIGHT_SetBrightness(gEeprom.BACKLIGHT_MAX);
 
         BACKLIGHT_Sound();
-    }
-    else
-    {
+    } else {
         BACKLIGHT_SetBrightness(gEeprom.BACKLIGHT_MAX);
     }
 
     switch (gEeprom.BACKLIGHT_TIME) {
-        default:
-        case 1 ... 60:  // 5 sec * value
-            gBacklightCountdown_500ms = 1 + (gEeprom.BACKLIGHT_TIME * 5) * 2;
-            break;
-        case 61:    // always on
-            gBacklightCountdown_500ms = 0;
-            break;
+    default:
+    case 1 ... 60: // 5 sec * value
+        gBacklightCountdown_500ms = 1 + (gEeprom.BACKLIGHT_TIME * 5) * 2;
+        break;
+    case 61: // always on
+        gBacklightCountdown_500ms = 0;
+        break;
     }
 }
 
@@ -149,36 +146,27 @@ void BACKLIGHT_SetBrightness(uint8_t brigtness)
 {
     // printf("BL: %d\n", brigtness);
 
-    if (currentBrightness == brigtness)
-    {
+    if (currentBrightness == brigtness) {
         return;
     }
 
-    if (0 == brigtness)
-    {
+    if (0 == brigtness) {
         LL_TIM_DisableCounter(TIMx);
         LL_DMA_DisableChannel(DMA1, DMA_CHANNEL);
         SYSTICK_DelayUs(1);
         GPIO_TurnOffBacklight();
-    }
-    else
-    {
+    } else {
         const uint32_t level = (uint32_t)(value[brigtness]) * DUTY_CYCLE_LEVELS / 255;
-        if (level >= DUTY_CYCLE_LEVELS)
-        {
+        if (level >= DUTY_CYCLE_LEVELS) {
             LL_TIM_DisableCounter(TIMx);
             LL_DMA_DisableChannel(DMA1, DMA_CHANNEL);
             GPIO_TurnOnBacklight();
-        }
-        else
-        {
-            for (uint32_t i = 0; i < DUTY_CYCLE_LEVELS; i++)
-            {
+        } else {
+            for (uint32_t i = 0; i < DUTY_CYCLE_LEVELS; i++) {
                 dutyCycle[i] = i < level ? DUTY_CYCLE_ON_VALUE : DUTY_CYCLE_OFF_VALUE;
             }
 
-            if (!LL_TIM_IsEnabledCounter(TIMx))
-            {
+            if (!LL_TIM_IsEnabledCounter(TIMx)) {
                 LL_DMA_EnableChannel(DMA1, DMA_CHANNEL);
                 LL_TIM_EnableCounter(TIMx);
             }

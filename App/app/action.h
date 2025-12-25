@@ -22,23 +22,23 @@
 void ACTION_Power(void);
 void ACTION_Monitor(void);
 void ACTION_Scan(bool bRestart);
-    void ACTION_Vox(void);
+void ACTION_Vox(void);
 
-    void ACTION_FM(void);
+void ACTION_FM(void);
 void ACTION_SwitchDemodul(void);
 
 
-    void ACTION_RxMode(void);
-    void ACTION_MainOnly(void);
-    void ACTION_Ptt(void);
-    void ACTION_Wn(void);
-    void ACTION_BackLightOnDemand(void);
-    void ACTION_BackLight(void);
-    //#if !defined(ENABLE_SPECTRUM) || !defined(ENABLE_FMRADIO)
-    void ACTION_Mute(void);
-    //#endif
-        void ACTION_Power_High(void);
-        void ACTION_Remove_Offset(void);
+void ACTION_RxMode(void);
+void ACTION_MainOnly(void);
+void ACTION_Ptt(void);
+void ACTION_Wn(void);
+void ACTION_BackLightOnDemand(void);
+void ACTION_BackLight(void);
+// #if !defined(ENABLE_SPECTRUM) || !defined(ENABLE_FMRADIO)
+void ACTION_Mute(void);
+// #endif
+void ACTION_Power_High(void);
+void ACTION_Remove_Offset(void);
 
 void ACTION_Handle(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld);
 

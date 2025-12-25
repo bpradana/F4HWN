@@ -74,8 +74,16 @@ case "$COMMAND" in
         exit 1
         ;;
     format)
-        echo "ℹ️  Format support not configured yet"
-        exit 1
+        echo ""
+        echo "=== 🎨 Formatting Code with clang-format ==="
+        echo "---------------------------------------------"
+        
+        docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
+            bash -c "find App -name '*.c' -o -name '*.h' | xargs clang-format -i --style=file"
+        
+        echo ""
+        echo "✅ Code formatting complete!"
+        echo "All C/H files in App/ have been formatted"
         ;;
     *)
         echo "❌ Unknown command: '$COMMAND'"

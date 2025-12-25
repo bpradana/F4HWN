@@ -19,11 +19,11 @@
 
 #include "app/chFrScanner.h"
 #include "app/dtmf.h"
-    #include "app/fm.h"
+#include "app/fm.h"
 #include "driver/keyboard.h"
 #include "misc.h"
-    #include "ui/aircopy.h"
-    #include "ui/fmradio.h"
+#include "ui/aircopy.h"
+#include "ui/fmradio.h"
 #include "ui/inputbox.h"
 #include "ui/main.h"
 #include "ui/menu.h"
@@ -34,14 +34,13 @@
 GUI_DisplayType_t gScreenToDisplay;
 GUI_DisplayType_t gRequestDisplayScreen = DISPLAY_INVALID;
 
-uint8_t           gAskForConfirmation;
-bool              gAskToSave;
-bool              gAskToDelete;
+uint8_t gAskForConfirmation;
+bool gAskToSave;
+bool gAskToDelete;
 
 
 void (*UI_DisplayFunctions[])(void) = {
-    [DISPLAY_MAIN] = &UI_DisplayMain,
-    [DISPLAY_MENU] = &UI_DisplayMenu,
+    [DISPLAY_MAIN] = &UI_DisplayMain,       [DISPLAY_MENU] = &UI_DisplayMenu,
     [DISPLAY_SCANNER] = &UI_DisplayScanner,
 
     [DISPLAY_FM] = &UI_DisplayFM,
@@ -64,23 +63,22 @@ void GUI_SelectNextDisplay(GUI_DisplayType_t Display)
     if (Display == DISPLAY_INVALID)
         return;
 
-    if (gScreenToDisplay != Display)
-    {
+    if (gScreenToDisplay != Display) {
         DTMF_clear_input_box();
 
-        gInputBoxIndex       = 0;
-        gIsInSubMenu         = false;
-        gCssBackgroundScan   = false;
-        gScanStateDir        = SCAN_OFF;
-            gFM_ScanState    = FM_SCAN_OFF;
-        gAskForConfirmation  = 0;
-        gAskToSave           = false;
-        gAskToDelete         = false;
-        gWasFKeyPressed      = false;
+        gInputBoxIndex = 0;
+        gIsInSubMenu = false;
+        gCssBackgroundScan = false;
+        gScanStateDir = SCAN_OFF;
+        gFM_ScanState = FM_SCAN_OFF;
+        gAskForConfirmation = 0;
+        gAskToSave = false;
+        gAskToDelete = false;
+        gWasFKeyPressed = false;
 
-        gUpdateStatus        = true;
+        gUpdateStatus = true;
     }
 
     gScreenToDisplay = Display;
-    gUpdateDisplay   = true;
+    gUpdateDisplay = true;
 }

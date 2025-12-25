@@ -16,7 +16,7 @@
 
 #include "scheduler.h"
 #include "app/chFrScanner.h"
-    #include "app/fm.h"
+#include "app/fm.h"
 #include "app/scanner.h"
 #include "audio.h"
 #include "functions.h"
@@ -27,17 +27,17 @@
 #include "driver/backlight.h"
 #include "driver/gpio.h"
 
-#define DECREMENT(cnt) \
-    do {               \
-        if (cnt > 0)   \
-            cnt--;     \
+#define DECREMENT(cnt)                                                                             \
+    do {                                                                                           \
+        if (cnt > 0)                                                                               \
+            cnt--;                                                                                 \
     } while (0)
 
-#define DECREMENT_AND_TRIGGER(cnt, flag) \
-    do {                                 \
-        if (cnt > 0)                     \
-            if (--cnt == 0)              \
-                flag = true;             \
+#define DECREMENT_AND_TRIGGER(cnt, flag)                                                           \
+    do {                                                                                           \
+        if (cnt > 0)                                                                               \
+            if (--cnt == 0)                                                                        \
+                flag = true;                                                                       \
     } while (0)
 
 static volatile uint32_t gGlobalSysTickCounter;
@@ -46,15 +46,15 @@ static volatile uint32_t gGlobalSysTickCounter;
 void SysTick_Handler(void)
 {
     gGlobalSysTickCounter++;
-    
+
     gNextTimeslice = true;
 
     if ((gGlobalSysTickCounter % 50) == 0) {
         gNextTimeslice_500ms = true;
 
         DECREMENT_AND_TRIGGER(gTxTimerCountdownAlert_500ms - ALERT_TOT * 2, gTxTimeoutReachedAlert);
-            DECREMENT(gRxTimerCountdown_500ms);
-        
+        DECREMENT(gRxTimerCountdown_500ms);
+
         DECREMENT_AND_TRIGGER(gTxTimerCountdown_500ms, gTxTimeoutReached);
         DECREMENT(gSerialConfigCountDown_500ms);
     }
@@ -74,7 +74,8 @@ void SysTick_Handler(void)
         DECREMENT_AND_TRIGGER(gPowerSave_10ms, gPowerSaveCountdownExpired);
 
     if (gScanStateDir == SCAN_OFF && !gCssBackgroundScan && gEeprom.DUAL_WATCH != DUAL_WATCH_OFF)
-        if (gCurrentFunction != FUNCTION_MONITOR && gCurrentFunction != FUNCTION_TRANSMIT && gCurrentFunction != FUNCTION_RECEIVE)
+        if (gCurrentFunction != FUNCTION_MONITOR && gCurrentFunction != FUNCTION_TRANSMIT &&
+            gCurrentFunction != FUNCTION_RECEIVE)
             DECREMENT_AND_TRIGGER(gDualWatchCountdown_10ms, gScheduleDualWatch);
 
 

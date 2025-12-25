@@ -17,9 +17,7 @@
 
 #include "crc.h"
 
-void CRC_Init(void)
-{
-}
+void CRC_Init(void) {}
 
 uint16_t CRC_Calculate(const void *pBuffer, uint16_t Size)
 {
@@ -27,19 +25,14 @@ uint16_t CRC_Calculate(const void *pBuffer, uint16_t Size)
     uint16_t i, Crc;
 
     Crc = 0;
-    for (i = 0; i < Size; i++)
-    {
+    for (i = 0; i < Size; i++) {
         Crc ^= (pData[i] << 8);
 
-        for (int j = 0; j < 8; j++)
-        {
+        for (int j = 0; j < 8; j++) {
             // Check bit [15]
-            if (Crc >> 15)
-            {
+            if (Crc >> 15) {
                 Crc = (Crc << 1) ^ 0x1021;
-            }
-            else
-            {
+            } else {
                 Crc = Crc << 1;
             }
         }

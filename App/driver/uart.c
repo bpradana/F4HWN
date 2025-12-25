@@ -41,8 +41,7 @@ void UART_Init(void)
     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_USART1);
 
     // Pins
-    do
-    {
+    do {
         LL_GPIO_InitTypeDef GPIO_InitStruct;
         LL_GPIO_StructInit(&GPIO_InitStruct);
         GPIO_InitStruct.Pin = LL_GPIO_PIN_9 | LL_GPIO_PIN_10;
@@ -56,8 +55,7 @@ void UART_Init(void)
     } while (0);
 
     // DMA
-    do
-    {
+    do {
         LL_DMA_DisableChannel(DMA1, DMA_CHANNEL);
 
         LL_DMA_InitTypeDef DMA_InitStruct;
@@ -84,8 +82,7 @@ void UART_Init(void)
     LL_APB1_GRP2_ReleaseReset(LL_APB1_GRP2_PERIPH_USART1);
 
     // USART
-    do
-    {
+    do {
         LL_USART_Disable(USARTx);
 
         LL_USART_InitTypeDef USART_InitStruct;
@@ -109,8 +106,7 @@ void UART_Send(const void *pBuffer, uint32_t Size)
     const uint8_t *pData = (const uint8_t *)pBuffer;
     uint32_t i;
 
-    for (i = 0; i < Size; i++)
-    {
+    for (i = 0; i < Size; i++) {
         while (!LL_USART_IsActiveFlag_TXE(USARTx))
             ;
         LL_USART_TransmitData8(USARTx, pData[i]);
@@ -124,12 +120,13 @@ void UART_LogSend(const void *pBuffer, uint32_t Size)
     }
 }
 
-    bool UART_IsCableConnected(void) {
-        for (size_t i = 0; i < sizeof(UART_DMA_Buffer); i++) {
-            if (UART_DMA_Buffer[i] == 0x55) {
-                UART_DMA_Buffer[i] = 0x00;  // Clear only the matched byte
-                return true;
-            }
+bool UART_IsCableConnected(void)
+{
+    for (size_t i = 0; i < sizeof(UART_DMA_Buffer); i++) {
+        if (UART_DMA_Buffer[i] == 0x55) {
+            UART_DMA_Buffer[i] = 0x00; // Clear only the matched byte
+            return true;
         }
-        return false;
     }
+    return false;
+}

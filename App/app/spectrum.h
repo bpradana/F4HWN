@@ -45,34 +45,11 @@
 static const uint8_t DrawingEndY = 40;
 
 static const uint8_t U8RssiMap[] = {
-    121,
-    115,
-    109,
-    103,
-    97,
-    91,
-    85,
-    79,
-    73,
-    63,
+    121, 115, 109, 103, 97, 91, 85, 79, 73, 63,
 };
 
 static const uint16_t scanStepValues[] = {
-    1,
-    10,
-    50,
-    100,
-    250,
-    500,
-    625,
-    833,
-    1000,
-    1250,
-    1500,
-    2000,
-    2500,
-    5000,
-    10000,
+    1, 10, 50, 100, 250, 500, 625, 833, 1000, 1250, 1500, 2000, 2500, 5000, 10000,
 };
 
 static const uint16_t scanStepBWRegValues[] = {
@@ -110,23 +87,20 @@ static const uint16_t listenBWRegValues[] = {
     0b0100100001011000, // 6.25
 };
 
-typedef enum State
-{
+typedef enum State {
     SPECTRUM,
     FREQ_INPUT,
     STILL,
 } State;
 
-typedef enum StepsCount
-{
+typedef enum StepsCount {
     STEPS_128,
     STEPS_64,
     STEPS_32,
     STEPS_16,
 } StepsCount;
 
-typedef enum ScanStep
-{
+typedef enum ScanStep {
     S_STEP_0_01kHz,
     S_STEP_0_1kHz,
     S_STEP_0_5kHz,
@@ -145,8 +119,7 @@ typedef enum ScanStep
     S_STEP_100_0kHz,
 } ScanStep;
 
-typedef struct SpectrumSettings
-{
+typedef struct SpectrumSettings {
     uint32_t frequencyChangeStep;
     StepsCount stepsCount;
     ScanStep scanStepIndex;
@@ -160,8 +133,7 @@ typedef struct SpectrumSettings
     bool backlightState;
 } SpectrumSettings;
 
-typedef struct ScanInfo
-{
+typedef struct ScanInfo {
     uint16_t rssi, rssiMin, rssiMax;
     uint16_t i, iPeak;
     uint32_t f, fPeak;
@@ -169,8 +141,7 @@ typedef struct ScanInfo
     uint16_t measurementsCount;
 } ScanInfo;
 
-typedef struct PeakInfo
-{
+typedef struct PeakInfo {
     uint16_t t;
     uint16_t rssi;
     uint32_t f;

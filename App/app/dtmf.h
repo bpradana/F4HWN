@@ -20,13 +20,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define    MAX_DTMF_CONTACTS   16
+#define MAX_DTMF_CONTACTS 16
 
-enum DTMF_State_t {
-    DTMF_STATE_0 = 0,
-    DTMF_STATE_TX_SUCC,
-    DTMF_STATE_CALL_OUT_RSP
-};
+enum DTMF_State_t { DTMF_STATE_0 = 0, DTMF_STATE_TX_SUCC, DTMF_STATE_CALL_OUT_RSP };
 
 typedef enum DTMF_State_t DTMF_State_t;
 
@@ -46,37 +42,28 @@ enum DTMF_DecodeResponse_t {
 
 typedef enum DTMF_CallState_t DTMF_CallState_t;
 
-enum DTMF_ReplyState_t {
-    DTMF_REPLY_NONE = 0,
-    DTMF_REPLY_ANI,
-    DTMF_REPLY_AB,
-    DTMF_REPLY_AAAAA
-};
+enum DTMF_ReplyState_t { DTMF_REPLY_NONE = 0, DTMF_REPLY_ANI, DTMF_REPLY_AB, DTMF_REPLY_AAAAA };
 
 typedef enum DTMF_ReplyState_t DTMF_ReplyState_t;
 
-enum DTMF_CallMode_t {
-    DTMF_CALL_MODE_NOT_GROUP = 0,
-    DTMF_CALL_MODE_GROUP,
-    DTMF_CALL_MODE_DTMF
-};
+enum DTMF_CallMode_t { DTMF_CALL_MODE_NOT_GROUP = 0, DTMF_CALL_MODE_GROUP, DTMF_CALL_MODE_DTMF };
 
-enum {  // seconds
-    DTMF_HOLD_MIN =  5,
+enum { // seconds
+    DTMF_HOLD_MIN = 5,
     DTMF_HOLD_MAX = 60
 };
 
 typedef enum DTMF_CallMode_t DTMF_CallMode_t;
 
-extern char              gDTMF_String[15];
+extern char gDTMF_String[15];
 
-extern char              gDTMF_InputBox[15];
-extern uint8_t           gDTMF_InputBox_Index;
-extern bool              gDTMF_InputMode;
-extern uint8_t           gDTMF_PreviousIndex;
+extern char gDTMF_InputBox[15];
+extern uint8_t gDTMF_InputBox_Index;
+extern bool gDTMF_InputMode;
+extern uint8_t gDTMF_PreviousIndex;
 
-extern char              gDTMF_RX_live[20];
-extern uint8_t           gDTMF_RX_live_timeout;
+extern char gDTMF_RX_live[20];
+extern uint8_t gDTMF_RX_live_timeout;
 
 extern DTMF_ReplyState_t gDTMF_ReplyState;
 

@@ -19,8 +19,8 @@
 #include "driver/i2c.h"
 #include "driver/systick.h"
 
-#define PIN_SCL     GPIO_MAKE_PIN(GPIOF, LL_GPIO_PIN_5)
-#define PIN_SDA     GPIO_MAKE_PIN(GPIOF, LL_GPIO_PIN_6)
+#define PIN_SCL GPIO_MAKE_PIN(GPIOF, LL_GPIO_PIN_5)
+#define PIN_SDA GPIO_MAKE_PIN(GPIOF, LL_GPIO_PIN_6)
 
 static inline void SCL_Set()
 {
@@ -44,7 +44,8 @@ static inline void SDA_Reset()
 
 static inline void SDA_SetDir(bool Output)
 {
-    LL_GPIO_SetPinMode(GPIO_PORT(PIN_SDA), GPIO_PIN_MASK(PIN_SDA), Output ? LL_GPIO_MODE_OUTPUT : LL_GPIO_MODE_INPUT);
+    LL_GPIO_SetPinMode(GPIO_PORT(PIN_SDA), GPIO_PIN_MASK(PIN_SDA),
+                       Output ? LL_GPIO_MODE_OUTPUT : LL_GPIO_MODE_INPUT);
 }
 
 static inline bool SDA_IsSet()
@@ -185,4 +186,3 @@ int I2C_WriteBuffer(const void *pBuffer, uint8_t Size)
 
     return 0;
 }
-

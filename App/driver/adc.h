@@ -72,4 +72,3 @@ bool ADC_CheckEndOfConversion(ADC_CH_MASK Mask);
 uint16_t ADC_GetValue(ADC_CH_MASK Mask);
 
 #endif
-

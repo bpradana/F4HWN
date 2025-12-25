@@ -58,8 +58,7 @@ static void SPI_Init()
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
     LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
 
-    do
-    {
+    do {
         // SCK: PA0
         // MOSI: PA1
         // MISO: PA2
@@ -234,14 +233,10 @@ void PY25Q16_ReadBuffer(uint32_t Address, void *pBuffer, uint32_t Size)
     SPI_WriteByte(0x03); // Fast read
     WriteAddr(Address);
 
-    if (Size >= 16)
-    {
+    if (Size >= 16) {
         SPI_ReadBuf((uint8_t *)pBuffer, Size);
-    }
-    else
-    {
-        for (uint32_t i = 0; i < Size; i++)
-        {
+    } else {
+        for (uint32_t i = 0; i < Size; i++) {
             ((uint8_t *)(pBuffer))[i] = SPI_WriteByte(0xff);
         }
     }
@@ -259,26 +254,20 @@ void PY25Q16_WriteBuffer(uint32_t Address, const void *pBuffer, uint32_t Size, b
     uint32_t SecOffset = Address % SECTOR_SIZE;
     uint32_t SecSize = SECTOR_SIZE - SecOffset;
 
-    while (Size)
-    {
-        if (Size < SecSize)
-        {
+    while (Size) {
+        if (Size < SecSize) {
             SecSize = Size;
         }
 
-        if (SecAddr != SectorCacheAddr)
-        {
+        if (SecAddr != SectorCacheAddr) {
             PY25Q16_ReadBuffer(SecAddr, SectorCache, SECTOR_SIZE);
             SectorCacheAddr = SecAddr;
         }
 
-        if (0 != memcmp(pBuffer, (char *)SectorCache + SecOffset, SecSize))
-        {
+        if (0 != memcmp(pBuffer, (char *)SectorCache + SecOffset, SecSize)) {
             bool Erase = false;
-            for (uint32_t i = 0; i < SecSize; i++)
-            {
-                if (0xff != SectorCache[SecOffset + i])
-                {
+            for (uint32_t i = 0; i < SecSize; i++) {
+                if (0xff != SectorCache[SecOffset + i]) {
                     Erase = true;
                     break;
                 }
@@ -286,21 +275,16 @@ void PY25Q16_WriteBuffer(uint32_t Address, const void *pBuffer, uint32_t Size, b
 
             memcpy(SectorCache + SecOffset, pBuffer, SecSize);
 
-            if (Erase)
-            {
+            if (Erase) {
                 SectorErase(SecAddr);
-                if (Append)
-                {
+                if (Append) {
                     SectorProgram(SecAddr, SectorCache, SecOffset + SecSize);
-                    memset(SectorCache + SecOffset + SecSize, 0xff, SECTOR_SIZE - SecOffset - SecSize);
-                }
-                else
-                {
+                    memset(SectorCache + SecOffset + SecSize, 0xff,
+                           SECTOR_SIZE - SecOffset - SecSize);
+                } else {
                     SectorProgram(SecAddr, SectorCache, SECTOR_SIZE);
                 }
-            }
-            else
-            {
+            } else {
                 SectorProgram(Address, pBuffer, SecSize);
             }
         }
@@ -319,8 +303,7 @@ void PY25Q16_SectorErase(uint32_t Address)
 {
     Address -= (Address % SECTOR_SIZE);
     SectorErase(Address);
-    if (SectorCacheAddr == Address)
-    {
+    if (SectorCacheAddr == Address) {
         memset(SectorCache, 0xff, SECTOR_SIZE);
     }
 }
@@ -335,8 +318,7 @@ static inline void WriteAddr(uint32_t Addr)
 static uint8_t ReadStatusReg(uint32_t Which)
 {
     uint8_t Cmd;
-    switch (Which)
-    {
+    switch (Which) {
     case 0:
         Cmd = 0x5;
         break;
@@ -360,8 +342,7 @@ static uint8_t ReadStatusReg(uint32_t Which)
 
 static void WaitWIP()
 {
-    for (int i = 0; i < 1000000; i++)
-    {
+    for (int i = 0; i < 1000000; i++) {
         uint8_t Status = ReadStatusReg(0);
         if (1 & Status) // WIP
         {
@@ -399,10 +380,8 @@ static void SectorProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size)
 {
     uint32_t Size1 = PAGE_SIZE - (Addr % PAGE_SIZE);
 
-    while (Size)
-    {
-        if (Size < Size1)
-        {
+    while (Size) {
+        if (Size < Size1) {
             Size1 = Size;
         }
 
@@ -430,14 +409,10 @@ static void PageProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size)
     SPI_WriteByte(0x2);
     WriteAddr(Addr);
 
-    if (Size >= 16)
-    {
+    if (Size >= 16) {
         SPI_WriteBuf(Buf, Size);
-    }
-    else
-    {
-        for (uint32_t i = 0; i < Size; i++)
-        {
+    } else {
+        for (uint32_t i = 0; i < Size; i++) {
             SPI_WriteByte(Buf[i]);
         }
     }
@@ -449,8 +424,7 @@ static void PageProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size)
 
 void DMA1_Channel4_5_6_7_IRQHandler()
 {
-    if (LL_DMA_IsActiveFlag_TC4(DMA1) && LL_DMA_IsEnabledIT_TC(DMA1, CHANNEL_RD))
-    {
+    if (LL_DMA_IsActiveFlag_TC4(DMA1) && LL_DMA_IsEnabledIT_TC(DMA1, CHANNEL_RD)) {
         LL_DMA_DisableIT_TC(DMA1, CHANNEL_RD);
         LL_DMA_ClearFlag_TC4(DMA1);
 

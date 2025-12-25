@@ -23,9 +23,9 @@
 extern uint16_t gBacklightCountdown_500ms;
 extern uint8_t gBacklightBrightness;
 
-    extern const uint8_t value[11];
+extern const uint8_t value[11];
 
-    extern uint16_t gSleepModeCountdown_500ms;
+extern uint16_t gSleepModeCountdown_500ms;
 
 
 void BACKLIGHT_InitHardware();

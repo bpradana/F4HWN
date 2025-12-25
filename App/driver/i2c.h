@@ -35,4 +35,3 @@ int I2C_ReadBuffer(void *pBuffer, uint8_t Size);
 int I2C_WriteBuffer(const void *pBuffer, uint8_t Size);
 
 #endif
-

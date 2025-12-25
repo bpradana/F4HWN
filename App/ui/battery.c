@@ -23,7 +23,7 @@
 #include "ui/battery.h"
 #include "../misc.h"
 
-void UI_DrawBattery(uint8_t* bitmap, uint8_t level, uint8_t blink)
+void UI_DrawBattery(uint8_t *bitmap, uint8_t level, uint8_t blink)
 {
     if (level < 2 && blink == 1) {
         memset(bitmap, 0, sizeof(BITMAP_BatteryLevel1));

@@ -27,7 +27,7 @@ static uint8_t keepAlive = 10;
 
 void getScreenShot(bool force)
 {
-    static uint8_t currentFrame[1024];  // Reused static buffer
+    static uint8_t currentFrame[1024]; // Reused static buffer
     uint16_t index = 0;
     uint8_t acc = 0;
     uint8_t bitCount = 0;
@@ -42,7 +42,8 @@ void getScreenShot(bool force)
     }
 
     if (keepAlive > 0) {
-        if (--keepAlive == 0) return;
+        if (--keepAlive == 0)
+            return;
     } else {
         return;
     }
@@ -84,7 +85,7 @@ void getScreenShot(bool force)
 
     // ==== Generate delta frame ====
     uint16_t deltaLen = 0;
-    uint8_t deltaFrame[128 * 9];  // Worst case: all 128 blocks changed
+    uint8_t deltaFrame[128 * 9]; // Worst case: all 128 blocks changed
 
     for (uint8_t block = 0; block < 128; block++) {
         uint8_t *cur = &currentFrame[block * 8];
@@ -108,11 +109,7 @@ void getScreenShot(bool force)
         return; // No update needed
 
     // ==== Send frame ====
-    uint8_t header[5] = {
-        0xAA, 0x55, 0x02,
-        (uint8_t)(deltaLen >> 8),
-        (uint8_t)(deltaLen & 0xFF)
-    };
+    uint8_t header[5] = {0xAA, 0x55, 0x02, (uint8_t)(deltaLen >> 8), (uint8_t)(deltaLen & 0xFF)};
 
     UART_Send(header, 5);
     UART_Send(deltaFrame, deltaLen);

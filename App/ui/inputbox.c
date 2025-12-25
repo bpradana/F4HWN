@@ -18,8 +18,8 @@
 
 #include "ui/inputbox.h"
 
-char    gInputBox[8];
-char    inputBoxAscii[9];
+char gInputBox[8];
+char inputBoxAscii[9];
 uint8_t gInputBoxIndex;
 
 void INPUTBOX_Append(const KEY_Code_t Digit)
@@ -34,11 +34,11 @@ void INPUTBOX_Append(const KEY_Code_t Digit)
         gInputBox[gInputBoxIndex++] = (char)(Digit - KEY_0);
 }
 
-const char* INPUTBOX_GetAscii()
+const char *INPUTBOX_GetAscii()
 {
-    for(int i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
         char c = gInputBox[i];
-        inputBoxAscii[i] = (c==10)? '-' : '0' + c;
+        inputBoxAscii[i] = (c == 10) ? '-' : '0' + c;
     }
     return inputBoxAscii;
 }

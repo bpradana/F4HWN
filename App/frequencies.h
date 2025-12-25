@@ -29,7 +29,7 @@ typedef struct {
 extern const freq_band_table_t BX4819_band1;
 extern const freq_band_table_t BX4819_band2;
 
-typedef enum  {
+typedef enum {
     BAND_NONE = -1,
     BAND1_50MHz = 0,
     BAND2_108MHz,
@@ -44,7 +44,7 @@ typedef enum  {
 extern const freq_band_table_t frequencyBandTable[];
 
 typedef enum {
-// standard steps
+    // standard steps
     STEP_2_5kHz,
     STEP_5kHz,
     STEP_6_25kHz,
@@ -52,7 +52,7 @@ typedef enum {
     STEP_12_5kHz,
     STEP_25kHz,
     STEP_8_33kHz,
-// custom steps
+    // custom steps
     STEP_0_01kHz,
     STEP_0_05kHz,
     STEP_0_1kHz,
@@ -78,13 +78,15 @@ extern const uint16_t gStepFrequencyTable[];
 
 
 FREQUENCY_Band_t FREQUENCY_GetBand(uint32_t Frequency);
-uint8_t          FREQUENCY_CalculateOutputPower(uint8_t TxpLow, uint8_t TxpMid, uint8_t TxpHigh, int32_t LowerLimit, int32_t Middle, int32_t UpperLimit, int32_t Frequency);
-uint32_t         FREQUENCY_RoundToStep(uint32_t freq, uint16_t step);
+uint8_t FREQUENCY_CalculateOutputPower(uint8_t TxpLow, uint8_t TxpMid, uint8_t TxpHigh,
+                                       int32_t LowerLimit, int32_t Middle, int32_t UpperLimit,
+                                       int32_t Frequency);
+uint32_t FREQUENCY_RoundToStep(uint32_t freq, uint16_t step);
 
-STEP_Setting_t   FREQUENCY_GetStepIdxFromSortedIdx(uint8_t sortedIdx);
-uint32_t         FREQUENCY_GetSortedIdxFromStepIdx(uint8_t step);
+STEP_Setting_t FREQUENCY_GetStepIdxFromSortedIdx(uint8_t sortedIdx);
+uint32_t FREQUENCY_GetSortedIdxFromStepIdx(uint8_t step);
 
-int32_t          TX_freq_check(uint32_t Frequency);
-int32_t          RX_freq_check(uint32_t Frequency);
+int32_t TX_freq_check(uint32_t Frequency);
+int32_t RX_freq_check(uint32_t Frequency);
 
 #endif

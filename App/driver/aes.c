@@ -24,8 +24,8 @@ static void AES_Setup_ENC_CBC(bool IsDecrypt, const void *pKey, const void *pIv)
     const uint32_t *pK = (const uint32_t *)pKey;
     const uint32_t *pI = (const uint32_t *)pIv;
 
-    (void)IsDecrypt;    // unused
-    
+    (void)IsDecrypt; // unused
+
     AES_CR = (AES_CR & ~AES_CR_EN_MASK) | AES_CR_EN_BITS_DISABLE;
     AES_CR = AES_CR_CHMOD_BITS_CBC;
     AES_KEYR3 = pK[0];
@@ -71,4 +71,3 @@ void AES_Encrypt(const void *pKey, const void *pIv, const void *pIn, void *pOut,
         AES_Transform(pI + (i * 16), pO + (i * 16));
     }
 }
-

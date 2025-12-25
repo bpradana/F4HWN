@@ -22,16 +22,15 @@
 #include <stdbool.h>
 #include "py32f071_ll_gpio.h"
 
-#define GPIO_MAKE_PIN(Port, PinMask)    ((uint32_t)((((uint32_t)(Port)) << 16) | (0xffff & (PinMask))))
-#define GPIO_PORT(Pin)                  ((GPIO_TypeDef *)(IOPORT_BASE + ((Pin) >> 16)))
-#define GPIO_PIN_MASK(Pin)              (0xffff & (Pin))
+#define GPIO_MAKE_PIN(Port, PinMask) ((uint32_t)((((uint32_t)(Port)) << 16) | (0xffff & (PinMask))))
+#define GPIO_PORT(Pin) ((GPIO_TypeDef *)(IOPORT_BASE + ((Pin) >> 16)))
+#define GPIO_PIN_MASK(Pin) (0xffff & (Pin))
 
-enum GPIO_PINS
-{
-    GPIO_PIN_PTT            = GPIO_MAKE_PIN(GPIOB, LL_GPIO_PIN_10),
-    GPIO_PIN_BACKLIGHT      = GPIO_MAKE_PIN(GPIOF, LL_GPIO_PIN_8),
-    GPIO_PIN_FLASHLIGHT     = GPIO_MAKE_PIN(GPIOC, LL_GPIO_PIN_13),
-    GPIO_PIN_AUDIO_PATH     = GPIO_MAKE_PIN(GPIOA, LL_GPIO_PIN_8),
+enum GPIO_PINS {
+    GPIO_PIN_PTT = GPIO_MAKE_PIN(GPIOB, LL_GPIO_PIN_10),
+    GPIO_PIN_BACKLIGHT = GPIO_MAKE_PIN(GPIOF, LL_GPIO_PIN_8),
+    GPIO_PIN_FLASHLIGHT = GPIO_MAKE_PIN(GPIOC, LL_GPIO_PIN_13),
+    GPIO_PIN_AUDIO_PATH = GPIO_MAKE_PIN(GPIOA, LL_GPIO_PIN_8),
 };
 
 static inline void GPIO_SetOutputPin(uint32_t Pin)
