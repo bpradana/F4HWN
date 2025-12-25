@@ -22,12 +22,8 @@
 
 enum
 {
-#if defined(ENABLE_UART)
     UART_PORT_UART,
-#endif
-#if defined(ENABLE_USB)
     UART_PORT_VCP,
-#endif
 };
 
 bool UART_IsCommandAvailable(uint32_t Port);

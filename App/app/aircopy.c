@@ -14,7 +14,6 @@
  *     limitations under the License.
  */
 
-#ifdef ENABLE_AIRCOPY
 
 //#if !defined(ENABLE_OVERLAY)
 //  #include "ARMCM0.h"
@@ -32,9 +31,7 @@
 #include "ui/inputbox.h"
 #include "ui/ui.h"
 
-#ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
 #include "screenshot.h"
-#endif
 
 static const uint16_t Obfuscation[8] = { 0x6C16, 0xE614, 0x912E, 0x400D, 0x3521, 0x40D5, 0x0313, 0x80E9 };
 
@@ -51,9 +48,7 @@ static void AIRCOPY_clear()
     {
         crc[i] = 0;
     }
-    #ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
         getScreenShot(true);
-    #endif
 }
 
 bool AIRCOPY_SendMessage(void)
@@ -80,9 +75,7 @@ bool AIRCOPY_SendMessage(void)
 
     if (++gAirCopyBlockNumber >= 0x78) {
         gAircopyState = AIRCOPY_COMPLETE;
-        #ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
             getScreenShot(false);
-        #endif
         //NVIC_SystemReset();
     }
 
@@ -141,9 +134,7 @@ void AIRCOPY_StorePacket(void)
 
     if (Offset == 0x1E00) {
         gAircopyState = AIRCOPY_COMPLETE;
-        #ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
             getScreenShot(false);
-        #endif
     }
 
     gAirCopyBlockNumber++;
@@ -160,9 +151,6 @@ static void AIRCOPY_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     gRequestDisplayScreen = DISPLAY_AIRCOPY;
 
     if (gInputBoxIndex < 6) {
-#ifdef ENABLE_VOICE
-        gAnotherVoiceID = (VOICE_ID_t)Key;
-#endif
         return;
     }
 
@@ -178,9 +166,6 @@ static void AIRCOPY_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
             continue;
         }
 
-#ifdef ENABLE_VOICE
-        gAnotherVoiceID = (VOICE_ID_t)Key;
-#endif
 
         Frequency = FREQUENCY_RoundToStep(Frequency, gRxVfo->StepFrequency);
         gRxVfo->Band = i;
@@ -271,4 +256,3 @@ void AIRCOPY_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     }
 }
 
-#endif

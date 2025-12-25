@@ -2,67 +2,84 @@
 set -euo pipefail
 
 # ---------------------------------------------
+# F4HWN Fusion Firmware Build Script
+# ---------------------------------------------
+# This script builds the Fusion-only firmware
+# using Docker for consistent toolchain environment.
+#
 # Usage:
-#   ./compile-with-docker.sh [Preset] [CMake options...]
-# Examples:
-#   ./compile-with-docker.sh Custom
-#   ./compile-with-docker.sh Bandscope -DENABLE_SPECTRUM=ON
-#   ./compile-with-docker.sh Broadcast -DENABLE_FEAT_F4HWN_GAME=ON -DENABLE_NOAA=ON
-#   ./compile-with-docker.sh All
-# Default preset: "Custom"
+#   ./compile-with-docker.sh        # Build firmware
+#   ./compile-with-docker.sh lint   # Run linter (if configured)
+#   ./compile-with-docker.sh format # Format code (if configured)
 # ---------------------------------------------
 
 IMAGE=uvk1-uvk5v3
-PRESET=${1:-Custom}
-shift || true  # remove preset from arguments if present
-
-# Any remaining args will be treated as CMake cache variables
-EXTRA_ARGS=("$@")
-
-# ---------------------------------------------
-# Validate preset name
-# ---------------------------------------------
-if [[ ! "$PRESET" =~ ^(Custom|Bandscope|Broadcast|Basic|RescueOps|Game|Fusion|All)$ ]]; then
-  echo "❌ Unknown preset: '$PRESET'"
-  echo "Valid presets are: Custom, Bandscope, Broadcast, Basic, RescueOps, Game, Fusion, All"
-  exit 1
-fi
+COMMAND=${1:-build}
 
 # ---------------------------------------------
 # Build the Docker image (only needed once)
 # ---------------------------------------------
+echo "🐳 Building Docker image..."
 docker build -t "$IMAGE" .
 
 # ---------------------------------------------
-# Clean existing CMake cache to ensure toolchain reload
+# Clean existing CMake cache
 # ---------------------------------------------
 rm -rf build
 
 # ---------------------------------------------
-# Function to build one preset
+# Build function
 # ---------------------------------------------
-build_preset() {
-  local preset="$1"
-  echo ""
-  echo "=== 🚀 Building preset: ${preset} ==="
-  echo "---------------------------------------------"
-  docker run --rm -it -v "$PWD":/src -w /src "$IMAGE" \
-    bash -c "which arm-none-eabi-gcc && arm-none-eabi-gcc --version && \
-             cmake --preset ${preset} ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"} && \
-             cmake --build --preset ${preset} -j"
-  echo "✅ Done: ${preset}"
+build_firmware() {
+    echo ""
+    echo "=== 🚀 Building Fusion Firmware ==="
+    echo "---------------------------------------------"
+    
+    # Show compiler info
+    docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
+        bash -c "/opt/toolchain/bin/arm-none-eabi-gcc --version | head -n1"
+    
+    echo ""
+    echo "Preset CMake variables:"
+    echo ""
+    echo "  CMAKE_BUILD_TYPE=\"Release\""
+    echo "  CMAKE_TOOLCHAIN_FILE:FILEPATH=\"/src/cmake/gcc-arm-none-eabi.cmake\""
+    echo "  EDITION_STRING=\"Fusion\""
+    echo "  TARGET=\"f4hwn.fusion\""
+    echo "  VERSION_STRING_1=\"v0.22\""
+    echo "  VERSION_STRING_2=\"v4.3.2\""
+    echo ""
+    
+    # Configure and build
+    docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
+        bash -c "cmake --preset Fusion && cmake --build build"
+    
+    echo ""
+    echo "✅ Build complete!"
+    echo "📦 Firmware files in: build/"
+    echo "   - f4hwn.fusion.bin (flash this file)"
+    echo "   - f4hwn.fusion.elf"
+    echo "   - f4hwn.fusion.hex"
 }
 
 # ---------------------------------------------
-# Handle 'All' preset
+# Main
 # ---------------------------------------------
-if [[ "$PRESET" == "All" ]]; then
-  PRESETS=(Bandscope Broadcast Basic RescueOps Game Fusion)
-  for p in "${PRESETS[@]}"; do
-    build_preset "$p"
-  done
-  echo ""
-  echo "🎉 All presets built successfully!"
-else
-  build_preset "$PRESET"
-fi
+case "$COMMAND" in
+    build|"")
+        build_firmware
+        ;;
+    lint)
+        echo "ℹ️  Lint support not configured yet"
+        exit 1
+        ;;
+    format)
+        echo "ℹ️  Format support not configured yet"
+        exit 1
+        ;;
+    *)
+        echo "❌ Unknown command: '$COMMAND'"
+        echo "Valid commands: build, lint, format"
+        exit 1
+        ;;
+esac

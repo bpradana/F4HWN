@@ -29,15 +29,9 @@ const freq_band_table_t BX4819_band2 = {84000000, BX4819_band2_upper};
 
 const freq_band_table_t frequencyBandTable[] =
 {
-    #ifndef ENABLE_WIDE_RX
-        // QS original
-        [BAND1_50MHz ]={.lower =  5000000,  .upper =  7600000},
-        [BAND7_470MHz]={.lower = 47000000,  .upper = 60000000},
-    #else
         // extended range
         [BAND1_50MHz ]={.lower =  BX4819_band1_lower, .upper =  10800000},
         [BAND7_470MHz]={.lower = 47000000, .upper = BX4819_band2_upper},
-    #endif
         [BAND2_108MHz]={.lower = 10800000,  .upper = 13700000},
         [BAND3_137MHz]={.lower = 13700000,  .upper = 17400000},
         [BAND4_174MHz]={.lower = 17400000,  .upper = 35000000},
@@ -45,21 +39,6 @@ const freq_band_table_t frequencyBandTable[] =
         [BAND6_400MHz]={.lower = 40000000,  .upper = 47000000}
 };
 
-#ifdef ENABLE_NOAA
-    const uint32_t NoaaFrequencyTable[10] =
-    {
-        16255000,
-        16240000,
-        16247500,
-        16242500,
-        16245000,
-        16250000,
-        16252500,
-        16152500,
-        16177500,
-        16327500
-    };
-#endif
 
 
 // this order of steps has to be preserved for backwards compatibility with other/stock firmwares
@@ -175,23 +154,13 @@ int32_t TX_freq_check(const uint32_t Frequency)
             if (Frequency >= frequencyBandTable[BAND3_137MHz].lower && Frequency < frequencyBandTable[BAND3_137MHz].upper)
                 return 0;
             if (Frequency >= frequencyBandTable[BAND4_174MHz].lower && Frequency < frequencyBandTable[BAND4_174MHz].upper)
-            #ifndef ENABLE_FEAT_F4HWN
-                if (gSetting_200TX)
-            #endif
                     return 0;
             if (Frequency >= frequencyBandTable[BAND5_350MHz].lower && Frequency < frequencyBandTable[BAND5_350MHz].upper)
-            #ifndef ENABLE_FEAT_F4HWN
-                if (gSetting_350TX && gSetting_350EN)
-            #else
                 if (gSetting_350EN)                
-            #endif
                     return 0;
             if (Frequency >= frequencyBandTable[BAND6_400MHz].lower && Frequency < frequencyBandTable[BAND6_400MHz].upper)
                 return 0;
             if (Frequency >= frequencyBandTable[BAND7_470MHz].lower && Frequency <= 60000000)
-            #ifndef ENABLE_FEAT_F4HWN
-                if (gSetting_500TX)
-            #endif
                     return 0;
             break;
 
@@ -230,14 +199,11 @@ int32_t TX_freq_check(const uint32_t Frequency)
                 return 0;
             break;
 
-#ifdef ENABLE_FEAT_F4HWN_PMR
         case F_LOCK_PMR:
             if (Frequency >= 44600625 && Frequency <= 44619375)
                 return 0;
             break;
-#endif
 
-#ifdef ENABLE_FEAT_F4HWN_GMRS_FRS_MURS
         case F_LOCK_GMRS_FRS_MURS:
             // https://forums.radioreference.com/threads/the-great-unofficial-radioreference-frs-gmrs-murs-fact-sheet.275370/
             if ((Frequency >= 46255000 && Frequency <= 46272500) ||
@@ -250,16 +216,13 @@ int32_t TX_freq_check(const uint32_t Frequency)
                 Frequency == 15460000) // MURS
                 return 0;
             break;
-#endif
 
-#ifdef ENABLE_FEAT_F4HWN_CA 
         case F_LOCK_CA:
             if (Frequency >= 14400000 && Frequency < 14800000)
                 return 0;
             if (Frequency >= 43000000 && Frequency < 45000000)
                 return 0;
             break;
-#endif
 
         case F_LOCK_ALL:
             break;

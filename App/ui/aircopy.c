@@ -14,7 +14,6 @@
  *     limitations under the License.
  */
 
-#ifdef ENABLE_AIRCOPY
 
 #include <string.h>
 
@@ -116,4 +115,3 @@ void UI_DisplayAircopy(void)
     ST7565_BlitFullScreen();
 }
 
-#endif

@@ -1,7 +1,6 @@
 #ifndef DEBUGGING_H
 #define DEBUGGING_H
 
-#ifdef ENABLE_UART
 
 #include "driver/uart.h"
 #include "driver/bk4819.h"
@@ -43,6 +42,5 @@ static inline void LogPrint()
     LogUart(buf);
 }
 
-#endif
 
 #endif

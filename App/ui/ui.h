@@ -26,17 +26,10 @@ enum GUI_DisplayType_t
     DISPLAY_MENU,
     DISPLAY_SCANNER,
 
-#ifdef ENABLE_FMRADIO
     DISPLAY_FM,
-#endif
 
-#ifdef ENABLE_AIRCOPY
     DISPLAY_AIRCOPY,
-#endif
 
-#ifdef ENABLE_REGA
-    DISPLAY_REGA,
-#endif
 
     DISPLAY_N_ELEM,
     DISPLAY_INVALID = 0xFFu

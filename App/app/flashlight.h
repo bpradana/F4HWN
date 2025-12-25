@@ -1,7 +1,6 @@
 #ifndef APP_FLASHLIGHT_H
 #define APP_FLASHLIGHT_H
 
-#ifdef ENABLE_FLASHLIGHT
 
 #include <stdint.h>
 
@@ -20,6 +19,5 @@
 #endif
 void ACTION_FlashLight(void);
 
-#endif
 
 #endif

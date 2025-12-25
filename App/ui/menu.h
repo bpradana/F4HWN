@@ -41,13 +41,8 @@ enum
     MENU_OFFSET,
     MENU_TOT,
     MENU_W_N,
-#ifndef ENABLE_FEAT_F4HWN
-    MENU_SCR,
-#endif
     MENU_BCL,
-#ifdef ENABLE_FEAT_F4HWN
     MENU_TX_LOCK, 
-#endif
     MENU_MEM_CH,
     MENU_DEL_CH,
     MENU_MEM_NAME,
@@ -60,9 +55,6 @@ enum
     MENU_ABR_MAX,
     MENU_TDR,
     MENU_BEEP,
-#ifdef ENABLE_VOICE
-    MENU_VOICE,
-#endif
     MENU_SC_REV,
     MENU_AUTOLK,
     MENU_S_ADD1,
@@ -78,57 +70,22 @@ enum
     MENU_SLIST1,
     MENU_SLIST2,
     MENU_SLIST3,
-#ifdef ENABLE_ALARM
     MENU_AL_MOD,
-#endif
-#ifdef ENABLE_DTMF_CALLING
-    MENU_ANI_ID,
-#endif
     MENU_UPCODE,
     MENU_DWCODE,
     MENU_PTT_ID,
     MENU_D_ST,
-#ifdef ENABLE_DTMF_CALLING
-    MENU_D_RSP,
-    MENU_D_HOLD,
-#endif
     MENU_D_PRE,
-#ifdef ENABLE_DTMF_CALLING  
-    MENU_D_DCD,
-    MENU_D_LIST,
-#endif
     MENU_D_LIVE_DEC,
     MENU_PONMSG,
     MENU_ROGER,
     MENU_VOL,
     MENU_BAT_TXT,
     MENU_AM,
-#ifdef ENABLE_AM_FIX
-    MENU_AM_FIX,
-#endif
-#ifndef ENABLE_FEAT_F4HWN
-    #ifdef ENABLE_NOAA
-        MENU_NOAA_S,
-    #endif
-#endif
     MENU_RESET,
     MENU_F_LOCK,
-#ifndef ENABLE_FEAT_F4HWN
-    MENU_200TX,
-    MENU_350TX,
-    MENU_500TX,
-#endif
     MENU_350EN,
-#ifndef ENABLE_FEAT_F4HWN
-    MENU_SCREN,
-#endif
-#ifdef ENABLE_F_CAL_MENU
-    MENU_F_CALI,  // reference xtal calibration
-#endif
-#ifdef ENABLE_FEAT_F4HWN_SLEEP
     MENU_SET_OFF,
-#endif
-#ifdef ENABLE_FEAT_F4HWN
     MENU_SET_PWR,
     MENU_SET_PTT,
     MENU_SET_TOT,
@@ -139,19 +96,8 @@ enum
     MENU_SET_MET,
     MENU_SET_GUI,
     MENU_SET_TMR,
-    #ifdef ENABLE_FEAT_F4HWN_NARROWER
         MENU_SET_NFM,
-    #endif
-    #ifdef ENABLE_FEAT_F4HWN_VOL
-        MENU_SET_VOL,
-    #endif
-    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
         MENU_SET_KEY,
-    #endif
-    #ifdef ENABLE_NOAA
-        MENU_NOAA_S,
-    #endif
-#endif
     MENU_BATCAL,  // battery voltage calibration
     MENU_F1SHRT,
     MENU_F1LONG,
@@ -172,37 +118,19 @@ extern const char        gSubMenu_NA[4];
 extern const char        gSubMenu_TOT[11][7];
 extern const char* const gSubMenu_RXMode[4];
 
-#ifdef ENABLE_VOICE
-    extern const char    gSubMenu_VOICE[3][4];
-#endif
 extern const char* const gSubMenu_MDF[4];
-#ifdef ENABLE_ALARM
     extern const char    gSubMenu_AL_MOD[2][5];
-#endif
-#ifdef ENABLE_DTMF_CALLING
-extern const char        gSubMenu_D_RSP[4][11];
-#endif
 
-#ifdef ENABLE_FEAT_F4HWN
     extern const char    gSubMenu_SET_PWR[7][6];
     extern const char    gSubMenu_SET_PTT[2][8];
     extern const char    gSubMenu_SET_TOT[4][7];
     extern const char    gSubMenu_SET_LCK[2][9];
     extern const char    gSubMenu_SET_MET[2][8];
-    #ifdef ENABLE_FEAT_F4HWN_NARROWER
         extern const char    gSubMenu_SET_NFM[2][9];
-    #endif
-    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
         extern const char gSubMenu_SET_KEY[][9];
-    #endif
-#endif
 
 extern const char* const gSubMenu_PTT_ID[5];
-#ifdef ENABLE_FEAT_F4HWN
     extern const char        gSubMenu_PONMSG[5][8];
-#else
-    extern const char        gSubMenu_PONMSG[4][8];
-#endif
 extern const char        gSubMenu_ROGER[3][6];
 extern const char        gSubMenu_RESET[2][4];
 extern const char* const gSubMenu_F_LOCK[F_LOCK_LEN];
@@ -210,9 +138,6 @@ extern const char        gSubMenu_RX_TX[4][6];
 extern const char        gSubMenu_BAT_TXT[3][8];
 extern const char        gSubMenu_BATTYP[5][12];
 
-#ifndef ENABLE_FEAT_F4HWN
-    extern const char        gSubMenu_SCRAMBLER[11][7];
-#endif
 
 typedef struct {char* name; uint8_t id;} t_sidefunction;
 extern const uint8_t         gSubMenu_SIDEFUNCTIONS_size;

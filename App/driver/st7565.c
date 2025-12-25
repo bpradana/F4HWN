@@ -124,7 +124,6 @@ void ST7565_DrawLine(const unsigned int Column, const unsigned int Line, const u
 }
 
 
-#ifdef ENABLE_FEAT_F4HWN
     // Optimization
     //
     // ST7565_BlitScreen(0) = ST7565_BlitStatusLine()
@@ -169,33 +168,6 @@ void ST7565_DrawLine(const unsigned int Column, const unsigned int Line, const u
     {
         ST7565_BlitScreen(0);
     }
-#else
-    void ST7565_BlitFullScreen(void)
-    {
-        CS_Assert();
-        ST7565_WriteByte(0x40);
-        for (unsigned line = 0; line < FRAME_LINES; line++) {
-            DrawLine(0, line+1, gFrameBuffer[line], LCD_WIDTH);
-        }
-        CS_Release();
-    }
-
-    void ST7565_BlitLine(unsigned line)
-    {
-        CS_Assert();
-        ST7565_WriteByte(0x40);    // start line ?
-        DrawLine(0, line+1, gFrameBuffer[line], LCD_WIDTH);
-        CS_Release();
-    }
-
-    void ST7565_BlitStatusLine(void)
-    {   // the top small text line on the display
-        CS_Assert();
-        ST7565_WriteByte(0x40);    // start line ?
-        DrawLine(0, 0, gStatusLine, LCD_WIDTH);
-        CS_Release();
-    }
-#endif
 
 void ST7565_FillScreen(uint8_t value)
 {
@@ -272,7 +244,6 @@ uint8_t cmds[] = {
     ST7565_CMD_DISPLAY_ON_OFF | 1,          // Display ON/OFF: ON
 };
 
-#ifdef ENABLE_FEAT_F4HWN
     static void ST7565_Cmd(uint8_t i)
     {
         switch(i) {
@@ -287,7 +258,6 @@ uint8_t cmds[] = {
         }
     }
 
-    #if defined(ENABLE_FEAT_F4HWN_CTR) || defined(ENABLE_FEAT_F4HWN_INV)
     void ST7565_ContrastAndInv(void)
     {
         CS_Assert();
@@ -300,7 +270,6 @@ uint8_t cmds[] = {
 
         // TODO: Release CS??
     }
-    #endif
 
     int16_t map(int16_t x, int16_t in_min, int16_t in_max, int16_t out_min, int16_t out_max) {
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -322,7 +291,6 @@ uint8_t cmds[] = {
         }
     }
     //#endif
-#endif
     
 void ST7565_Init(void)
 {
@@ -334,11 +302,7 @@ void ST7565_Init(void)
 
     for(uint8_t i = 0; i < 8; i++)
     {
-#ifdef ENABLE_FEAT_F4HWN
         ST7565_Cmd(i);
-#else
-        ST7565_WriteByte(cmds[i]);
-#endif
     }
 
     ST7565_WriteByte(ST7565_CMD_POWER_CIRCUIT | 0b011);   // VB=0 VR=1 VF=1
@@ -359,7 +323,6 @@ void ST7565_Init(void)
     ST7565_FillScreen(0x00);
 }
 
-#ifdef ENABLE_FEAT_F4HWN_SLEEP
     void ST7565_ShutDown(void)
     {
         CS_Assert();
@@ -368,17 +331,12 @@ void ST7565_Init(void)
         ST7565_WriteByte(ST7565_CMD_DISPLAY_ON_OFF | 0);   // D=1
         CS_Release();
     }
-#endif
 
 void ST7565_FixInterfGlitch(void)
 {
     CS_Assert();
     for(uint8_t i = 0; i < ARRAY_SIZE(cmds); i++)
-#ifdef ENABLE_FEAT_F4HWN
         ST7565_Cmd(i);
-#else
-        ST7565_WriteByte(cmds[i]);
-#endif
 
     CS_Release();
 }

@@ -17,7 +17,6 @@
 #ifndef APP_AIRCOPY_H
 #define APP_AIRCOPY_H
 
-#ifdef ENABLE_AIRCOPY
 
 #include "driver/keyboard.h"
 
@@ -41,6 +40,5 @@ bool AIRCOPY_SendMessage(void);
 void AIRCOPY_StorePacket(void);
 void AIRCOPY_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld);
 
-#endif
 
 #endif

@@ -1,4 +1,3 @@
-#ifdef ENABLE_FLASHLIGHT
 
 #include "driver/gpio.h"
 #include "app/flashlight.h"
@@ -82,5 +81,4 @@ static inline void Flashlight_Toggle(){ GPIO_TogglePin(GPIO_PIN_FLASHLIGHT); }
 
         gFlashLightState = (gFlashLightState) ? false : true;
     }
-#endif
 #endif

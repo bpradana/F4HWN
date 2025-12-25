@@ -19,20 +19,11 @@
 
 #include "app/chFrScanner.h"
 #include "app/dtmf.h"
-#ifdef ENABLE_FMRADIO
     #include "app/fm.h"
-#endif
 #include "driver/keyboard.h"
 #include "misc.h"
-#ifdef ENABLE_AIRCOPY
     #include "ui/aircopy.h"
-#endif
-#ifdef ENABLE_FMRADIO
     #include "ui/fmradio.h"
-#endif
-#ifdef ENABLE_REGA
-    #include "app/rega.h"
-#endif
 #include "ui/inputbox.h"
 #include "ui/main.h"
 #include "ui/menu.h"
@@ -53,17 +44,10 @@ void (*UI_DisplayFunctions[])(void) = {
     [DISPLAY_MENU] = &UI_DisplayMenu,
     [DISPLAY_SCANNER] = &UI_DisplayScanner,
 
-#ifdef ENABLE_FMRADIO
     [DISPLAY_FM] = &UI_DisplayFM,
-#endif
 
-#ifdef ENABLE_AIRCOPY
     [DISPLAY_AIRCOPY] = &UI_DisplayAircopy,
-#endif
 
-#ifdef ENABLE_REGA
-    [DISPLAY_REGA] = &UI_DisplayREGA,
-#endif
 };
 
 static_assert(ARRAY_SIZE(UI_DisplayFunctions) == DISPLAY_N_ELEM);
@@ -88,9 +72,7 @@ void GUI_SelectNextDisplay(GUI_DisplayType_t Display)
         gIsInSubMenu         = false;
         gCssBackgroundScan   = false;
         gScanStateDir        = SCAN_OFF;
-        #ifdef ENABLE_FMRADIO
             gFM_ScanState    = FM_SCAN_OFF;
-        #endif
         gAskForConfirmation  = 0;
         gAskToSave           = false;
         gAskToDelete         = false;

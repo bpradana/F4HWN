@@ -14,7 +14,6 @@
  *     limitations under the License.
  */
 
-#ifdef ENABLE_FMRADIO
 
 #include <string.h>
 
@@ -99,4 +98,3 @@ void UI_DisplayFM(void)
     ST7565_BlitFullScreen();
 }
 
-#endif

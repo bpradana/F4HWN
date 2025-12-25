@@ -1130,7 +1130,6 @@ void BK4819_TurnsOffTones_TurnsOnRX(void)
         BK4819_REG_30_ENABLE_RX_DSP);
 }
 
-#ifdef ENABLE_AIRCOPY
     void BK4819_SetupAircopy(void)
     {
         BK4819_WriteRegister(BK4819_REG_70, 0x00C3);    // Enable Tone2, tuning gain 48
@@ -1141,7 +1140,6 @@ void BK4819_TurnsOffTones_TurnsOnRX(void)
         BK4819_WriteRegister(BK4819_REG_5D, 0x4700);    // FSK Data Length 72 Bytes (0xabcd + 2 byte length + 64 byte payload + 2 byte CRC + 0xdcba)
         BK4819_WriteRegister(0x5E, 0x3204);
     }
-#endif
 
 void BK4819_ResetFSK(void)
 {
@@ -1479,11 +1477,7 @@ void BK4819_PlayCDCSSTail(void)
 
 void BK4819_PlayCTCSSTail(void)
 {
-    #ifdef ENABLE_CTCSS_TAIL_PHASE_SHIFT
-        BK4819_GenTail(2);       // 180° phase shift
-    #else
         BK4819_GenTail(4);       // 55Hz tone freq
-    #endif
 
     // REG_51
     //

@@ -25,11 +25,9 @@
 #include "settings.h"
 #include "external/printf/printf.h"
 
-#ifdef ENABLE_FEAT_F4HWN
     #include "driver/system.h"
     #include "audio.h"
     #include "misc.h"
-#endif
 
 #define PWM_FREQ 240
 #define DUTY_CYCLE_LEVELS 64
@@ -46,13 +44,9 @@ static uint32_t dutyCycle[DUTY_CYCLE_LEVELS];
 uint16_t gBacklightCountdown_500ms = 0;
 bool backlightOn;
 
-#ifdef ENABLE_FEAT_F4HWN
     const uint8_t value[] = {0, 3, 6, 9, 15, 24, 38, 62, 100, 159, 255};
-#endif
 
-#ifdef ENABLE_FEAT_F4HWN_SLEEP
     uint16_t gSleepModeCountdown_500ms = 0;
-#endif
 
 void BACKLIGHT_InitHardware()
 {
@@ -101,38 +95,23 @@ static void BACKLIGHT_Sound(void)
 
 void BACKLIGHT_TurnOn(void)
 {
-    #ifdef ENABLE_FEAT_F4HWN_SLEEP
         gSleepModeCountdown_500ms = gSetting_set_off * 120;
-    #endif
 
-    #ifdef ENABLE_FEAT_F4HWN
         gBacklightBrightnessOld = BACKLIGHT_GetBrightness();
-    #endif
 
     if (gEeprom.BACKLIGHT_TIME == 0) {
         BACKLIGHT_TurnOff();
-        #ifdef ENABLE_FEAT_F4HWN
             if(gK5startup == true) 
             {
                 BACKLIGHT_Sound();
             }
-        #endif
         return;
     }
 
     backlightOn = true;
 
-#ifdef ENABLE_FEAT_F4HWN
     if(gK5startup == true) {
-        #if defined(ENABLE_FMRADIO) && defined(ENABLE_SPECTRUM)
             BACKLIGHT_SetBrightness(gEeprom.BACKLIGHT_MAX);
-        #else
-            for(uint8_t i = 0; i <= gEeprom.BACKLIGHT_MAX; i++)
-            {
-                BACKLIGHT_SetBrightness(i);
-                SYSTEM_DelayMs(50);
-            }
-        #endif
 
         BACKLIGHT_Sound();
     }
@@ -140,9 +119,6 @@ void BACKLIGHT_TurnOn(void)
     {
         BACKLIGHT_SetBrightness(gEeprom.BACKLIGHT_MAX);
     }
-#else
-    BACKLIGHT_SetBrightness(gEeprom.BACKLIGHT_MAX);
-#endif
 
     switch (gEeprom.BACKLIGHT_TIME) {
         default:
@@ -157,18 +133,7 @@ void BACKLIGHT_TurnOn(void)
 
 void BACKLIGHT_TurnOff()
 {
-#ifdef ENABLE_BLMIN_TMP_OFF
-    register uint8_t tmp;
-
-    if (gEeprom.BACKLIGHT_MIN_STAT == BLMIN_STAT_ON)
-        tmp = gEeprom.BACKLIGHT_MIN;
-    else
-        tmp = 0;
-
-    BACKLIGHT_SetBrightness(tmp);
-#else
     BACKLIGHT_SetBrightness(gEeprom.BACKLIGHT_MIN);
-#endif
     gBacklightCountdown_500ms = 0;
     backlightOn = false;
 }

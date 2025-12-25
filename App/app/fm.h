@@ -17,7 +17,6 @@
 #ifndef APP_FM_H
 #define APP_FM_H
 
-#ifdef ENABLE_FMRADIO
 
 #include "driver/keyboard.h"
 
@@ -56,6 +55,5 @@ void    FM_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld);
 void    FM_Play(void);
 void    FM_Start(void);
 
-#endif
 
 #endif

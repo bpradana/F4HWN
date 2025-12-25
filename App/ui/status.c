@@ -17,9 +17,7 @@
 #include <string.h>
 
 #include "app/chFrScanner.h"
-#ifdef ENABLE_FMRADIO
     #include "app/fm.h"
-#endif
 #include "app/scanner.h"
 #include "bitmaps.h"
 #include "driver/keyboard.h"
@@ -34,8 +32,6 @@
 #include "ui/ui.h"
 #include "ui/status.h"
 
-#ifdef ENABLE_FEAT_F4HWN_RX_TX_TIMER
-#ifndef ENABLE_FEAT_F4HWN_DEBUG
 static void convertTime(uint8_t *line, uint8_t type) 
 {
     uint16_t t = (type == 0) ? (gTxTimerCountdown_500ms / 2) : (3600 - gRxTimerCountdown_500ms / 2);
@@ -51,8 +47,6 @@ static void convertTime(uint8_t *line, uint8_t type)
 
     gUpdateStatus = true;
 }
-#endif
-#endif
 
 void UI_DisplayStatus()
 {
@@ -64,33 +58,14 @@ void UI_DisplayStatus()
     uint8_t     *line = gStatusLine;
     unsigned int x    = 0;
 
-#ifdef ENABLE_NOAA
-    // NOAA indicator
-    if (!(gScanStateDir != SCAN_OFF || SCANNER_IsScanning()) && gIsNoaaMode) { // NOASS SCAN indicator
-        memcpy(line + x, BITMAP_NOAA, sizeof(BITMAP_NOAA));
-    }
-    // Power Save indicator
-    else if (gCurrentFunction == FUNCTION_POWER_SAVE) {
-        memcpy(line + x, gFontPowerSave, sizeof(gFontPowerSave));
-    }
-    x += 8;
-#else
     // Power Save indicator
     if (gCurrentFunction == FUNCTION_POWER_SAVE) {
         memcpy(line + x, gFontPowerSave, sizeof(gFontPowerSave));
     }
     x += 8;
-#endif
 
     unsigned int x1 = x;
 
-#ifdef ENABLE_DTMF_CALLING
-    if (gSetting_KILLED) {
-        memset(line + x, 0xFF, 10);
-        x1 = x + 10;
-    }
-    else
-#endif
     { // SCAN indicator
         if (gScanStateDir != SCAN_OFF || SCANNER_IsScanning()) {
             if (IS_MR_CHANNEL(gNextMrChannel) && !SCANNER_IsScanning()) { // channel mode
@@ -124,26 +99,8 @@ void UI_DisplayStatus()
     }
     x += 10;  // font character width
 
-    #ifdef ENABLE_FEAT_F4HWN_DEBUG
-        // Only for debug
-        // Only for debug
-        // Only for debug
-
-        sprintf(str, "%d", gDebug);
-        UI_PrintStringSmallBufferNormal(str, line + x + 1);
-        x += 16;
-    #else
-        #ifdef ENABLE_VOICE
-        // VOICE indicator
-        if (gEeprom.VOICE_PROMPT != VOICE_PROMPT_OFF){
-            memcpy(line + x, BITMAP_VoicePrompt, sizeof(BITMAP_VoicePrompt));
-            x1 = x + sizeof(BITMAP_VoicePrompt);
-        }
-        x += sizeof(BITMAP_VoicePrompt);
-        #endif
 
         if(!SCANNER_IsScanning()) {
-        #ifdef ENABLE_FEAT_F4HWN_RX_TX_TIMER
             if(gCurrentFunction == FUNCTION_TRANSMIT && gSetting_set_tmr == true)
             {
                 convertTime(line, 0);
@@ -153,15 +110,12 @@ void UI_DisplayStatus()
                 convertTime(line, 1);
             }
             else
-        #endif
             {
-                #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
                 if(gEeprom.MENU_LOCK == true) {
                     memcpy(line + x + 2, gFontRO, sizeof(gFontRO));
                 }
                 else
                 {
-                #endif
                     uint8_t dw = (gEeprom.DUAL_WATCH != DUAL_WATCH_OFF) + (gEeprom.CROSS_BAND_RX_TX != CROSS_BAND_OFF) * 2;
                     if(dw == 1 || dw == 3) { // DWR - dual watch + respond
                         if(gDualWatchActive)
@@ -176,24 +130,18 @@ void UI_DisplayStatus()
                     {
                         memcpy(line + x + 2, gFontMO, sizeof(gFontMO));
                     }
-                #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
                 }
-                #endif
             }
         }
         x += sizeof(gFontDWR) + 3;
-    #endif
 
-#ifdef ENABLE_VOX
     // VOX indicator
     if (gEeprom.VOX_SWITCH) {
         memcpy(line + x, gFontVox, sizeof(gFontVox));
         x1 = x + sizeof(gFontVox) + 1;
     }
     x += sizeof(gFontVox) + 3;
-#endif
 
-#ifdef ENABLE_FEAT_F4HWN
     // PTT indicator
     if (gSetting_set_ptt_session) {
         memcpy(line + x, gFontPttOnePush, sizeof(gFontPttOnePush));
@@ -205,7 +153,6 @@ void UI_DisplayStatus()
         x1 = x + sizeof(gFontPttClassic) + 1;       
     }
     x += sizeof(gFontPttClassic) + 3;
-#endif
 
     x = MAX(x1, 69u);
 
@@ -218,32 +165,19 @@ void UI_DisplayStatus()
         size = sizeof(gFontKeyLock);
     }
     else if (gWasFKeyPressed) {
-        #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
         if (!gEeprom.MENU_LOCK) {
             src = gFontF;
             size = sizeof(gFontF);
         }
-        #else
-        src = gFontF;
-        size = sizeof(gFontF);
-        #endif
     }
-    #ifdef ENABLE_FEAT_F4HWN
         else if (gMute) {
             src = gFontMute;
             size = sizeof(gFontMute);
         }
-    #endif
     else if (gBackLight) {
         src = gFontLight;
         size = sizeof(gFontLight);
     }
-    #ifdef ENABLE_FEAT_F4HWN_CHARGING_C
-    else if (gChargingWithTypeC) {
-        src = BITMAP_USB_C;
-        size = sizeof(BITMAP_USB_C);
-    }
-    #endif
 
     // Perform the memcpy if a source was selected
     if (src) {

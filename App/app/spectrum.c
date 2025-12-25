@@ -18,22 +18,16 @@
 #include "audio.h"
 #include "misc.h"
 
-#ifdef ENABLE_SCAN_RANGES
 #include "chFrScanner.h"
-#endif
 
 #include "driver/backlight.h"
 #include "frequencies.h"
 #include "ui/helper.h"
 #include "ui/main.h"
 
-#ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
 #include "screenshot.h"
-#endif
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
 #include "driver/py25q16.h"
-#endif
 
 struct FrequencyBandInfo
 {
@@ -66,10 +60,8 @@ PeakInfo peak;
 ScanInfo scanInfo;
 static KeyboardState kbd = {KEY_INVALID, KEY_INVALID, 0};
 
-#ifdef ENABLE_SCAN_RANGES
 static uint16_t blacklistFreqs[15];
 static uint8_t blacklistFreqsIdx;
-#endif
 
 const char *bwOptions[] = {"25", "12.5", "6.25"};
 const uint8_t modulationTypeTuneSteps[] = {100, 50, 10};
@@ -108,16 +100,13 @@ RegisterSpec registerSpecs[] = {
     // {"MIX", 0x13, 3, 0b11, 1}, // TODO: hidden
 };
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
 const int8_t LNAsOptions[] = {-19, -16, -11, 0};
 const int8_t LNAOptions[] = {-24, -19, -14, -9, -6, -4, -2, 0};
 const int8_t VGAOptions[] = {-33, -27, -21, -15, -9, -6, -3, 0};
 const char *BPFOptions[] = {"8.46", "7.25", "6.35", "5.64", "5.08", "4.62", "4.23"};
-#endif
 
 uint16_t statuslineUpdateTimer = 0;
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
 static void LoadSettings()
 {
     uint8_t Data[8] = {0};
@@ -154,7 +143,6 @@ static void SaveSettings()
 
     PY25Q16_WriteBuffer(0x00c000, Data, sizeof(Data), true);
 }
-#endif
 
 static uint8_t DBm2S(int dbm)
 {
@@ -213,16 +201,6 @@ static void SetRegMenuValue(uint8_t st, bool add)
 
 // GUI functions
 
-#ifndef ENABLE_FEAT_F4HWN
-static void PutPixel(uint8_t x, uint8_t y, bool fill)
-{
-    UI_DrawPixelBuffer(gFrameBuffer, x, y, fill);
-}
-static void PutPixelStatus(uint8_t x, uint8_t y, bool fill)
-{
-    UI_DrawPixelBuffer(&gStatusLine, x, y, fill);
-}
-#endif
 
 static void DrawVLine(int sy, int ey, int nx, bool fill)
 {
@@ -235,36 +213,6 @@ static void DrawVLine(int sy, int ey, int nx, bool fill)
     }
 }
 
-#ifndef ENABLE_FEAT_F4HWN
-static void GUI_DisplaySmallest(const char *pString, uint8_t x, uint8_t y,
-                                bool statusbar, bool fill)
-{
-    uint8_t c;
-    uint8_t pixels;
-    const uint8_t *p = (const uint8_t *)pString;
-
-    while ((c = *p++) && c != '\0')
-    {
-        c -= 0x20;
-        for (int i = 0; i < 3; ++i)
-        {
-            pixels = gFont3x5[c][i];
-            for (int j = 0; j < 6; ++j)
-            {
-                if (pixels & 1)
-                {
-                    if (statusbar)
-                        PutPixelStatus(x + i, y + j, fill);
-                    else
-                        PutPixel(x + i, y + j, fill);
-                }
-                pixels >>= 1;
-            }
-        }
-        x += 4;
-    }
-}
-#endif
 
 // Utility functions
 
@@ -332,9 +280,7 @@ static void RestoreRegisters()
         BK4819_WriteRegister(registers_to_save[i], registers_stack[i]);
     }
 
-#ifdef ENABLE_FEAT_F4HWN
     gVfoConfigureMode = VFO_CONFIGURE;
-#endif
 }
 
 static void ToggleAFDAC(bool on)
@@ -367,7 +313,6 @@ static void ResetPeak()
     peak.rssi = 0;
 }
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
     static void setTailFoundInterrupt()
     {
         BK4819_WriteRegister(BK4819_REG_3F, BK4819_REG_02_CxCSS_TAIL | BK4819_REG_02_SQUELCH_FOUND);
@@ -395,7 +340,6 @@ static void ResetPeak()
       }
       return false;
     }
-#endif
 
 bool IsCenterMode() { return settings.scanStepIndex < S_STEP_2_5kHz; }
 // scan step in 0.01khz
@@ -403,18 +347,15 @@ uint16_t GetScanStep() { return scanStepValues[settings.scanStepIndex]; }
 
 uint16_t GetStepsCount()
 {
-#ifdef ENABLE_SCAN_RANGES
     if (gScanRangeStart)
     {
         uint32_t range = gScanRangeStop - gScanRangeStart;
         uint16_t step = GetScanStep();
         return (range / step) + 1;  // +1 to include up limit
     }
-#endif
     return 128 >> settings.stepsCount;
 }
 
-#ifdef ENABLE_SCAN_RANGES
 static uint16_t GetStepsCountDisplay()
 {
     if (gScanRangeStart)
@@ -423,7 +364,6 @@ static uint16_t GetStepsCountDisplay()
     }
     return GetStepsCount();
 }
-#endif
 
 uint32_t GetBW() { return GetStepsCount() * GetScanStep(); }
 uint32_t GetFStart()
@@ -433,12 +373,10 @@ uint32_t GetFStart()
 
 uint32_t GetFEnd()
 {
-#ifdef ENABLE_SCAN_RANGES
     if (gScanRangeStart)
     {
         return gScanRangeStop;
     }
-#endif
     return currentFreq + GetBW();
 }
 
@@ -471,10 +409,6 @@ uint16_t GetRssi()
         SYSTICK_DelayUs(100);
     }
     uint16_t rssi = BK4819_GetRSSI();
-#ifdef ENABLE_AM_FIX
-    if (settings.modulationType == MODULATION_AM && gSetting_AM_fix)
-        rssi += AM_fix_get_gain_diff() * 2;
-#endif
     return rssi;
 }
 
@@ -497,11 +431,9 @@ static void ToggleAudio(bool on)
 
 static void ToggleRX(bool on)
 {
-    #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
     if (isListening == on) {
         return;
     }
-    #endif
     isListening = on;
 
     RADIO_SetupAGC(settings.modulationType == MODULATION_AM, lockAGC);
@@ -513,14 +445,9 @@ static void ToggleRX(bool on)
 
     if (on)
     {
-    #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
         listenT = 100;
         BK4819_WriteRegister(0x43, listenBWRegValues[settings.listenBw]);
         setTailFoundInterrupt();
-    #else
-        listenT = 1000;
-        BK4819_WriteRegister(0x43, listenBWRegValues[settings.listenBw]);
-    #endif
     }
     else
     {
@@ -555,10 +482,8 @@ static void ResetBlacklist()
         if (rssiHistory[i] == RSSI_MAX_VALUE)
             rssiHistory[i] = 0;
     }
-#ifdef ENABLE_SCAN_RANGES
     memset(blacklistFreqs, 0, sizeof(blacklistFreqs));
     blacklistFreqsIdx = 0;
-#endif
 }
 
 static void RelaunchScan()
@@ -615,7 +540,6 @@ static void UpdatePeakInfo()
 
 static void SetRssiHistory(uint16_t idx, uint16_t rssi)
 {
-#ifdef ENABLE_SCAN_RANGES
     if (scanInfo.measurementsCount > 128)
     {
         uint8_t i = (uint32_t)ARRAY_SIZE(rssiHistory) * 1000 / scanInfo.measurementsCount * idx / 1000;
@@ -624,7 +548,6 @@ static void SetRssiHistory(uint16_t idx, uint16_t rssi)
         rssiHistory[(i + 1) % 128] = 0;
         return;
     }
-#endif
     rssiHistory[idx] = rssi;
 }
 
@@ -889,9 +812,7 @@ static void UpdateFreqInput(KEY_Code_t key)
 
 static void Blacklist()
 {
-#ifdef ENABLE_SCAN_RANGES
     blacklistFreqs[blacklistFreqsIdx++ % ARRAY_SIZE(blacklistFreqs)] = peak.i;
-#endif
 
     SetRssiHistory(peak.i, RSSI_MAX_VALUE);
     ResetPeak();
@@ -899,7 +820,6 @@ static void Blacklist()
     ResetScanStats();
 }
 
-#ifdef ENABLE_SCAN_RANGES
 static bool IsBlacklisted(uint16_t idx)
 {
     if (blacklistFreqsIdx)
@@ -908,7 +828,6 @@ static bool IsBlacklisted(uint16_t idx)
                 return true;
     return false;
 }
-#endif
 
 // Draw things
 
@@ -931,7 +850,6 @@ uint8_t Rssi2Y(uint16_t rssi)
     return DrawingEndY - Rssi2PX(rssi, 0, DrawingEndY);
 }
 
-#ifdef ENABLE_FEAT_F4HWN
     static void DrawSpectrum()
     {
         uint16_t steps = GetStepsCount();
@@ -943,7 +861,6 @@ uint8_t Rssi2Y(uint16_t rssi)
         {
             uint16_t rssi = rssiHistory[(bars>128) ? i >> settings.stepsCount : i];
             
-#ifdef ENABLE_SCAN_RANGES
             uint8_t x;
             if (gScanRangeStart && bars > 1)
             {
@@ -964,7 +881,6 @@ uint8_t Rssi2Y(uint16_t rssi)
                 }
             }
             else
-#endif
             {
                 uint8_t shift_graph = 64 / steps + 1;
                 x = i * 128 / bars + shift_graph;
@@ -980,19 +896,6 @@ uint8_t Rssi2Y(uint16_t rssi)
             ox = x;
         }
     }
-#else
-    static void DrawSpectrum()
-    {
-        for (uint8_t x = 0; x < 128; ++x)
-        {
-            uint16_t rssi = rssiHistory[x >> settings.stepsCount];
-            if (rssi != RSSI_MAX_VALUE)
-            {
-                DrawVLine(Rssi2Y(rssi), DrawingEndY, x, true);
-            }
-        }
-    }
-#endif
 
 static void DrawStatus()
 {
@@ -1032,7 +935,6 @@ static void DrawStatus()
     }
 }
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
 static void ShowChannelName(uint32_t f)
 {
     static uint32_t channelF = 0;
@@ -1066,7 +968,6 @@ static void ShowChannelName(uint32_t f)
     }
     ST7565_BlitStatusLine();
 }
-#endif
 
 static void DrawF(uint32_t f)
 {
@@ -1078,9 +979,7 @@ static void DrawF(uint32_t f)
     sprintf(String, "%4sk", bwOptions[settings.listenBw]);
     GUI_DisplaySmallest(String, 108, 7, false, true);
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
     ShowChannelName(f);
-#endif
 }
 
 static void DrawNums()
@@ -1088,13 +987,11 @@ static void DrawNums()
 
     if (currentState == SPECTRUM)
     {
-#ifdef ENABLE_SCAN_RANGES
         if (gScanRangeStart)
         {
             sprintf(String, "%ux", GetStepsCountDisplay());
         }
         else
-#endif
         {
             sprintf(String, "%ux", GetStepsCount());
         }
@@ -1202,24 +1099,12 @@ static void OnKeyDown(uint8_t key)
         UpdateFreqChangeStep(false);
         break;
     case KEY_UP:
-#ifdef ENABLE_SCAN_RANGES
         if (!gScanRangeStart)
-#endif
-#ifdef ENABLE_NAVIG_LEFT_RIGHT
             UpdateCurrentFreq(false);
-#else
-            UpdateCurrentFreq(true);
-#endif
         break;
     case KEY_DOWN:
-#ifdef ENABLE_SCAN_RANGES
         if (!gScanRangeStart)
-#endif
-#ifdef ENABLE_NAVIG_LEFT_RIGHT
             UpdateCurrentFreq(true);
-#else
-            UpdateCurrentFreq(false);
-#endif
         break;
     case KEY_SIDE1:
         Blacklist();
@@ -1231,9 +1116,7 @@ static void OnKeyDown(uint8_t key)
         UpdateRssiTriggerLevel(false);
         break;
     case KEY_5:
-#ifdef ENABLE_SCAN_RANGES
         if (!gScanRangeStart)
-#endif
             FreqInput();
         break;
     case KEY_0:
@@ -1243,9 +1126,7 @@ static void OnKeyDown(uint8_t key)
         ToggleListeningBW();
         break;
     case KEY_4:
-#ifdef ENABLE_SCAN_RANGES
         if (!gScanRangeStart)
-#endif
             ToggleStepsCount();
         break;
     case KEY_SIDE2:
@@ -1263,13 +1144,9 @@ static void OnKeyDown(uint8_t key)
             menuState = 0;
             break;
         }
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
         SaveSettings();
-#endif
-#ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
         gEeprom.CURRENT_STATE = 0;
         SETTINGS_WriteCurrentState();
-#endif
         DeInitSpectrum();
         break;
     default:
@@ -1337,35 +1214,19 @@ void OnKeyDownStill(KEY_Code_t key)
     case KEY_UP:
         if (menuState)
 
-#ifdef ENABLE_NAVIG_LEFT_RIGHT
         {
             SetRegMenuValue(menuState, false);
             break;
         }
         UpdateCurrentFreqStill(false);
-#else
-        {
-            SetRegMenuValue(menuState, true);
-            break;
-        }
-        UpdateCurrentFreqStill(true);
-#endif
         break;
     case KEY_DOWN:
         if (menuState)
-#ifdef ENABLE_NAVIG_LEFT_RIGHT
         {
             SetRegMenuValue(menuState, true);
             break;
         }
         UpdateCurrentFreqStill(true);
-#else
-        {
-            SetRegMenuValue(menuState, false);
-            break;
-        }
-        UpdateCurrentFreqStill(false);
-#endif
         break;
     case KEY_STAR:
         UpdateRssiTriggerLevel(true);
@@ -1504,7 +1365,6 @@ static void RenderStill()
         GUI_DisplaySmallest(String, offset + 2, row * 8 + 2, false,
                             menuState != idx);
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
         if(idx == 1)
         {
             sprintf(String, "%ddB", LNAsOptions[GetRegMenuValue(idx)]);
@@ -1521,9 +1381,6 @@ static void RenderStill()
         {
             sprintf(String, "%skHz", BPFOptions[(GetRegMenuValue(idx) / 0x2aaa)]);
         }
-#else
-        sprintf(String, "%u", GetRegMenuValue(idx));
-#endif
         GUI_DisplaySmallest(String, offset + 2, (row + 1) * 8 + 1, false,
                             menuState != idx);
     }
@@ -1589,9 +1446,7 @@ static bool HandleUserInput()
 static void Scan()
 {
     if (rssiHistory[scanInfo.i] != RSSI_MAX_VALUE
-#ifdef ENABLE_SCAN_RANGES
         && !IsBlacklisted(scanInfo.i)
-#endif
     )
     {
         SetF(scanInfo.f);
@@ -1652,12 +1507,8 @@ static void UpdateStill()
 static void UpdateListening()
 {
     preventKeypress = false;
-    #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
     bool tailFound = checkIfTailFound();
     if (tailFound)
-    #else
-    if (currentState == STILL)
-    #endif
     {
         listenT = 0;
     }
@@ -1682,19 +1533,11 @@ static void UpdateListening()
     peak.rssi = scanInfo.rssi;
     redrawScreen = true;
 
-    #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
         if ((IsPeakOverLevel() && !tailFound) || monitorMode)
         {
             listenT = 100;
             return;
         }
-    #else
-        if (IsPeakOverLevel() || monitorMode)
-        {
-            listenT = 1000;
-            return;
-        }
-    #endif
 
     ToggleRX(false);
     ResetScanStats();
@@ -1702,18 +1545,7 @@ static void UpdateListening()
 
 static void Tick()
 {
-#ifdef ENABLE_AM_FIX
-    if (gNextTimeslice)
-    {
-        gNextTimeslice = false;
-        if (settings.modulationType == MODULATION_AM && !lockAGC)
-        {
-            AM_fix_10ms(vfo); // allow AM_Fix to apply its AGC action
-        }
-    }
-#endif
 
-#ifdef ENABLE_SCAN_RANGES
     if (gNextTimeslice_500ms)
     {
         gNextTimeslice_500ms = false;
@@ -1734,7 +1566,6 @@ static void Tick()
             preventKeypress = false;
         }
     }
-#endif
 
     if (!preventKeypress)
     {
@@ -1770,9 +1601,7 @@ static void Tick()
     {
         Render();
         // For screenshot
-        #ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
             getScreenShot(false);
-        #endif
         redrawScreen = false;
     }
 }
@@ -1781,11 +1610,8 @@ void APP_RunSpectrum()
 {
     // TX here coz it always? set to active VFO
     vfo = gEeprom.TX_VFO;
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
     LoadSettings();
-#endif
     // set the current frequency in the middle of the display
-#ifdef ENABLE_SCAN_RANGES
     if (gScanRangeStart)
     {
         currentFreq = initialFreq = gScanRangeStart;
@@ -1798,22 +1624,15 @@ void APP_RunSpectrum()
             }
         }
         settings.stepsCount = STEPS_128;
-        #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
             gEeprom.CURRENT_STATE = 5;
-        #endif
     }
     else {
-#endif
         currentFreq = initialFreq = gTxVfo->pRX->Frequency -
                                     ((GetStepsCount() / 2) * GetScanStep());
-        #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
             gEeprom.CURRENT_STATE = 4;
-        #endif
     }
 
-    #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
         SETTINGS_WriteCurrentState();
-    #endif
 
     BackupRegisters();
 
@@ -1825,11 +1644,7 @@ void APP_RunSpectrum()
     ToggleRX(true), ToggleRX(false); // hack to prevent noise when squelch off
     RADIO_SetModulation(settings.modulationType = gTxVfo->Modulation);
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
     BK4819_SetFilterBandwidth(settings.listenBw, false);
-#else
-    BK4819_SetFilterBandwidth(settings.listenBw = BK4819_FILTER_BW_WIDE, false);
-#endif
 
     RelaunchScan();
 

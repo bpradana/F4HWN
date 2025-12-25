@@ -28,16 +28,12 @@
 #include "version.h"
 #include "bitmaps.h"
 
-#ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
     #include "screenshot.h"
-#endif
 
 void UI_DisplayReleaseKeys(void)
 {
     memset(gStatusLine,  0, sizeof(gStatusLine));
-#if defined(ENABLE_FEAT_F4HWN_CTR) || defined(ENABLE_FEAT_F4HWN_INV)
         ST7565_ContrastAndInv();
-#endif
     UI_DisplayClear();
 
     UI_PrintString("RELEASE", 0, 127, 1, 10);
@@ -56,21 +52,14 @@ void UI_DisplayWelcome(void)
 
     memset(gStatusLine,  0, sizeof(gStatusLine));
 
-#if defined(ENABLE_FEAT_F4HWN_CTR) || defined(ENABLE_FEAT_F4HWN_INV)
         ST7565_ContrastAndInv();
-#endif
     UI_DisplayClear();
 
-#ifdef ENABLE_FEAT_F4HWN
     ST7565_BlitStatusLine();
     ST7565_BlitFullScreen();
     
     if (gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_NONE || gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_SOUND) {
         ST7565_FillScreen(0x00);
-#else
-    if (gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_NONE || gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_FULL_SCREEN) {
-        ST7565_FillScreen(0xFF);
-#endif
     } else {
         memset(WelcomeString0, 0, sizeof(WelcomeString0));
         memset(WelcomeString1, 0, sizeof(WelcomeString1));
@@ -122,7 +111,6 @@ void UI_DisplayWelcome(void)
         UI_PrintString(WelcomeString0, 0, 127, 0, 10);
         UI_PrintString(WelcomeString1, 0, 127, 2, 10);
 
-#ifdef ENABLE_FEAT_F4HWN
         UI_PrintStringSmallNormal(Version, 0, 128, 4);
 
         UI_DrawLineBuffer(gFrameBuffer, 0, 31, 127, 31, 1); // Be ware, status zone = 8 lines, the rest = 56 ->total 64
@@ -136,7 +124,6 @@ void UI_DisplayWelcome(void)
         UI_PrintStringSmallNormal(WelcomeString3, 0, 127, 6);
 
         /*
-        #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
             #if ENABLE_FEAT_F4HWN_RESCUE_OPS > 1
                 UI_PrintStringSmallNormal(Edition, 18, 0, 6);
                 if(gEeprom.MENU_LOCK == true) {
@@ -150,7 +137,6 @@ void UI_DisplayWelcome(void)
                 UI_PrintStringSmallNormal(Edition, 18, 0, 5);
                 memcpy(gFrameBuffer[5] + 103, BITMAP_Ready, sizeof(BITMAP_Ready));
                 
-                #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
                     UI_PrintStringSmallNormal("RescueOps", 18, 0, 6);
                     if(gEeprom.MENU_LOCK == true) {
                         memcpy(gFrameBuffer[6] + 103, BITMAP_Ready, sizeof(BITMAP_Ready));
@@ -159,54 +145,17 @@ void UI_DisplayWelcome(void)
                     {
                         memcpy(gFrameBuffer[6] + 103, BITMAP_NotReady, sizeof(BITMAP_NotReady));
                     }
-                #endif
             #endif
-        #else
-            UI_PrintStringSmallNormal(Edition, 18, 0, 6);
-            memcpy(gFrameBuffer[6] + 103, BITMAP_Ready, sizeof(BITMAP_Ready));                    
-        #endif
         */
 
         /*
-        #ifdef ENABLE_SPECTRUM
-            #ifdef ENABLE_FMRADIO
                     UI_PrintStringSmallNormal(Based, 0, 127, 5);
                     UI_PrintStringSmallNormal(Credits, 0, 127, 6);
-            #else
-                    UI_PrintStringSmallNormal("Bandscope  ", 0, 127, 5);
-                    memcpy(gFrameBuffer[5] + 95, BITMAP_Ready, sizeof(BITMAP_Ready));
-
-                    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-                        UI_PrintStringSmallNormal("RescueOps  ", 0, 127, 6);
-                        if(gEeprom.MENU_LOCK == true) {
-                            memcpy(gFrameBuffer[6] + 95, BITMAP_Ready, sizeof(BITMAP_Ready));
-                        }
-                    #else
-                        UI_PrintStringSmallNormal("Broadcast  ", 0, 127, 6);
-                    #endif
-            #endif
-        #else
-            #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-                UI_PrintStringSmallNormal("RescueOps  ", 0, 127, 5);
-                if(gEeprom.MENU_LOCK == true) {
-                    memcpy(gFrameBuffer[5] + 95, BITMAP_Ready, sizeof(BITMAP_Ready));
-                }
-            #else
-                UI_PrintStringSmallNormal("Bandscope  ", 0, 127, 5);
-            #endif
-            UI_PrintStringSmallNormal("Broadcast  ", 0, 127, 6);
-            memcpy(gFrameBuffer[6] + 95, BITMAP_Ready, sizeof(BITMAP_Ready));
-        #endif
         */
-#else
-        UI_PrintStringSmallNormal(Version, 0, 127, 6);
-#endif
 
         //ST7565_BlitStatusLine();  // blank status line : I think it's useless
         ST7565_BlitFullScreen();
 
-        #ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
             getScreenShot(true);
-        #endif
     }
 }

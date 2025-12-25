@@ -94,13 +94,11 @@ const uint8_t gFontDWR[3][6] =
     {0x00, 0x7f, 0x9, 0x19, 0x29, 0x46},
 };
 
-#ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
     const uint8_t gFontRO[2][6] =
     {   // "RO"
         {0x00, 0x7f, 0x9, 0x19, 0x29, 0x46},
         {0x00, 0x3e, 0x41, 0x41, 0x41, 0x3e},
     };
-#endif
 
 const uint8_t gFontHold[2][5] =
 {   // "><" .. DW on hold
@@ -149,13 +147,11 @@ const uint8_t BITMAP_USB_C[9] =
     0b00011100
 };
 
-#ifdef ENABLE_VOX
     const uint8_t gFontVox[2][6] =
     {
         {0x00, 0x1f, 0x20, 0x40, 0x20, 0x1f},
         {0x00, 0x63, 0x14, 0x8, 0x14, 0x63},
     };
-#endif
 
 const uint8_t BITMAP_Antenna[5] =
 {
@@ -343,33 +339,4 @@ const uint8_t BITMAP_PowerUser[3] =
     0b00001000,
 };
 
-#ifdef ENABLE_NOAA
-const uint8_t BITMAP_NOAA[12] =
-{	// "WX"
-    0b00000000,
-    0b01111111,
-    0b00100000,
-    0b00011000,
-    0b00100000,
-    0b01111111,
-    0b00000000,
-    0b01100011,
-    0b00010100,
-    0b00001000,
-    0b00010100,
-    0b01100011
-};
-#endif
 
-#ifndef ENABLE_CUSTOM_MENU_LAYOUT
-const uint8_t BITMAP_CurrentIndicator[8] = {
-    0xFF,
-    0xFF,
-    0x7E,
-    0x7E,
-    0x3C,
-    0x3C,
-    0x18,
-    0x18
-};
-#endif

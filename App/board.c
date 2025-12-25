@@ -17,9 +17,7 @@
 
 #include <string.h>
 
-#ifdef ENABLE_FMRADIO
     #include "app/fm.h"
-#endif
 #include "board.h"
 #include "py32f071_ll_bus.h"
 #include "py32f071_ll_gpio.h"
@@ -27,9 +25,7 @@
 #include "py32f071_ll_adc.h"
 #include "driver/voice.h"
 #include "driver/backlight.h"
-#ifdef ENABLE_FMRADIO
     #include "driver/bk1080.h"
-#endif
 
 #include "driver/crc.h"
 #include "driver/py25q16.h"
@@ -41,23 +37,7 @@
 #include "helper/battery.h"
 #include "misc.h"
 #include "settings.h"
-#if defined(ENABLE_OVERLAY)
-    #include "sram-overlay.h"
-#endif
 
-#if defined(ENABLE_OVERLAY)
-    void BOARD_FLASH_Init(void)
-    {
-        FLASH_Init(FLASH_READ_MODE_1_CYCLE);
-        FLASH_ConfigureTrimValues();
-        SYSTEM_ConfigureClocks();
-
-        overlay_FLASH_MainClock       = 48000000;
-        overlay_FLASH_ClockMultiplier = 48;
-
-        FLASH_Init(FLASH_READ_MODE_2_CYCLE);
-    }
-#endif
 
 void BOARD_GPIO_Init(void)
 {
@@ -116,23 +96,16 @@ void BOARD_GPIO_Init(void)
     InitStruct.Pin = LL_GPIO_PIN_13;
     LL_GPIO_Init(GPIOC, &InitStruct);
 
-#ifdef ENABLE_FMRADIO
     // BK1080 SCK: PF5
     // BK1080 SDA: PF6
     InitStruct.Pin = LL_GPIO_PIN_6 | LL_GPIO_PIN_5;
     LL_GPIO_Init(GPIOF, &InitStruct);
-#endif
 
     // Backlight: PF8
     // BK4819 CS: PF9
     InitStruct.Pin = LL_GPIO_PIN_9 | LL_GPIO_PIN_8  ;
     LL_GPIO_Init(GPIOF, &InitStruct);
 
-#ifndef ENABLE_SWD
-    // A14:13
-    InitStruct.Pin = LL_GPIO_PIN_14 | LL_GPIO_PIN_13;
-    LL_GPIO_Init(GPIOA, &InitStruct);
-#endif // ENABLE_SWD
 }
 
 void BOARD_ADC_Init(void)
@@ -179,17 +152,10 @@ void BOARD_Init(void)
     BOARD_GPIO_Init();
     BACKLIGHT_InitHardware();
     BOARD_ADC_Init();
-#ifdef ENABLE_VOICE
-    VOICE_Init();
-#endif
     PY25Q16_Init();
     ST7565_Init();
-#ifdef ENABLE_FMRADIO
     BK1080_Init0();
-#endif
 
-#if defined(ENABLE_UART) || defined(ENABLED_AIRCOPY)
     CRC_Init();
-#endif
 
 }

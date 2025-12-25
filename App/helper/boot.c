@@ -16,9 +16,7 @@
 
 #include <string.h>
 
-#ifdef ENABLE_AIRCOPY
     #include "app/aircopy.h"
-#endif
 #include "driver/bk4819.h"
 #include "driver/keyboard.h"
 #include "driver/gpio.h"
@@ -43,12 +41,10 @@ BOOT_Mode_t BOOT_GetMode(void)
         SYSTEM_DelayMs(20);
     }
 
-    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
     if (Keys[0] == (10 + gEeprom.SET_KEY))
     {
         return BOOT_MODE_RESCUE_OPS;  // Secret KEY pressed
     }
-    #endif
 
     if (Keys[0] == Keys[1])
     {
@@ -60,10 +56,8 @@ BOOT_Mode_t BOOT_GetMode(void)
         if (Keys[0] == KEY_SIDE1)
             return BOOT_MODE_F_LOCK;
 
-        #ifdef ENABLE_AIRCOPY
             if (Keys[0] == KEY_SIDE2)
                 return BOOT_MODE_AIRCOPY;
-        #endif
     }
 
     return BOOT_MODE_NORMAL;
@@ -73,20 +67,15 @@ void BOOT_ProcessMode(BOOT_Mode_t Mode)
 {
     if (Mode == BOOT_MODE_F_LOCK)
     {
-        #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
             gEeprom.CURRENT_STATE = 0; // Don't resume is active...
-        #endif 
         GUI_SelectNextDisplay(DISPLAY_MENU);
     }
-    #ifdef ENABLE_AIRCOPY
         else
         if (Mode == BOOT_MODE_AIRCOPY)
         {
             gEeprom.DUAL_WATCH               = DUAL_WATCH_OFF;
             gEeprom.BATTERY_SAVE             = 0;
-            #ifdef ENABLE_VOX
                 gEeprom.VOX_SWITCH           = false;
-            #endif
             gEeprom.CROSS_BAND_RX_TX         = CROSS_BAND_OFF;
             gEeprom.AUTO_KEYPAD_LOCK         = false;
             gEeprom.KEY_1_SHORT_PRESS_ACTION = ACTION_OPT_NONE;
@@ -113,13 +102,10 @@ void BOOT_ProcessMode(BOOT_Mode_t Mode)
             gEeprom.BACKLIGHT_TIME = 61;
             gEeprom.KEY_LOCK = 0;
 
-            #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
                 gEeprom.CURRENT_STATE = 0; // Don't resume is active...
-            #endif 
 
             GUI_SelectNextDisplay(DISPLAY_AIRCOPY);
         }
-    #endif
     else
     {
         GUI_SelectNextDisplay(DISPLAY_MAIN);

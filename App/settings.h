@@ -26,12 +26,8 @@
 #include <driver/backlight.h>
 
 enum POWER_OnDisplayMode_t {
-#ifdef ENABLE_FEAT_F4HWN
     POWER_ON_DISPLAY_MODE_ALL,
     POWER_ON_DISPLAY_MODE_SOUND,
-#else
-    POWER_ON_DISPLAY_MODE_FULL_SCREEN = 0,
-#endif
     POWER_ON_DISPLAY_MODE_MESSAGE,
     POWER_ON_DISPLAY_MODE_VOLTAGE,
     POWER_ON_DISPLAY_MODE_NONE
@@ -41,19 +37,13 @@ typedef enum POWER_OnDisplayMode_t POWER_OnDisplayMode_t;
 enum TxLockModes_t {
     F_LOCK_DEF, //all default frequencies + configurable
     F_LOCK_FCC,
-#ifdef ENABLE_FEAT_F4HWN_CA
     F_LOCK_CA,
-#endif
     F_LOCK_CE,
     F_LOCK_GB,
     F_LOCK_430,
     F_LOCK_438,
-#ifdef ENABLE_FEAT_F4HWN_PMR
     F_LOCK_PMR,
-#endif
-#ifdef ENABLE_FEAT_F4HWN_GMRS_FRS_MURS
     F_LOCK_GMRS_FRS_MURS,
-#endif
     F_LOCK_ALL, // disable TX on all frequencies
     F_LOCK_NONE, // enable TX on all frequencies
     F_LOCK_LEN
@@ -111,34 +101,17 @@ enum ACTION_OPT_t {
     ACTION_OPT_VFO_MR,
     ACTION_OPT_SWITCH_DEMODUL,
     ACTION_OPT_BLMIN_TMP_OFF, //BackLight Minimum Temporay OFF
-#ifdef ENABLE_FEAT_F4HWN
     ACTION_OPT_RXMODE,
     ACTION_OPT_MAINONLY,
     ACTION_OPT_PTT,
     ACTION_OPT_WN,
     ACTION_OPT_BACKLIGHT,
     ACTION_OPT_MUTE,
-    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
         ACTION_OPT_POWER_HIGH,
         ACTION_OPT_REMOVE_OFFSET,
-    #endif
-#endif
-#ifdef ENABLE_REGA
-    ACTION_OPT_REGA_ALARM,
-    ACTION_OPT_REGA_TEST,
-#endif
     ACTION_OPT_LEN
 };
 
-#ifdef ENABLE_VOICE
-    enum VOICE_Prompt_t
-    {
-        VOICE_PROMPT_OFF = 0,
-        VOICE_PROMPT_CHINESE,
-        VOICE_PROMPT_ENGLISH
-    };
-    typedef enum VOICE_Prompt_t VOICE_Prompt_t;
-#endif
 
 enum ALARM_Mode_t {
     ALARM_MODE_SITE = 0,
@@ -165,9 +138,6 @@ typedef struct {
     uint8_t               ScreenChannel[2]; // current channels set in the radio (memory or frequency channels)
     uint8_t               FreqChannel[2]; // last frequency channels used
     uint8_t               MrChannel[2]; // last memory channels used
-#ifdef ENABLE_NOAA
-    uint8_t           NoaaChannel[2];
-#endif
 
     // The actual VFO index (0-upper/1-lower) that is now used for RX, 
     // It is being alternated by dual watch, and flipped by crossband
@@ -180,30 +150,21 @@ typedef struct {
     uint8_t               field7_0xa;
     uint8_t               field8_0xb;
 
-#ifdef ENABLE_FMRADIO
     uint16_t          FM_SelectedFrequency;
     uint8_t           FM_SelectedChannel;
     bool              FM_IsMrMode;
     uint16_t          FM_FrequencyPlaying;
     uint8_t           FM_Band  : 2;
     //uint8_t         FM_Space : 2;
-#endif
 
     uint8_t               SQUELCH_LEVEL;
     uint8_t               TX_TIMEOUT_TIMER;
     bool                  KEY_LOCK;
-#ifdef ENABLE_FEAT_F4HWN
     bool                  KEY_LOCK_PTT;
-#endif
-#ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
     bool                  MENU_LOCK;
     uint8_t               SET_KEY;
-#endif
     bool                  VOX_SWITCH;
     uint8_t               VOX_LEVEL;
-#ifdef ENABLE_VOICE
-    VOICE_Prompt_t    VOICE_PROMPT;
-#endif
     bool                  BEEP_CONTROL;
     uint8_t               CHANNEL_DISPLAY_MODE;
     bool                  TAIL_TONE_ELIMINATION;
@@ -229,9 +190,7 @@ typedef struct {
     uint8_t               field38_0x33;
 
     uint8_t               AUTO_KEYPAD_LOCK;
-#if defined(ENABLE_ALARM) || defined(ENABLE_TX1750)
     ALARM_Mode_t      ALARM_MODE;
-#endif
     POWER_OnDisplayMode_t POWER_ON_DISPLAY_MODE;
     ROGER_Mode_t          ROGER;
     uint8_t               REPEATER_TAIL_TONE_ELIMINATION;
@@ -242,11 +201,6 @@ typedef struct {
     uint8_t               MIC_SENSITIVITY;
     uint8_t               MIC_SENSITIVITY_TUNING;
     uint8_t               CHAN_1_CALL;
-#ifdef ENABLE_DTMF_CALLING
-    char                  ANI_DTMF_ID[8];
-    char                  KILL_CODE[8];
-    char                  REVIVE_CODE[8];
-#endif
     char                  DTMF_UP_CODE[16];
 
     uint8_t               field57_0x6c;
@@ -257,29 +211,15 @@ typedef struct {
     uint8_t               field60_0x7e;
     uint8_t               field61_0x7f;
 
-#ifdef ENABLE_DTMF_CALLING
-    char                  DTMF_SEPARATE_CODE;
-    char                  DTMF_GROUP_CALL_CODE;
-    uint8_t               DTMF_DECODE_RESPONSE;
-    uint8_t               DTMF_auto_reset_time;
-#endif  
     uint16_t              DTMF_PRELOAD_TIME;
     uint16_t              DTMF_FIRST_CODE_PERSIST_TIME;
     uint16_t              DTMF_HASH_CODE_PERSIST_TIME;
     uint16_t              DTMF_CODE_PERSIST_TIME;
     uint16_t              DTMF_CODE_INTERVAL_TIME;
     bool                  DTMF_SIDE_TONE;
-#ifdef ENABLE_DTMF_CALLING
-    bool                  PERMIT_REMOTE_KILL;
-#endif
     int16_t               BK4819_XTAL_FREQ_LOW;
-#ifdef ENABLE_NOAA
-    bool              NOAA_AUTO_SCAN;
-#endif
     uint8_t               VOLUME_GAIN;
-    #ifdef ENABLE_FEAT_F4HWN
         uint8_t           VOLUME_GAIN_BACKUP;
-    #endif
     uint8_t               DAC_GAIN;
 
     VFO_Info_t            VfoInfo[2];
@@ -293,15 +233,10 @@ typedef struct {
 
     uint8_t               KEY_M_LONG_PRESS_ACTION;
     uint8_t               BACKLIGHT_MIN;
-#ifdef ENABLE_BLMIN_TMP_OFF
-    BLMIN_STAT_t          BACKLIGHT_MIN_STAT;
-#endif
     uint8_t               BACKLIGHT_MAX;
     BATTERY_Type_t        BATTERY_TYPE;
-#ifdef ENABLE_RSSI_BAR
     uint8_t               S0_LEVEL;
     uint8_t               S9_LEVEL;
-#endif
 } EEPROM_Config_t;
 
 extern EEPROM_Config_t gEeprom;
@@ -311,9 +246,7 @@ void     SETTINGS_LoadCalibration(void);
 uint32_t SETTINGS_FetchChannelFrequency(const int channel);
 void     SETTINGS_FetchChannelName(char *s, const int channel);
 void     SETTINGS_FactoryReset(bool bIsAll);
-#ifdef ENABLE_FMRADIO
     void SETTINGS_SaveFM(void);
-#endif
 void SETTINGS_SaveVfoIndices(void);
 void SETTINGS_SaveSettings(void);
 void SETTINGS_SaveChannelName(uint8_t channel, const char * name);
@@ -321,13 +254,6 @@ void SETTINGS_SaveChannel(uint8_t Channel, uint8_t VFO, const VFO_Info_t *pVFO, 
 void SETTINGS_SaveBatteryCalibration(const uint16_t * batteryCalibration);
 void SETTINGS_UpdateChannel(uint8_t channel, const VFO_Info_t *pVFO, bool keep, bool check, bool save);
 void SETTINGS_WriteBuildOptions(void);
-#ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
     void SETTINGS_WriteCurrentState(void);
-#endif
-#ifdef ENABLE_FEAT_F4HWN_VOL
-    void SETTINGS_WriteCurrentVol(void);
-#endif
-#ifdef ENABLE_FEAT_F4HWN
     void SETTINGS_ResetTxLock(void);
-#endif
 #endif

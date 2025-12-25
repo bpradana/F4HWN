@@ -10,19 +10,15 @@ extern int8_t            gScanStateDir;
 extern bool              gScanKeepResult;
 extern bool              gScanPauseMode;
 
-#ifdef ENABLE_SCAN_RANGES
 extern uint32_t          gScanRangeStart;
 extern uint32_t          gScanRangeStop;
-#endif
 
 void CHFRSCANNER_Found(void);
 void CHFRSCANNER_Stop(void);
 void CHFRSCANNER_Start(const bool storeBackupSettings, const int8_t scan_direction);
 void CHFRSCANNER_ContinueScanning(void);
 
-#ifdef ENABLE_FEAT_F4HWN
     extern uint32_t lastFoundFrqOrChan;
     extern uint32_t lastFoundFrqOrChanOld;
-#endif
 
 #endif
