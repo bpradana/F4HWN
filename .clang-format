@@ -10,7 +10,7 @@ UseTab: Never
 ColumnLimit: 100
 
 # Braces
-BreakBeforeBraces: Linux
+BreakBeforeBraces: Attach
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false

@@ -1,0 +1,40 @@
+# Clang-Tidy configuration for F4HWN Firmware
+# Static analysis for embedded C code
+
+---
+# Check configuration
+Checks: >
+  bugprone-*,
+  clang-analyzer-*,
+  performance-*,
+  readability-*,
+  cert-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-reserved-identifier,
+  -bugprone-macro-parentheses,
+  -readability-magic-numbers,
+  -readability-function-cognitive-complexity,
+  -readability-isolate-declaration,
+  -readability-uppercase-literal-suffix,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
+  -readability-identifier-length,
+  -readability-avoid-const-params-in-decls,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -clang-diagnostic-error
+
+# Treat as C code
+WarningsAsErrors: ''
+HeaderFilterRegex: 'App/.*'
+FormatStyle: file
+
+# Check options
+CheckOptions:
+  - key: readability-braces-around-statements.ShortStatementLines
+    value: '1'
+  - key: readability-function-size.LineThreshold
+    value: '200'
+  - key: readability-function-size.StatementThreshold
+    value: '150'
+  - key: performance-move-const-arg.CheckTriviallyCopyableMove
+    value: 'false'

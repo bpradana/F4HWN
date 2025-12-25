@@ -5,6 +5,7 @@ FROM mcr.microsoft.com/devcontainers/python:3.10-bookworm
 # ---------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake ninja-build python3 curl xz-utils ca-certificates \
+    clang-tidy clang-format \
  && rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------

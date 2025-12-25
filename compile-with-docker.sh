@@ -70,8 +70,51 @@ case "$COMMAND" in
         build_firmware
         ;;
     lint)
-        echo "ℹ️  Lint support not configured yet"
-        exit 1
+        echo ""
+        echo "=== 🔍 Fixing clang-tidy Warnings ==="
+        echo "---------------------------------------------"
+        echo "NOTE: Running without compilation database to avoid cross-compilation issues"
+        echo ""
+        
+        docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
+            bash -c "find App -type d -name 'external' -prune -o \( -name '*.c' -o -name '*.h' \) -type f -exec clang-tidy --fix --config-file=.clang-tidy {} -- -std=gnu11 \;"
+        
+        echo ""
+        echo "✅ Static analysis complete!"
+        echo "Review any warnings above to improve code quality"
+        ;;
+    lint-force)
+        echo ""
+        echo "=== 🔍 Fixing clang-tidy Warnings (Safe Mode) ==="
+        echo "---------------------------------------------"
+        echo "NOTE: Running without compilation database to avoid cross-compilation issues"
+        echo ""
+        
+        docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
+            bash -c "find App -type d -name 'external' -prune -o \( -name '*.c' -o -name '*.h' \) -type f -exec clang-tidy --fix --config-file=.clang-tidy {} -- -std=gnu11 \;"
+        
+        echo ""
+        echo "✅ Static analysis complete!"
+        echo "Review any warnings above to improve code quality"
+        ;;
+    lint-check)
+        echo ""
+        echo "=== 🔍 Running clang-tidy Static Analysis ==="
+        echo "---------------------------------------------"
+        
+        # First ensure we have a build directory with compile_commands.json
+        if [ ! -f "build/compile_commands.json" ]; then
+            echo "⚠️  Compilation database not found. Running cmake first..."
+            docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
+                bash -c "cmake --preset Fusion"
+        fi
+        
+        docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
+            bash -c "find App -type d -name 'external' -prune -o \( -name '*.c' -o -name '*.h' \) -type f -print | xargs clang-tidy -p build --config-file=.clang-tidy"
+        
+        echo ""
+        echo "✅ Static analysis complete!"
+        echo "Review any warnings above to improve code quality"
         ;;
     format)
         echo ""
@@ -80,6 +123,18 @@ case "$COMMAND" in
         
         docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
             bash -c "find App -path 'App/external' -prune -o \( -name '*.c' -o -name '*.h' \) -print | xargs clang-format -i --style=file"
+        
+        echo ""
+        echo "✅ Code formatting complete!"
+        echo "All C/H files in App/ have been formatted"
+        ;;
+    format-check)
+        echo ""
+        echo "=== 🎨 Checking Code with clang-format ==="
+        echo "---------------------------------------------"
+        
+        docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
+            bash -c "find App -path 'App/external' -prune -o \( -name '*.c' -o -name '*.h' \) -print | xargs clang-format --dry-run --Werror --style=file"
         
         echo ""
         echo "✅ Code formatting complete!"
