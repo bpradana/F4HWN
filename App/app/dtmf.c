@@ -44,8 +44,7 @@ uint8_t gDTMF_RX_live_timeout = 0;
 DTMF_ReplyState_t gDTMF_ReplyState;
 
 
-void DTMF_SendEndOfTransmission(void)
-{
+void DTMF_SendEndOfTransmission(void) {
     if (gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_APOLLO) {
         BK4819_PlaySingleTone(2475, 250, 28, gEeprom.DTMF_SIDE_TONE);
     }
@@ -71,8 +70,7 @@ void DTMF_SendEndOfTransmission(void)
     BK4819_ExitDTMF_TX(true);
 }
 
-bool DTMF_ValidateCodes(char *pCode, const unsigned int size)
-{
+bool DTMF_ValidateCodes(char *pCode, const unsigned int size) {
     unsigned int i;
 
     if (pCode[0] == 0xFF || pCode[0] == 0)
@@ -93,8 +91,7 @@ bool DTMF_ValidateCodes(char *pCode, const unsigned int size)
 }
 
 
-char DTMF_GetCharacter(const unsigned int code)
-{
+char DTMF_GetCharacter(const unsigned int code) {
     if (code <= KEY_9)
         return '0' + code;
 
@@ -116,15 +113,13 @@ char DTMF_GetCharacter(const unsigned int code)
     }
 }
 
-void DTMF_clear_input_box(void)
-{
+void DTMF_clear_input_box(void) {
     memset(gDTMF_InputBox, 0, sizeof(gDTMF_InputBox));
     gDTMF_InputBox_Index = 0;
     gDTMF_InputMode = false;
 }
 
-void DTMF_Append(const char code)
-{
+void DTMF_Append(const char code) {
     if (gDTMF_InputBox_Index == 0) {
         memset(gDTMF_InputBox, '-', sizeof(gDTMF_InputBox) - 1);
         gDTMF_InputBox[sizeof(gDTMF_InputBox) - 1] = 0;
@@ -135,8 +130,7 @@ void DTMF_Append(const char code)
 }
 
 
-void DTMF_Reply(void)
-{
+void DTMF_Reply(void) {
     uint16_t Delay;
     const char *pString = NULL;
 

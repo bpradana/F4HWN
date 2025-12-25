@@ -44,8 +44,7 @@
 static volatile uint32_t gGlobalSysTickCounter;
 
 // we come here every 10ms
-void SysTick_Handler(void)
-{
+void SysTick_Handler(void) {
     gGlobalSysTickCounter++;
 
     gNextTimeslice = true;

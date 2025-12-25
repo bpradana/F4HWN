@@ -39,17 +39,14 @@
 static void ACTION_Scan_FM(bool bRestart);
 
 static void ACTION_AlarmOr1750(bool b1750);
-inline static void ACTION_Alarm()
-{
+inline static void ACTION_Alarm() {
     ACTION_AlarmOr1750(false);
 }
-inline static void ACTION_1750()
-{
+inline static void ACTION_1750() {
     ACTION_AlarmOr1750(true);
 };
 
-inline static void ACTION_ScanRestart()
-{
+inline static void ACTION_ScanRestart() {
     ACTION_Scan(true);
 };
 
@@ -91,8 +88,7 @@ void (*action_opt_table[])(void) = {
 
 static_assert(ARRAY_SIZE(action_opt_table) == ACTION_OPT_LEN);
 
-void ACTION_Power(void)
-{
+void ACTION_Power(void) {
     if (++gTxVfo->OUTPUT_POWER > OUTPUT_POWER_HIGH)
         gTxVfo->OUTPUT_POWER = OUTPUT_POWER_LOW1;
 
@@ -101,8 +97,7 @@ void ACTION_Power(void)
     gRequestDisplayScreen = gScreenToDisplay;
 }
 
-void ACTION_Monitor(void)
-{
+void ACTION_Monitor(void) {
     if (gCurrentFunction != FUNCTION_MONITOR) { // enable the monitor
         RADIO_SelectVfos();
         RADIO_SetupRegisters(true);
@@ -127,8 +122,7 @@ void ACTION_Monitor(void)
         gRequestDisplayScreen = gScreenToDisplay;
 }
 
-void ACTION_Scan(bool bRestart)
-{
+void ACTION_Scan(bool bRestart) {
     (void)bRestart;
 
     if (gFmRadioMode) {
@@ -188,8 +182,7 @@ void ACTION_Scan(bool bRestart)
     gUpdateStatus = true;
 }
 
-void ACTION_SwitchDemodul(void)
-{
+void ACTION_SwitchDemodul(void) {
     gRequestSaveChannel = 1;
 
     gTxVfo->Modulation++;
@@ -198,8 +191,7 @@ void ACTION_SwitchDemodul(void)
         gTxVfo->Modulation = MODULATION_FM;
 }
 
-void ACTION_Handle(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+void ACTION_Handle(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     if (gScreenToDisplay == DISPLAY_MAIN && gDTMF_InputMode) {
         // entering DTMF code
 
@@ -267,8 +259,7 @@ void ACTION_Handle(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     action_opt_table[funcShort]();
 }
 
-void ACTION_FM(void)
-{
+void ACTION_FM(void) {
     if (gCurrentFunction != FUNCTION_TRANSMIT && gCurrentFunction != FUNCTION_MONITOR) {
         gInputBoxIndex = 0;
 
@@ -292,8 +283,7 @@ void ACTION_FM(void)
     }
 }
 
-static void ACTION_Scan_FM(bool bRestart)
-{
+static void ACTION_Scan_FM(bool bRestart) {
     if (FUNCTION_IsRx())
         return;
 
@@ -324,8 +314,7 @@ static void ACTION_Scan_FM(bool bRestart)
     FM_Tune(freq, 1, bRestart);
 }
 
-static void ACTION_AlarmOr1750(const bool b1750)
-{
+static void ACTION_AlarmOr1750(const bool b1750) {
     if (gEeprom.KEY_LOCK && gEeprom.KEY_LOCK_PTT)
         return;
 
@@ -343,23 +332,20 @@ static void ACTION_AlarmOr1750(const bool b1750)
         gRequestDisplayScreen = DISPLAY_MAIN;
 }
 
-void ACTION_Vox(void)
-{
+void ACTION_Vox(void) {
     gEeprom.VOX_SWITCH = !gEeprom.VOX_SWITCH;
     gRequestSaveSettings = true;
     gFlagReconfigureVfos = true;
     gUpdateStatus = true;
 }
 
-void ACTION_Update(void)
-{
+void ACTION_Update(void) {
     gSaveRxMode = false;
     gFlagReconfigureVfos = true;
     gUpdateStatus = true;
 }
 
-void ACTION_RxMode(void)
-{
+void ACTION_RxMode(void) {
     static bool cycle = 0;
 
     switch (cycle) {
@@ -376,8 +362,7 @@ void ACTION_RxMode(void)
     ACTION_Update();
 }
 
-void ACTION_MainOnly(void)
-{
+void ACTION_MainOnly(void) {
     static bool cycle = 0;
     static uint8_t dw = 0;
     static uint8_t cb = 0;
@@ -401,13 +386,11 @@ void ACTION_MainOnly(void)
     ACTION_Update();
 }
 
-void ACTION_Ptt(void)
-{
+void ACTION_Ptt(void) {
     gSetting_set_ptt_session = !gSetting_set_ptt_session;
 }
 
-void ACTION_Wn(void)
-{
+void ACTION_Wn(void) {
     if (gRxVfo->Modulation == MODULATION_AM) {
         BK4819_SetFilterBandwidth(BK4819_FILTER_BW_AM, true);
         return;
@@ -430,8 +413,7 @@ void ACTION_Wn(void)
     }
 }
 
-void ACTION_BackLight(void)
-{
+void ACTION_BackLight(void) {
     if (gBackLight) {
         gEeprom.BACKLIGHT_TIME = gBacklightTimeOriginal;
     }
@@ -439,8 +421,7 @@ void ACTION_BackLight(void)
     BACKLIGHT_TurnOn();
 }
 
-void ACTION_BackLightOnDemand(void)
-{
+void ACTION_BackLightOnDemand(void) {
     if (gBackLight == false) {
         gBacklightTimeOriginal = gEeprom.BACKLIGHT_TIME;
         gEeprom.BACKLIGHT_TIME = 61;
@@ -457,8 +438,7 @@ void ACTION_BackLightOnDemand(void)
 }
 
 // #if !defined(ENABLE_SPECTRUM) || !defined(ENABLE_FMRADIO)
-void ACTION_Mute(void)
-{
+void ACTION_Mute(void) {
     // Toggle mute state
     gMute = !gMute;
 
@@ -475,14 +455,12 @@ void ACTION_Mute(void)
 }
 // #endif
 
-void ACTION_Power_High(void)
-{
+void ACTION_Power_High(void) {
     gPowerHigh = !gPowerHigh;
     gVfoConfigureMode = VFO_CONFIGURE_RELOAD;
 }
 
-void ACTION_Remove_Offset(void)
-{
+void ACTION_Remove_Offset(void) {
     gRemoveOffset = !gRemoveOffset;
     gVfoConfigureMode = VFO_CONFIGURE_RELOAD;
 }

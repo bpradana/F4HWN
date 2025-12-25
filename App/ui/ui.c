@@ -51,15 +51,13 @@ void (*UI_DisplayFunctions[])(void) = {
 
 static_assert(ARRAY_SIZE(UI_DisplayFunctions) == DISPLAY_N_ELEM);
 
-void GUI_DisplayScreen(void)
-{
+void GUI_DisplayScreen(void) {
     if (gScreenToDisplay != DISPLAY_INVALID) {
         UI_DisplayFunctions[gScreenToDisplay]();
     }
 }
 
-void GUI_SelectNextDisplay(GUI_DisplayType_t Display)
-{
+void GUI_SelectNextDisplay(GUI_DisplayType_t Display) {
     if (Display == DISPLAY_INVALID)
         return;
 

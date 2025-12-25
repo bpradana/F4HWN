@@ -19,8 +19,7 @@
 #include "bsp/dp32g030/aes.h"
 #include "driver/aes.h"
 
-static void AES_Setup_ENC_CBC(bool IsDecrypt, const void *pKey, const void *pIv)
-{
+static void AES_Setup_ENC_CBC(bool IsDecrypt, const void *pKey, const void *pIv) {
     const uint32_t *pK = (const uint32_t *)pKey;
     const uint32_t *pI = (const uint32_t *)pIv;
 
@@ -39,8 +38,7 @@ static void AES_Setup_ENC_CBC(bool IsDecrypt, const void *pKey, const void *pIv)
     AES_CR = (AES_CR & ~AES_CR_EN_MASK) | AES_CR_EN_BITS_ENABLE;
 }
 
-static void AES_Transform(const void *pIn, void *pOut)
-{
+static void AES_Transform(const void *pIn, void *pOut) {
     const uint32_t *pI = (const uint32_t *)pIn;
     uint32_t *pO = (uint32_t *)pOut;
 
@@ -60,8 +58,8 @@ static void AES_Transform(const void *pIn, void *pOut)
     AES_CR |= AES_CR_CCFC_BITS_SET;
 }
 
-void AES_Encrypt(const void *pKey, const void *pIv, const void *pIn, void *pOut, uint8_t NumBlocks)
-{
+void AES_Encrypt(const void *pKey, const void *pIv, const void *pIn, void *pOut,
+                 uint8_t NumBlocks) {
     const uint8_t *pI = (const uint8_t *)pIn;
     uint8_t *pO = (uint8_t *)pOut;
     uint8_t i;

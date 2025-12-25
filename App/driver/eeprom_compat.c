@@ -35,7 +35,7 @@ typedef struct {
 } AddrMapping_t;
 
 #define _MK_MAPPING(PY25Q16_Addr, EEPROM_From, EEPROM_To)                                          \
-    {PY25Q16_Addr, EEPROM_From, EEPROM_To - EEPROM_From}
+    { PY25Q16_Addr, EEPROM_From, EEPROM_To - EEPROM_From }
 
 static const AddrMapping_t ADDR_MAPPINGS[] = {
     // Sorted by EEPROM addr
@@ -67,8 +67,7 @@ static const AddrMapping_t ADDR_MAPPINGS[] = {
 static void AddrTranslate(uint16_t EEPROM_Addr, uint16_t Size, uint32_t *PY25Q16_Addr_out,
                           uint16_t *Size_out, bool *End_out);
 
-void EEPROM_ReadBuffer(uint16_t Address, void *pBuffer, uint8_t Size)
-{
+void EEPROM_ReadBuffer(uint16_t Address, void *pBuffer, uint8_t Size) {
     while (Size) {
         uint32_t PY_Addr;
         uint16_t PY_Size;
@@ -84,8 +83,7 @@ void EEPROM_ReadBuffer(uint16_t Address, void *pBuffer, uint8_t Size)
     }
 }
 
-void EEPROM_WriteBuffer(uint16_t Address, const void *pBuffer)
-{
+void EEPROM_WriteBuffer(uint16_t Address, const void *pBuffer) {
     // Write 8 bytes!!
 
     uint16_t Size = 8;
@@ -104,8 +102,7 @@ void EEPROM_WriteBuffer(uint16_t Address, const void *pBuffer)
 }
 
 static void AddrTranslate(uint16_t EEPROM_Addr, uint16_t Size, uint32_t *PY25Q16_Addr_out,
-                          uint16_t *Size_out, bool *End_out)
-{
+                          uint16_t *Size_out, bool *End_out) {
     const AddrMapping_t *p = NULL;
     for (uint32_t i = 0, N = sizeof(ADDR_MAPPINGS) / sizeof(AddrMapping_t); i < N; i++) {
         p = ADDR_MAPPINGS + i;

@@ -21,16 +21,14 @@
 // 0x20000324
 static uint32_t gTickMultiplier;
 
-void SYSTICK_Init(void)
-{
+void SYSTICK_Init(void) {
     SysTick_Config(480000);
     gTickMultiplier = 48;
 
     NVIC_SetPriority(SysTick_IRQn, 0);
 }
 
-void SYSTICK_DelayUs(uint32_t Delay)
-{
+void SYSTICK_DelayUs(uint32_t Delay) {
     const uint32_t ticks = Delay * gTickMultiplier;
     uint32_t elapsed_ticks = 0;
     uint32_t Start = SysTick->LOAD;

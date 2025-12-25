@@ -243,14 +243,13 @@ uint8_t gBacklightBrightnessOld;
 uint8_t gPttOnePushCounter = 0;
 uint32_t gBlinkCounter = 0;
 
-inline void FUNCTION_NOP()
-{
+inline void FUNCTION_NOP() {
     ;
 }
 
 
-int32_t NUMBER_AddWithWraparound(int32_t Base, int32_t Add, int32_t LowerLimit, int32_t UpperLimit)
-{
+int32_t NUMBER_AddWithWraparound(int32_t Base, int32_t Add, int32_t LowerLimit,
+                                 int32_t UpperLimit) {
     Base += Add;
 
     if (Base == 0x7fffffff || Base < LowerLimit)
@@ -262,8 +261,7 @@ int32_t NUMBER_AddWithWraparound(int32_t Base, int32_t Add, int32_t LowerLimit, 
     return Base;
 }
 
-unsigned long StrToUL(const char *str)
-{
+unsigned long StrToUL(const char *str) {
     unsigned long ul = 0;
     for (uint8_t i = 0; i < strlen(str); i++) {
         char c = str[i];

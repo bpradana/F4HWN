@@ -39,59 +39,62 @@ const uint16_t DCS_Options[104] = {
     0x01C3, 0x01CA, 0x01D3, 0x01D9, 0x01DA, 0x01DC, 0x01E3, 0x01EC,
 };
 
-static uint32_t DCS_CalculateGolay(uint32_t CodeWord)
-{
+static uint32_t DCS_CalculateGolay(uint32_t CodeWord) {
     unsigned int i;
     uint32_t Word = CodeWord;
     for (i = 0; i < 12; i++) {
         Word <<= 1;
-        if (Word & 0x1000)
+        if (Word & 0x1000) {
             Word ^= 0x08EA;
+        }
     }
     return CodeWord | ((Word & 0x0FFE) << 11);
 }
 
-uint32_t DCS_GetGolayCodeWord(DCS_CodeType_t CodeType, uint8_t Option)
-{
+uint32_t DCS_GetGolayCodeWord(DCS_CodeType_t CodeType, uint8_t Option) {
     uint32_t Code = DCS_CalculateGolay(DCS_Options[Option] + 0x800U);
-    if (CodeType == CODE_TYPE_REVERSE_DIGITAL)
+    if (CodeType == CODE_TYPE_REVERSE_DIGITAL) {
         Code ^= 0x7FFFFF;
+    }
     return Code;
 }
 
-uint8_t DCS_GetCdcssCode(uint32_t Code)
-{
+uint8_t DCS_GetCdcssCode(uint32_t Code) {
     unsigned int i;
     for (i = 0; i < 23; i++) {
         uint32_t Shift;
 
         if (((Code >> 9) & 0x7U) == 4) {
             unsigned int j;
-            for (j = 0; j < ARRAY_SIZE(DCS_Options); j++)
-                if (DCS_Options[j] == (Code & 0x1FF))
-                    if (DCS_GetGolayCodeWord(2, j) == Code)
+            for (j = 0; j < ARRAY_SIZE(DCS_Options); j++) {
+                if (DCS_Options[j] == (Code & 0x1FF)) {
+                    if (DCS_GetGolayCodeWord(2, j) == Code) {
                         return j;
+                    }
+                }
+            }
         }
 
         Shift = Code >> 1;
-        if (Code & 1U)
+        if (Code & 1U) {
             Shift |= 0x400000U;
+        }
         Code = Shift;
     }
 
     return 0xFF;
 }
 
-uint8_t DCS_GetCtcssCode(int Code)
-{
+uint8_t DCS_GetCtcssCode(int Code) {
     unsigned int i;
     uint8_t Result = 0xFF;
     int Smallest = ARRAY_SIZE(CTCSS_Options);
 
     for (i = 0; i < ARRAY_SIZE(CTCSS_Options); i++) {
         int Delta = Code - CTCSS_Options[i];
-        if (Delta < 0)
+        if (Delta < 0) {
             Delta = -(Code - CTCSS_Options[i]);
+        }
         if (Smallest > Delta) {
             Smallest = Delta;
             Result = i;

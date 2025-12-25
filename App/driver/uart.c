@@ -30,8 +30,7 @@
 static bool UART_IsLogEnabled;
 uint8_t UART_DMA_Buffer[256];
 
-void UART_Init(void)
-{
+void UART_Init(void) {
     // PA9 TX
     // PA10 RX
 
@@ -101,8 +100,7 @@ void UART_Init(void)
     LL_USART_TransmitData8(USARTx, 0);
 }
 
-void UART_Send(const void *pBuffer, uint32_t Size)
-{
+void UART_Send(const void *pBuffer, uint32_t Size) {
     const uint8_t *pData = (const uint8_t *)pBuffer;
     uint32_t i;
 
@@ -113,15 +111,13 @@ void UART_Send(const void *pBuffer, uint32_t Size)
     }
 }
 
-void UART_LogSend(const void *pBuffer, uint32_t Size)
-{
+void UART_LogSend(const void *pBuffer, uint32_t Size) {
     if (UART_IsLogEnabled) {
         UART_Send(pBuffer, Size);
     }
 }
 
-bool UART_IsCableConnected(void)
-{
+bool UART_IsCableConnected(void) {
     for (size_t i = 0; i < sizeof(UART_DMA_Buffer); i++) {
         if (UART_DMA_Buffer[i] == 0x55) {
             UART_DMA_Buffer[i] = 0x00; // Clear only the matched byte

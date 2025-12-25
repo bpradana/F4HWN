@@ -8,13 +8,11 @@
 #include "external/printf/printf.h"
 #include "am_fix.h"
 
-static inline void LogUart(const char *const str)
-{
+static inline void LogUart(const char *const str) {
     UART_Send(str, strlen(str));
 }
 
-static inline void LogUartf(const char *format, ...)
-{
+static inline void LogUartf(const char *format, ...) {
     char buffer[128];
     va_list va;
     va_start(va, format);
@@ -23,16 +21,14 @@ static inline void LogUartf(const char *format, ...)
     UART_Send(buffer, strlen(buffer));
 }
 
-static inline void LogRegUart(uint16_t reg)
-{
+static inline void LogRegUart(uint16_t reg) {
     uint16_t regVal = BK4819_ReadRegister(reg);
     char buf[32];
     sprintf(buf, "reg%02X: %04X\n", reg, regVal);
     LogUart(buf);
 }
 
-static inline void LogPrint()
-{
+static inline void LogPrint() {
     uint16_t rssi = BK4819_GetRSSI();
     uint16_t reg7e = BK4819_ReadRegister(0x7E);
     char buf[32];

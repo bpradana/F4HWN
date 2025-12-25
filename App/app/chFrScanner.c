@@ -31,8 +31,7 @@ uint32_t lastFoundFrqOrChanOld;
 static void NextFreqChannel(void);
 static void NextMemChannel(void);
 
-void CHFRSCANNER_Start(const bool storeBackupSettings, const int8_t scan_direction)
-{
+void CHFRSCANNER_Start(const bool storeBackupSettings, const int8_t scan_direction) {
     if (storeBackupSettings) {
         initialCROSS_BAND_RX_TX = gEeprom.CROSS_BAND_RX_TX;
         gEeprom.CROSS_BAND_RX_TX = CROSS_BAND_OFF;
@@ -91,8 +90,7 @@ void CHFRSCANNER_ContinueScanning(void)
 }
 */
 
-void CHFRSCANNER_ContinueScanning(void)
-{
+void CHFRSCANNER_ContinueScanning(void) {
     if (gCurrentFunction == FUNCTION_INCOMING &&
         (IS_FREQ_CHANNEL(gNextMrChannel) || gCurrentCodeType == CODE_TYPE_OFF)) {
         APP_StartListening(gMonitor ? FUNCTION_MONITOR : FUNCTION_RECEIVE);
@@ -105,8 +103,7 @@ void CHFRSCANNER_ContinueScanning(void)
     gScheduleScanListen = false;
 }
 
-void CHFRSCANNER_Found(void)
-{
+void CHFRSCANNER_Found(void) {
     if (gEeprom.SCAN_RESUME_MODE > 80) {
         if (!gScanPauseMode) {
             gScanPauseDelayIn_10ms =
@@ -168,8 +165,7 @@ void CHFRSCANNER_Found(void)
     gScanKeepResult = true;
 }
 
-void CHFRSCANNER_Stop(void)
-{
+void CHFRSCANNER_Stop(void) {
     if (initialCROSS_BAND_RX_TX != CROSS_BAND_OFF) {
         gEeprom.CROSS_BAND_RX_TX = initialCROSS_BAND_RX_TX;
         initialCROSS_BAND_RX_TX = CROSS_BAND_OFF;
@@ -204,8 +200,7 @@ void CHFRSCANNER_Stop(void)
     gUpdateDisplay = true;
 }
 
-static void NextFreqChannel(void)
-{
+static void NextFreqChannel(void) {
     if (gScanRangeStart) {
         gRxVfo->freq_config_RX.Frequency =
             APP_SetFreqByStepAndLimits(gRxVfo, gScanStateDir, gScanRangeStart, gScanRangeStop);
@@ -221,8 +216,7 @@ static void NextFreqChannel(void)
     gUpdateDisplay = true;
 }
 
-static void NextMemChannel(void)
-{
+static void NextMemChannel(void) {
     static unsigned int prev_mr_chan = 0;
     const bool enabled = (gEeprom.SCAN_LIST_DEFAULT > 0 && gEeprom.SCAN_LIST_DEFAULT < 4)
                              ? gEeprom.SCAN_LIST_ENABLED[gEeprom.SCAN_LIST_DEFAULT - 1]

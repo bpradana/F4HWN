@@ -35,13 +35,11 @@ static bool gIsInitBK1080;
 uint16_t BK1080_BaseFrequency;
 uint16_t BK1080_FrequencyDeviation;
 
-void BK1080_Init0(void)
-{
+void BK1080_Init0(void) {
     BK1080_Init(0, 0 /*,0*/);
 }
 
-void BK1080_Init(uint16_t freq, uint8_t band /*, uint8_t space*/)
-{
+void BK1080_Init(uint16_t freq, uint8_t band /*, uint8_t space*/) {
     unsigned int i;
 
     if (freq) {
@@ -71,8 +69,7 @@ void BK1080_Init(uint16_t freq, uint8_t band /*, uint8_t space*/)
     }
 }
 
-uint16_t BK1080_ReadRegister(BK1080_Register_t Register)
-{
+uint16_t BK1080_ReadRegister(BK1080_Register_t Register) {
     uint8_t Value[2];
 
     I2C_Start();
@@ -84,8 +81,7 @@ uint16_t BK1080_ReadRegister(BK1080_Register_t Register)
     return (Value[0] << 8) | Value[1];
 }
 
-void BK1080_WriteRegister(BK1080_Register_t Register, uint16_t Value)
-{
+void BK1080_WriteRegister(BK1080_Register_t Register, uint16_t Value) {
     I2C_Start();
     I2C_Write(0x80);
     I2C_Write((Register << 1) | I2C_WRITE);
@@ -94,13 +90,11 @@ void BK1080_WriteRegister(BK1080_Register_t Register, uint16_t Value)
     I2C_Stop();
 }
 
-void BK1080_Mute(bool Mute)
-{
+void BK1080_Mute(bool Mute) {
     BK1080_WriteRegister(BK1080_REG_02_POWER_CONFIGURATION, Mute ? 0x4201 : 0x0201);
 }
 
-void BK1080_SetFrequency(uint16_t frequency, uint8_t band /*, uint8_t space*/)
-{
+void BK1080_SetFrequency(uint16_t frequency, uint8_t band /*, uint8_t space*/) {
     // uint8_t spacings[] = {20,10,5};
     // space %= 3;
 
@@ -117,20 +111,17 @@ void BK1080_SetFrequency(uint16_t frequency, uint8_t band /*, uint8_t space*/)
     BK1080_WriteRegister(BK1080_REG_03_CHANNEL, channel | 0x8000);
 }
 
-void BK1080_GetFrequencyDeviation(uint16_t Frequency)
-{
+void BK1080_GetFrequencyDeviation(uint16_t Frequency) {
     BK1080_BaseFrequency = Frequency;
     BK1080_FrequencyDeviation = BK1080_ReadRegister(BK1080_REG_07) / 16;
 }
 
-uint16_t BK1080_GetFreqLoLimit(uint8_t band)
-{
+uint16_t BK1080_GetFreqLoLimit(uint8_t band) {
     static const uint16_t lim[] = {875, 760, 760, 640};
     return lim[band % 4];
 }
 
-uint16_t BK1080_GetFreqHiLimit(uint8_t band)
-{
+uint16_t BK1080_GetFreqHiLimit(uint8_t band) {
     static const uint16_t lim[] = {1080, 1080, 900, 760};
     return lim[band % 4];
 }

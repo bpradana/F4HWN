@@ -27,8 +27,7 @@
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 #endif
 
-void UI_GenerateChannelString(char *pString, const uint8_t Channel)
-{
+void UI_GenerateChannelString(char *pString, const uint8_t Channel) {
     unsigned int i;
 
     if (gInputBoxIndex == 0) {
@@ -43,8 +42,8 @@ void UI_GenerateChannelString(char *pString, const uint8_t Channel)
         pString[i + 3] = (gInputBox[i] == 10) ? '-' : gInputBox[i] + '0';
 }
 
-void UI_GenerateChannelStringEx(char *pString, const bool bShowPrefix, const uint8_t ChannelNumber)
-{
+void UI_GenerateChannelStringEx(char *pString, const bool bShowPrefix,
+                                const uint8_t ChannelNumber) {
     if (gInputBoxIndex > 0) {
         for (unsigned int i = 0; i < 3; i++) {
             pString[i] = (gInputBox[i] == 10) ? '-' : gInputBox[i] + '0';
@@ -65,8 +64,7 @@ void UI_GenerateChannelStringEx(char *pString, const bool bShowPrefix, const uin
 }
 
 void UI_PrintStringBuffer(const char *pString, uint8_t *buffer, uint32_t char_width,
-                          const uint8_t *font)
-{
+                          const uint8_t *font) {
     const size_t Length = strlen(pString);
     const unsigned int char_spacing = char_width + 1;
     for (size_t i = 0; i < Length; i++) {
@@ -78,8 +76,7 @@ void UI_PrintStringBuffer(const char *pString, uint8_t *buffer, uint32_t char_wi
     }
 }
 
-void UI_PrintString(const char *pString, uint8_t Start, uint8_t End, uint8_t Line, uint8_t Width)
-{
+void UI_PrintString(const char *pString, uint8_t Start, uint8_t End, uint8_t Line, uint8_t Width) {
     size_t i;
     size_t Length = strlen(pString);
 
@@ -97,8 +94,7 @@ void UI_PrintString(const char *pString, uint8_t Start, uint8_t End, uint8_t Lin
 }
 
 void UI_PrintStringSmall(const char *pString, uint8_t Start, uint8_t End, uint8_t Line,
-                         uint8_t char_width, const uint8_t *font)
-{
+                         uint8_t char_width, const uint8_t *font) {
     const size_t Length = strlen(pString);
     const unsigned int char_spacing = char_width + 1;
 
@@ -110,34 +106,29 @@ void UI_PrintStringSmall(const char *pString, uint8_t Start, uint8_t End, uint8_
 }
 
 
-void UI_PrintStringSmallNormal(const char *pString, uint8_t Start, uint8_t End, uint8_t Line)
-{
+void UI_PrintStringSmallNormal(const char *pString, uint8_t Start, uint8_t End, uint8_t Line) {
     UI_PrintStringSmall(pString, Start, End, Line, ARRAY_SIZE(gFontSmall[0]),
                         (const uint8_t *)gFontSmall);
 }
 
-void UI_PrintStringSmallBold(const char *pString, uint8_t Start, uint8_t End, uint8_t Line)
-{
+void UI_PrintStringSmallBold(const char *pString, uint8_t Start, uint8_t End, uint8_t Line) {
     const uint8_t *font = (uint8_t *)gFontSmallBold;
     const uint8_t char_width = ARRAY_SIZE(gFontSmallBold[0]);
 
     UI_PrintStringSmall(pString, Start, End, Line, char_width, font);
 }
 
-void UI_PrintStringSmallBufferNormal(const char *pString, uint8_t *buffer)
-{
+void UI_PrintStringSmallBufferNormal(const char *pString, uint8_t *buffer) {
     UI_PrintStringBuffer(pString, buffer, ARRAY_SIZE(gFontSmall[0]), (uint8_t *)gFontSmall);
 }
 
-void UI_PrintStringSmallBufferBold(const char *pString, uint8_t *buffer)
-{
+void UI_PrintStringSmallBufferBold(const char *pString, uint8_t *buffer) {
     const uint8_t *font = (uint8_t *)gFontSmallBold;
     const uint8_t char_width = ARRAY_SIZE(gFontSmallBold[0]);
     UI_PrintStringBuffer(pString, buffer, char_width, font);
 }
 
-void UI_DisplayFrequency(const char *string, uint8_t X, uint8_t Y, bool center)
-{
+void UI_DisplayFrequency(const char *string, uint8_t X, uint8_t Y, bool center) {
     const unsigned int char_width = 13;
     uint8_t *pFb0 = gFrameBuffer[Y] + X;
     uint8_t *pFb1 = pFb0 + 128;
@@ -215,8 +206,7 @@ void UI_DisplayFrequency(const char *string, uint8_t X, uint8_t Y, bool center)
 }
 */
 
-void UI_DrawPixelBuffer(uint8_t (*buffer)[128], uint8_t x, uint8_t y, bool black)
-{
+void UI_DrawPixelBuffer(uint8_t (*buffer)[128], uint8_t x, uint8_t y, bool black) {
     const uint8_t pattern = 1 << (y % 8);
     if (black)
         buffer[y / 8][x] |= pattern;
@@ -224,8 +214,7 @@ void UI_DrawPixelBuffer(uint8_t (*buffer)[128], uint8_t x, uint8_t y, bool black
         buffer[y / 8][x] &= ~pattern;
 }
 
-static void sort(int16_t *a, int16_t *b)
-{
+static void sort(int16_t *a, int16_t *b) {
     if (*a > *b) {
         int16_t t = *a;
         *a = *b;
@@ -256,18 +245,15 @@ bool black)
 }
 */
 
-void PutPixel(uint8_t x, uint8_t y, bool fill)
-{
+void PutPixel(uint8_t x, uint8_t y, bool fill) {
     UI_DrawPixelBuffer(gFrameBuffer, x, y, fill);
 }
 
-void PutPixelStatus(uint8_t x, uint8_t y, bool fill)
-{
+void PutPixelStatus(uint8_t x, uint8_t y, bool fill) {
     UI_DrawPixelBuffer(&gStatusLine, x, y, fill);
 }
 
-void GUI_DisplaySmallest(const char *pString, uint8_t x, uint8_t y, bool statusbar, bool fill)
-{
+void GUI_DisplaySmallest(const char *pString, uint8_t x, uint8_t y, bool statusbar, bool fill) {
     uint8_t c;
     uint8_t pixels;
     const uint8_t *p = (const uint8_t *)pString;
@@ -291,8 +277,7 @@ void GUI_DisplaySmallest(const char *pString, uint8_t x, uint8_t y, bool statusb
 }
 
 void UI_DrawLineBuffer(uint8_t (*buffer)[128], int16_t x1, int16_t y1, int16_t x2, int16_t y2,
-                       bool black)
-{
+                       bool black) {
     if (x2 == x1) {
         sort(&y1, &y2);
         for (int16_t i = y1; i <= y2; i++) {
@@ -311,8 +296,7 @@ void UI_DrawLineBuffer(uint8_t (*buffer)[128], int16_t x1, int16_t y1, int16_t x
 }
 
 void UI_DrawRectangleBuffer(uint8_t (*buffer)[128], int16_t x1, int16_t y1, int16_t x2, int16_t y2,
-                            bool black)
-{
+                            bool black) {
     UI_DrawLineBuffer(buffer, x1, y1, x1, y2, black);
     UI_DrawLineBuffer(buffer, x1, y1, x2, y1, black);
     UI_DrawLineBuffer(buffer, x2, y1, x2, y2, black);
@@ -320,8 +304,7 @@ void UI_DrawRectangleBuffer(uint8_t (*buffer)[128], int16_t x1, int16_t y1, int1
 }
 
 
-void UI_DisplayPopup(const char *string)
-{
+void UI_DisplayPopup(const char *string) {
     UI_DisplayClear();
 
     // for(uint8_t i = 1; i < 5; i++) {
@@ -342,7 +325,6 @@ void UI_DisplayPopup(const char *string)
     UI_PrintStringSmallNormal("Press EXIT", 9, 118, 6);
 }
 
-void UI_DisplayClear()
-{
+void UI_DisplayClear() {
     memset(gFrameBuffer, 0, sizeof(gFrameBuffer));
 }

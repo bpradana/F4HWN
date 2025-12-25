@@ -74,13 +74,11 @@ const STEP_Setting_t StepSortedIndexes[] = {
     STEP_10kHz,   STEP_12_5kHz, STEP_15kHz,  STEP_20kHz,   STEP_25kHz,   STEP_30kHz,
     STEP_50kHz,   STEP_100kHz,  STEP_125kHz, STEP_200kHz,  STEP_250kHz,  STEP_500kHz};
 
-STEP_Setting_t FREQUENCY_GetStepIdxFromSortedIdx(uint8_t sortedIdx)
-{
+STEP_Setting_t FREQUENCY_GetStepIdxFromSortedIdx(uint8_t sortedIdx) {
     return StepSortedIndexes[sortedIdx];
 }
 
-uint32_t FREQUENCY_GetSortedIdxFromStepIdx(uint8_t stepIdx)
-{
+uint32_t FREQUENCY_GetSortedIdxFromStepIdx(uint8_t stepIdx) {
     for (uint8_t i = 0; i < ARRAY_SIZE(gStepFrequencyTable); i++)
         if (StepSortedIndexes[i] == stepIdx)
             return i;
@@ -90,8 +88,7 @@ uint32_t FREQUENCY_GetSortedIdxFromStepIdx(uint8_t stepIdx)
 static_assert(ARRAY_SIZE(gStepFrequencyTable) == STEP_N_ELEM);
 
 
-FREQUENCY_Band_t FREQUENCY_GetBand(uint32_t Frequency)
-{
+FREQUENCY_Band_t FREQUENCY_GetBand(uint32_t Frequency) {
     for (int32_t band = BAND_N_ELEM - 1; band >= 0; band--)
         if (Frequency >= frequencyBandTable[band].lower)
             return (FREQUENCY_Band_t)band;
@@ -101,8 +98,7 @@ FREQUENCY_Band_t FREQUENCY_GetBand(uint32_t Frequency)
 
 uint8_t FREQUENCY_CalculateOutputPower(uint8_t TxpLow, uint8_t TxpMid, uint8_t TxpHigh,
                                        int32_t LowerLimit, int32_t Middle, int32_t UpperLimit,
-                                       int32_t Frequency)
-{
+                                       int32_t Frequency) {
     if (Frequency <= LowerLimit)
         return TxpLow;
 
@@ -120,8 +116,7 @@ uint8_t FREQUENCY_CalculateOutputPower(uint8_t TxpLow, uint8_t TxpMid, uint8_t T
 }
 
 
-uint32_t FREQUENCY_RoundToStep(uint32_t freq, uint16_t step)
-{
+uint32_t FREQUENCY_RoundToStep(uint32_t freq, uint16_t step) {
     if (step == 833) {
         uint32_t base = freq / 2500 * 2500;
         int chno =
@@ -137,8 +132,7 @@ uint32_t FREQUENCY_RoundToStep(uint32_t freq, uint16_t step)
     return (freq + (step + 1) / 2) / step * step;
 }
 
-int32_t TX_freq_check(const uint32_t Frequency)
-{ // return '0' if TX frequency is allowed
+int32_t TX_freq_check(const uint32_t Frequency) { // return '0' if TX frequency is allowed
     // otherwise return '-1'
 
     if (Frequency < frequencyBandTable[0].lower ||
@@ -238,8 +232,7 @@ int32_t TX_freq_check(const uint32_t Frequency)
     return -1;
 }
 
-int32_t RX_freq_check(const uint32_t Frequency)
-{ // return '0' if RX frequency is allowed
+int32_t RX_freq_check(const uint32_t Frequency) { // return '0' if RX frequency is allowed
     // otherwise return '-1'
 
     if (Frequency < frequencyBandTable[0].lower ||

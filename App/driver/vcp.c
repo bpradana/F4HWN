@@ -21,8 +21,7 @@
 uint8_t VCP_RxBuf[VCP_RX_BUF_SIZE];
 volatile uint32_t VCP_RxBufPointer = 0;
 
-void VCP_Init()
-{
+void VCP_Init() {
     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
     LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA); // PA12:11
     LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USBD);

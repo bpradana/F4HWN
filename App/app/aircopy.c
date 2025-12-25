@@ -43,16 +43,14 @@ uint8_t gAirCopyIsSendMode;
 
 uint16_t g_FSK_Buffer[36];
 
-static void AIRCOPY_clear()
-{
+static void AIRCOPY_clear() {
     for (uint8_t i = 0; i < 15; i++) {
         crc[i] = 0;
     }
     getScreenShot(true);
 }
 
-bool AIRCOPY_SendMessage(void)
-{
+bool AIRCOPY_SendMessage(void) {
     static uint8_t gAircopySendCountdown = 1;
 
     if (gAircopyState != AIRCOPY_TRANSFER) {
@@ -90,8 +88,7 @@ bool AIRCOPY_SendMessage(void)
     return 0;
 }
 
-void AIRCOPY_StorePacket(void)
-{
+void AIRCOPY_StorePacket(void) {
     if (gFSKWriteIndex < 36) {
         return;
     }
@@ -140,8 +137,7 @@ void AIRCOPY_StorePacket(void)
     gAirCopyBlockNumber++;
 }
 
-static void AIRCOPY_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+static void AIRCOPY_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     if (bKeyHeld || !bKeyPressed) {
         return;
     }
@@ -182,8 +178,7 @@ static void AIRCOPY_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     gRequestDisplayScreen = DISPLAY_AIRCOPY;
 }
 
-static void AIRCOPY_Key_EXIT(bool bKeyPressed, bool bKeyHeld)
-{
+static void AIRCOPY_Key_EXIT(bool bKeyPressed, bool bKeyHeld) {
     if (bKeyHeld || !bKeyPressed) {
         return;
     }
@@ -208,8 +203,7 @@ static void AIRCOPY_Key_EXIT(bool bKeyPressed, bool bKeyHeld)
     gRequestDisplayScreen = DISPLAY_AIRCOPY;
 }
 
-static void AIRCOPY_Key_MENU(bool bKeyPressed, bool bKeyHeld)
-{
+static void AIRCOPY_Key_MENU(bool bKeyPressed, bool bKeyHeld) {
     if (bKeyHeld || !bKeyPressed) {
         return;
     }
@@ -230,8 +224,7 @@ static void AIRCOPY_Key_MENU(bool bKeyPressed, bool bKeyHeld)
     gAircopyState = AIRCOPY_TRANSFER;
 }
 
-void AIRCOPY_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+void AIRCOPY_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     switch (Key) {
     case KEY_0:
     case KEY_1:

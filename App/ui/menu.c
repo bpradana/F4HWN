@@ -225,16 +225,14 @@ const uint8_t gSubMenu_SIDEFUNCTIONS_size = ARRAY_SIZE(gSubMenu_SIDEFUNCTIONS);
 
 bool gIsInSubMenu;
 uint8_t gMenuCursor;
-int UI_MENU_GetCurrentMenuId()
-{
+int UI_MENU_GetCurrentMenuId() {
     if (gMenuCursor < ARRAY_SIZE(MenuList))
         return MenuList[gMenuCursor].menu_id;
 
     return MenuList[ARRAY_SIZE(MenuList) - 1].menu_id;
 }
 
-uint8_t UI_MENU_GetMenuIdx(uint8_t id)
-{
+uint8_t UI_MENU_GetMenuIdx(uint8_t id) {
     for (uint8_t i = 0; i < ARRAY_SIZE(MenuList); i++)
         if (MenuList[i].menu_id == id)
             return i;
@@ -249,8 +247,7 @@ char edit_original[17]; // a copy of the text before editing so that we can easi
 char edit[17];
 int edit_index;
 
-void UI_DisplayMenu(void)
-{
+void UI_DisplayMenu(void) {
     const unsigned int menu_list_width = 6; // max no. of characters on the menu list (left side)
     const unsigned int menu_item_x1 = (8 * menu_list_width) + 2;
     const unsigned int menu_item_x2 = LCD_WIDTH - 1;
@@ -409,8 +406,8 @@ void UI_DisplayMenu(void)
         if (gSubMenuSelection == 0) {
             strcpy(String, gSubMenu_OFF_ON[0]);
         } else if (gSubMenuSelection < 61) {
-            sprintf(String, "%02dm:%02ds", (((gSubMenuSelection) * 5) / 60),
-                    (((gSubMenuSelection) * 5) % 60));
+            sprintf(String, "%02dm:%02ds", (((gSubMenuSelection)*5) / 60),
+                    (((gSubMenuSelection)*5) % 60));
             // #if !defined(ENABLE_SPECTRUM) || !defined(ENABLE_FMRADIO)
             // ST7565_Gauge(4, 1, 60, gSubMenuSelection);
             gaugeLine = 4;

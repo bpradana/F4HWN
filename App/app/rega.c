@@ -80,22 +80,19 @@ const uint16_t rega_test_tones[5] = {
 char rega_message[16];
 
 // Transmit the ZVEI tone sequence for alarm
-void ACTION_RegaAlarm()
-{
+void ACTION_RegaAlarm() {
     const char message[16] = "REGA Alarm";
     REGA_TransmitZvei(rega_alarm_tones, message);
 }
 
 // Tranmit the ZVEI tone sequence for test
-void ACTION_RegaTest()
-{
+void ACTION_RegaTest() {
     const char message[16] = "REGA Test";
     REGA_TransmitZvei(rega_test_tones, message);
 }
 
 // Display the REGA message on the screen
-void UI_DisplayREGA()
-{
+void UI_DisplayREGA() {
     UI_DisplayClear();
     UI_DisplayPopup(rega_message);
     ST7565_BlitFullScreen();
@@ -105,8 +102,7 @@ void UI_DisplayREGA()
 // Configures the radio on VFO A with the required parameters
 // tones: array of 5 ZVEI tones
 // message: message to display on the screen
-void REGA_TransmitZvei(const uint16_t tones[], const char message[])
-{
+void REGA_TransmitZvei(const uint16_t tones[], const char message[]) {
     // Copy the message text
     strncpy(rega_message, message, 16);
     // Trigger the display

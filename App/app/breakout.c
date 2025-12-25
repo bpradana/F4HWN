@@ -120,35 +120,30 @@ const uint8_t BITMAP_blockEmpty[15] = {
 };
 
 // Initialise seed
-void srand_custom(uint32_t seed)
-{
+void srand_custom(uint32_t seed) {
     randSeed = seed;
 }
 
 // Return pseudo-random from 0 to RAND_MAX (here 32767)
-int rand_custom(void)
-{
+int rand_custom(void) {
     randSeed = randSeed * 1103515245 + 12345;
     return (randSeed >> 16) & 0x7FFF; // 15 bits
 }
 
 // Return integer from min to max include
-int randInt(int min, int max)
-{
+int randInt(int min, int max) {
     return min + (rand_custom() % (max - min + 1));
 }
 
 // Reset
-void reset(void)
-{
+void reset(void) {
     ballCount = BALL_NUMBER;
     levelCountBreackout = 1;
     score = 0;
 }
 
 // PlayBeep
-void playBeep(uint16_t tone)
-{
+void playBeep(uint16_t tone) {
     BK4819_PlayTone(tone, true); // 500 Hz ON
     AUDIO_AudioPathOn();
     BK4819_ExitTxMute();
@@ -158,8 +153,7 @@ void playBeep(uint16_t tone)
 }
 
 // Draw score
-void drawScore()
-{
+void drawScore() {
     // Clean status line
     memset(gStatusLine, 0, sizeof(gStatusLine));
 
@@ -177,8 +171,7 @@ void drawScore()
 }
 
 // Init ball
-void initBall()
-{
+void initBall() {
     ball.x = 62;
     ball.y = 30;
     ball.w = 3;
@@ -192,8 +185,7 @@ void initBall()
 }
 
 // Draw ball
-void drawBall()
-{
+void drawBall() {
     UI_DrawRectangleBuffer(gFrameBuffer, ball.x, ball.y, ball.x + ball.w - 1, ball.y + ball.h - 1,
                            false);
     UI_DrawLineBuffer(gFrameBuffer, ball.x - 1, ball.y + 1, ball.x + ball.w, ball.y + 1, false);
@@ -245,8 +237,7 @@ void drawBall()
 }
 
 // Init wall
-void initWall()
-{
+void initWall() {
     uint8_t offset = 6;
     uint8_t i = 0;
     uint8_t j = 0;
@@ -270,8 +261,7 @@ void initWall()
 }
 
 // Draw wall
-void drawWall()
-{
+void drawWall() {
     uint8_t i = 0;
 
     for (i = 0; i < BRICK_NUMBER; i++) {
@@ -312,8 +302,7 @@ void drawWall()
 }
 
 // Init racket
-void initRacket()
-{
+void initRacket() {
     racket.w = 24;
     racket.x = (64) - (racket.w / 2);
     racket.y = 50;
@@ -327,8 +316,7 @@ void initRacket()
 }
 
 // Draw racket
-void drawRacket()
-{
+void drawRacket() {
     if (racket.p != racket.x) {
         UI_DrawRectangleBuffer(gFrameBuffer, racket.p + 1, racket.y, racket.p + racket.w - 2,
                                racket.y + racket.h, false);
@@ -343,8 +331,7 @@ void drawRacket()
 }
 
 // OnKeyDown
-static void OnKeyDown(uint8_t key)
-{
+static void OnKeyDown(uint8_t key) {
     bool wasPaused = isPaused;
 
     switch (key) {
@@ -383,8 +370,7 @@ static void OnKeyDown(uint8_t key)
 
 
 // Key
-static KEY_Code_t GetKey()
-{
+static KEY_Code_t GetKey() {
     KEY_Code_t btn = KEYBOARD_Poll();
     if (btn == KEY_INVALID && GPIO_IsPttPressed()) {
         btn = KEY_PTT;
@@ -393,8 +379,7 @@ static KEY_Code_t GetKey()
 }
 
 // HandleUserInput
-static bool HandleUserInput()
-{
+static bool HandleUserInput() {
     // Store previous key state
     kbd.prev = kbd.current;
 
@@ -423,15 +408,13 @@ static bool HandleUserInput()
 }
 
 // Tick
-static void Tick()
-{
+static void Tick() {
     HandleUserInput();
     HandleUserInput();
 }
 
 // APP_RunBreakout
-void APP_RunBreakout(void)
-{
+void APP_RunBreakout(void) {
     static uint8_t swap = 0;
 
     // Init seed

@@ -80,8 +80,7 @@ void (*ProcessKeysFunctions[])(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) 
 
 static_assert(ARRAY_SIZE(ProcessKeysFunctions) == DISPLAY_N_ELEM);
 
-static void CheckForIncoming(void)
-{
+static void CheckForIncoming(void) {
     if (!g_SquelchLost)
         return; // squelch is closed
 
@@ -136,8 +135,7 @@ static void CheckForIncoming(void)
     }
 }
 
-static void HandleIncoming(void)
-{
+static void HandleIncoming(void) {
     if (!g_SquelchLost) { // squelch is closed
         if (gCurrentFunction != FUNCTION_FOREGROUND) {
             FUNCTION_Select(FUNCTION_FOREGROUND);
@@ -164,8 +162,7 @@ static void HandleIncoming(void)
     APP_StartListening(gMonitor ? FUNCTION_MONITOR : FUNCTION_RECEIVE);
 }
 
-static void HandleReceive(void)
-{
+static void HandleReceive(void) {
 #define END_OF_RX_MODE_SKIP 0
 #define END_OF_RX_MODE_END 1
 #define END_OF_RX_MODE_TTE 2
@@ -358,8 +355,7 @@ Skip:
     }
 }
 
-static void HandlePowerSave()
-{
+static void HandlePowerSave() {
     if (!gRxIdleMode) {
         CheckForIncoming();
     }
@@ -374,13 +370,11 @@ static void (*HandleFunction_fn_table[])(void) = {
 
 static_assert(ARRAY_SIZE(HandleFunction_fn_table) == FUNCTION_N_ELEM);
 
-static void HandleFunction(void)
-{
+static void HandleFunction(void) {
     HandleFunction_fn_table[gCurrentFunction]();
 }
 
-void APP_StartListening(FUNCTION_Type_t function)
-{
+void APP_StartListening(FUNCTION_Type_t function) {
     const unsigned int vfo = gEeprom.RX_VFO;
 
     gRxTimerCountdown_500ms = 7200;
@@ -438,8 +432,7 @@ void APP_StartListening(FUNCTION_Type_t function)
 }
 
 uint32_t APP_SetFreqByStepAndLimits(VFO_Info_t *pInfo, int8_t direction, uint32_t lower,
-                                    uint32_t upper)
-{
+                                    uint32_t upper) {
     uint32_t Frequency = FREQUENCY_RoundToStep(
         pInfo->freq_config_RX.Frequency + (direction * pInfo->StepFrequency), pInfo->StepFrequency);
 
@@ -452,15 +445,13 @@ uint32_t APP_SetFreqByStepAndLimits(VFO_Info_t *pInfo, int8_t direction, uint32_
     return Frequency;
 }
 
-uint32_t APP_SetFrequencyByStep(VFO_Info_t *pInfo, int8_t direction)
-{
+uint32_t APP_SetFrequencyByStep(VFO_Info_t *pInfo, int8_t direction) {
     return APP_SetFreqByStepAndLimits(pInfo, direction, frequencyBandTable[pInfo->Band].lower,
                                       frequencyBandTable[pInfo->Band].upper);
 }
 
 
-static void DualwatchAlternate(void)
-{
+static void DualwatchAlternate(void) {
     { // toggle between VFO's
         gEeprom.RX_VFO = !gEeprom.RX_VFO;
         gRxVfo = &gEeprom.VfoInfo[gEeprom.RX_VFO];
@@ -476,8 +467,7 @@ static void DualwatchAlternate(void)
     gDualWatchCountdown_10ms = dual_watch_count_toggle_10ms;
 }
 
-static void CheckRadioInterrupts(void)
-{
+static void CheckRadioInterrupts(void) {
     if (SCANNER_IsScanning())
         return;
 
@@ -607,8 +597,7 @@ static void CheckRadioInterrupts(void)
     }
 }
 
-void APP_EndTransmission(void)
-{
+void APP_EndTransmission(void) {
     // back to RX mode
     RADIO_SendEndOfTransmission();
 
@@ -620,8 +609,7 @@ void APP_EndTransmission(void)
     }
 }
 
-static void HandleVox(void)
-{
+static void HandleVox(void) {
     if (gVoxResumeCountdown == 0) {
         if (gVoxPauseCountdown)
             return;
@@ -679,8 +667,7 @@ static void HandleVox(void)
     }
 }
 
-void APP_Update(void)
-{
+void APP_Update(void) {
     if (UART_IsCommandAvailable(UART_PORT_VCP)) {
         // SCHEDULER_Disable();
         UART_HandleCommand(UART_PORT_VCP);
@@ -860,8 +847,7 @@ void APP_Update(void)
 }
 
 // called every 10ms
-static void CheckKeys(void)
-{
+static void CheckKeys(void) {
     if (gScreenToDisplay == DISPLAY_AIRCOPY && gAircopyState != AIRCOPY_READY) {
         return;
     }
@@ -999,8 +985,7 @@ static void CheckKeys(void)
     }
 }
 
-void APP_TimeSlice10ms(void)
-{
+void APP_TimeSlice10ms(void) {
     gNextTimeslice = false;
     gFlashLightBlinkCounter++;
 
@@ -1130,8 +1115,7 @@ void APP_TimeSlice10ms(void)
     CheckKeys();
 }
 
-void cancelUserInputModes(void)
-{
+void cancelUserInputModes(void) {
     if (gDTMF_InputMode || gDTMF_InputBox_Index > 0) {
         DTMF_clear_input_box();
         gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
@@ -1150,8 +1134,7 @@ void cancelUserInputModes(void)
 }
 
 // this is called once every 500ms
-void APP_TimeSlice500ms(void)
-{
+void APP_TimeSlice500ms(void) {
     gNextTimeslice_500ms = false;
     bool exit_menu = false;
 
@@ -1351,8 +1334,7 @@ void APP_TimeSlice500ms(void)
     UI_MAIN_TimeSlice500ms();
 }
 
-static void ALARM_Off(void)
-{
+static void ALARM_Off(void) {
     AUDIO_AudioPathOff();
     gEnableSpeaker = false;
 
@@ -1372,8 +1354,7 @@ static void ALARM_Off(void)
         gRequestDisplayScreen = DISPLAY_MAIN;
 }
 
-static void ProcessKey(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+static void ProcessKey(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     if (gWakeUp) {
         if (!bKeyPressed || Key == KEY_PTT) {
             BACKLIGHT_TurnOn();

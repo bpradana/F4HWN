@@ -29,8 +29,7 @@
 
 EEPROM_Config_t gEeprom = {0};
 
-void SETTINGS_InitEEPROM(void)
-{
+void SETTINGS_InitEEPROM(void) {
     uint8_t Data[16] = {0};
     // 0E70..0E77
     PY25Q16_ReadBuffer(0x004000, Data, 8);
@@ -270,8 +269,7 @@ void SETTINGS_InitEEPROM(void)
     gEeprom.KEY_LOCK_PTT = gSetting_set_lck;
 }
 
-void SETTINGS_LoadCalibration(void)
-{
+void SETTINGS_LoadCalibration(void) {
     //  uint8_t Mic;
 
     // 0x1EC0
@@ -332,8 +330,7 @@ void SETTINGS_LoadCalibration(void)
     }
 }
 
-uint32_t SETTINGS_FetchChannelFrequency(const int channel)
-{
+uint32_t SETTINGS_FetchChannelFrequency(const int channel) {
     struct {
         uint32_t frequency;
         uint32_t offset;
@@ -344,8 +341,7 @@ uint32_t SETTINGS_FetchChannelFrequency(const int channel)
     return info.frequency;
 }
 
-void SETTINGS_FetchChannelName(char *s, const int channel)
-{
+void SETTINGS_FetchChannelName(char *s, const int channel) {
     if (s == NULL)
         return;
 
@@ -371,8 +367,7 @@ void SETTINGS_FetchChannelName(char *s, const int channel)
         s[i--] = 0;              // null term
 }
 
-void SETTINGS_FactoryReset(bool bIsAll)
-{
+void SETTINGS_FactoryReset(bool bIsAll) {
     // 0000 - 0c80
     PY25Q16_SectorErase(0);
     // 0c80 - 0d60
@@ -440,8 +435,7 @@ void SETTINGS_FactoryReset(bool bIsAll)
     }
 }
 
-void SETTINGS_SaveFM(void)
-{
+void SETTINGS_SaveFM(void) {
     union {
         struct {
             uint16_t selFreq;
@@ -466,8 +460,7 @@ void SETTINGS_SaveFM(void)
     PY25Q16_WriteBuffer(0x003000, gFM_Channels, sizeof(gFM_Channels), true);
 }
 
-void SETTINGS_SaveVfoIndices(void)
-{
+void SETTINGS_SaveVfoIndices(void) {
     uint8_t State[8];
 
     // 0x0E80
@@ -484,8 +477,7 @@ void SETTINGS_SaveVfoIndices(void)
     PY25Q16_WriteBuffer(0x005000, State, 8, true);
 }
 
-void SETTINGS_SaveSettings(void)
-{
+void SETTINGS_SaveSettings(void) {
     uint8_t *State;
     uint8_t tmp = 0;
     uint8_t SecBuf[0x50];
@@ -673,8 +665,7 @@ void SETTINGS_SaveSettings(void)
     PY25Q16_WriteBuffer(0x00c000, SecBuf, 8, true);
 }
 
-void SETTINGS_SaveChannel(uint8_t Channel, uint8_t VFO, const VFO_Info_t *pVFO, uint8_t Mode)
-{
+void SETTINGS_SaveChannel(uint8_t Channel, uint8_t VFO, const VFO_Info_t *pVFO, uint8_t Mode) {
     // 0
     uint16_t OffsetVFO = 0 + Channel * 16;
 
@@ -722,14 +713,12 @@ void SETTINGS_SaveChannel(uint8_t Channel, uint8_t VFO, const VFO_Info_t *pVFO, 
     }
 }
 
-void SETTINGS_SaveBatteryCalibration(const uint16_t *batteryCalibration)
-{
+void SETTINGS_SaveBatteryCalibration(const uint16_t *batteryCalibration) {
     // 0x1F40
     PY25Q16_WriteBuffer(0x010000 + 0x140, batteryCalibration, 12, false);
 }
 
-void SETTINGS_SaveChannelName(uint8_t channel, const char *name)
-{
+void SETTINGS_SaveChannelName(uint8_t channel, const char *name) {
     uint16_t offset = channel * 16;
     uint8_t buf[16] = {0};
     memcpy(buf, name, MIN(strlen(name), 10u));
@@ -738,8 +727,7 @@ void SETTINGS_SaveChannelName(uint8_t channel, const char *name)
 }
 
 void SETTINGS_UpdateChannel(uint8_t channel, const VFO_Info_t *pVFO, bool keep, bool check,
-                            bool save)
-{
+                            bool save) {
     {
         ChannelAttributes_t state;
         ChannelAttributes_t att = {
@@ -783,8 +771,7 @@ void SETTINGS_UpdateChannel(uint8_t channel, const VFO_Info_t *pVFO, bool keep, 
     }
 }
 
-void SETTINGS_WriteBuildOptions(void)
-{
+void SETTINGS_WriteBuildOptions(void) {
     uint8_t State[8];
 
     // 0x1FF0
@@ -796,8 +783,7 @@ void SETTINGS_WriteBuildOptions(void)
     PY25Q16_WriteBuffer(0x00c000, State, sizeof(State), true);
 }
 
-void SETTINGS_WriteCurrentState(void)
-{
+void SETTINGS_WriteCurrentState(void) {
     uint8_t State[0x10];
     // 0x0E78
     PY25Q16_ReadBuffer(0x004000, State, sizeof(State));
@@ -808,8 +794,7 @@ void SETTINGS_WriteCurrentState(void)
 }
 
 
-void SETTINGS_ResetTxLock(void)
-{
+void SETTINGS_ResetTxLock(void) {
     // TODO: This is expensive operation!
 
 #define SETTINGS_ResetTxLock_BATCH 10

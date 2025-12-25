@@ -58,15 +58,13 @@ const uint8_t BUTTON_EVENT_LONG = BUTTON_STATE_HELD;
 
 static void Key_FUNC(KEY_Code_t Key, uint8_t state);
 
-bool FM_CheckValidChannel(uint8_t Channel)
-{
+bool FM_CheckValidChannel(uint8_t Channel) {
     return Channel < ARRAY_SIZE(gFM_Channels) &&
            gFM_Channels[Channel] >= BK1080_GetFreqLoLimit(gEeprom.FM_Band) &&
            gFM_Channels[Channel] < BK1080_GetFreqHiLimit(gEeprom.FM_Band);
 }
 
-uint8_t FM_FindNextChannel(uint8_t Channel, uint8_t Direction)
-{
+uint8_t FM_FindNextChannel(uint8_t Channel, uint8_t Direction) {
     for (unsigned i = 0; i < ARRAY_SIZE(gFM_Channels); i++) {
         if (Channel == 0xFF)
             Channel = ARRAY_SIZE(gFM_Channels) - 1;
@@ -80,8 +78,7 @@ uint8_t FM_FindNextChannel(uint8_t Channel, uint8_t Direction)
     return 0xFF;
 }
 
-int FM_ConfigureChannelState(void)
-{
+int FM_ConfigureChannelState(void) {
     gEeprom.FM_FrequencyPlaying = gEeprom.FM_SelectedFrequency;
 
     if (gEeprom.FM_IsMrMode) {
@@ -97,8 +94,7 @@ int FM_ConfigureChannelState(void)
     return 0;
 }
 
-void FM_TurnOff(void)
-{
+void FM_TurnOff(void) {
     gFmRadioMode = false;
     gFM_ScanState = FM_SCAN_OFF;
     gFM_RestoreCountdown_10ms = 0;
@@ -118,14 +114,12 @@ void FM_TurnOff(void)
     SETTINGS_WriteCurrentState();
 }
 
-void FM_EraseChannels(void)
-{
+void FM_EraseChannels(void) {
     PY25Q16_SectorErase(0x003000);
     memset(gFM_Channels, 0xFF, sizeof(gFM_Channels));
 }
 
-void FM_Tune(uint16_t Frequency, int8_t Step, bool bFlag)
-{
+void FM_Tune(uint16_t Frequency, int8_t Step, bool bFlag) {
     AUDIO_AudioPathOff();
 
     gEnableSpeaker = false;
@@ -154,8 +148,7 @@ void FM_Tune(uint16_t Frequency, int8_t Step, bool bFlag)
     BK1080_SetFrequency(gEeprom.FM_FrequencyPlaying, gEeprom.FM_Band /*, gEeprom.FM_Space*/);
 }
 
-void FM_PlayAndUpdate(void)
-{
+void FM_PlayAndUpdate(void) {
     gFM_ScanState = FM_SCAN_OFF;
 
     if (gFM_AutoScan) {
@@ -176,8 +169,7 @@ void FM_PlayAndUpdate(void)
     gEnableSpeaker = true;
 }
 
-int FM_CheckFrequencyLock(uint16_t Frequency, uint16_t LowerLimit)
-{
+int FM_CheckFrequencyLock(uint16_t Frequency, uint16_t LowerLimit) {
     int ret = -1;
 
     const uint16_t Test2 = BK1080_ReadRegister(BK1080_REG_07);
@@ -238,8 +230,7 @@ int FM_CheckFrequencyLock(uint16_t Frequency, uint16_t LowerLimit)
     return ret;
 }
 
-static void Key_DIGITS(KEY_Code_t Key, uint8_t state)
-{
+static void Key_DIGITS(KEY_Code_t Key, uint8_t state) {
     enum { STATE_FREQ_MODE, STATE_MR_MODE, STATE_SAVE };
 
     if (state == BUTTON_EVENT_SHORT && !gWasFKeyPressed) {
@@ -322,8 +313,7 @@ static void Key_DIGITS(KEY_Code_t Key, uint8_t state)
         Key_FUNC(Key, state);
 }
 
-static void Key_FUNC(KEY_Code_t Key, uint8_t state)
-{
+static void Key_FUNC(KEY_Code_t Key, uint8_t state) {
     if (state == BUTTON_EVENT_SHORT || state == BUTTON_EVENT_HELD) {
         bool autoScan = gWasFKeyPressed || (state == BUTTON_EVENT_HELD);
 
@@ -369,8 +359,7 @@ static void Key_FUNC(KEY_Code_t Key, uint8_t state)
     }
 }
 
-static void Key_EXIT(uint8_t state)
-{
+static void Key_EXIT(uint8_t state) {
     if (state != BUTTON_EVENT_SHORT)
         return;
 
@@ -409,8 +398,7 @@ static void Key_EXIT(uint8_t state)
     gRequestDisplayScreen = DISPLAY_FM;
 }
 
-static void Key_MENU(uint8_t state)
-{
+static void Key_MENU(uint8_t state) {
     if (state != BUTTON_EVENT_SHORT)
         return;
 
@@ -452,8 +440,7 @@ static void Key_MENU(uint8_t state)
     }
 }
 
-static void Key_UP_DOWN(uint8_t state, int8_t Step)
-{
+static void Key_UP_DOWN(uint8_t state, int8_t Step) {
     if (state == BUTTON_EVENT_PRESSED) {
         if (gInputBoxIndex) {
             gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
@@ -509,8 +496,7 @@ Bail:
     gRequestDisplayScreen = DISPLAY_FM;
 }
 
-void FM_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+void FM_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     uint8_t state = bKeyPressed + 2 * bKeyHeld;
 
     switch (Key) {
@@ -545,8 +531,7 @@ void FM_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     }
 }
 
-void FM_Play(void)
-{
+void FM_Play(void) {
     if (!FM_CheckFrequencyLock(gEeprom.FM_FrequencyPlaying,
                                BK1080_GetFreqLoLimit(gEeprom.FM_Band))) {
         if (!gFM_AutoScan) {
@@ -581,8 +566,7 @@ void FM_Play(void)
     GUI_SelectNextDisplay(DISPLAY_FM);
 }
 
-void FM_Start(void)
-{
+void FM_Start(void) {
     gDualWatchActive = false;
     gFmRadioMode = true;
     gFM_ScanState = FM_SCAN_OFF;

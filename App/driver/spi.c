@@ -20,8 +20,7 @@
 #include "bsp/dp32g030/irq.h"
 #include "driver/spi.h"
 
-void SPI0_Init(void)
-{
+void SPI0_Init(void) {
     SPI_Config_t Config;
 
     SPI_Disable(&SPI0->CR);
@@ -43,8 +42,7 @@ void SPI0_Init(void)
     SPI_Enable(&SPI0->CR);
 }
 
-void SPI_WaitForUndocumentedTxFifoStatusBit(void)
-{
+void SPI_WaitForUndocumentedTxFifoStatusBit(void) {
     uint32_t Timeout;
 
     Timeout = 0;
@@ -57,13 +55,11 @@ void SPI_WaitForUndocumentedTxFifoStatusBit(void)
     } while (Timeout <= 100000);
 }
 
-void SPI_Disable(volatile uint32_t *pCR)
-{
+void SPI_Disable(volatile uint32_t *pCR) {
     *pCR = (*pCR & ~SPI_CR_SPE_MASK) | SPI_CR_SPE_BITS_DISABLE;
 }
 
-void SPI_Configure(volatile SPI_Port_t *pPort, SPI_Config_t *pConfig)
-{
+void SPI_Configure(volatile SPI_Port_t *pPort, SPI_Config_t *pConfig) {
     if (pPort == SPI0) {
         SYSCON_DEV_CLK_GATE = (SYSCON_DEV_CLK_GATE & ~SYSCON_DEV_CLK_GATE_SPI0_MASK) |
                               SYSCON_DEV_CLK_GATE_SPI0_BITS_ENABLE;
@@ -100,8 +96,7 @@ void SPI_Configure(volatile SPI_Port_t *pPort, SPI_Config_t *pConfig)
     }
 }
 
-void SPI_ToggleMasterMode(volatile uint32_t *pCR, bool bIsMaster)
-{
+void SPI_ToggleMasterMode(volatile uint32_t *pCR, bool bIsMaster) {
     if (bIsMaster) {
         *pCR = (*pCR & ~SPI_CR_MSR_SSN_MASK) | SPI_CR_MSR_SSN_BITS_ENABLE;
     } else {
@@ -109,7 +104,6 @@ void SPI_ToggleMasterMode(volatile uint32_t *pCR, bool bIsMaster)
     }
 }
 
-void SPI_Enable(volatile uint32_t *pCR)
-{
+void SPI_Enable(volatile uint32_t *pCR) {
     *pCR = (*pCR & ~SPI_CR_SPE_MASK) | SPI_CR_SPE_BITS_ENABLE;
 }

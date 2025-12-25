@@ -24,8 +24,7 @@
 #include "ui/helper.h"
 #include "ui/scanner.h"
 
-void UI_DisplayScanner(void)
-{
+void UI_DisplayScanner(void) {
     char String[16] = {0};
     char *pPrintStr = String;
     bool bCentered;

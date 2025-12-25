@@ -25,8 +25,7 @@ static uint8_t previousFrame[1024] = {0};
 static uint8_t forcedBlock = 0;
 static uint8_t keepAlive = 10;
 
-void getScreenShot(bool force)
-{
+void getScreenShot(bool force) {
     static uint8_t currentFrame[1024]; // Reused static buffer
     uint16_t index = 0;
     uint8_t acc = 0;

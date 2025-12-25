@@ -89,14 +89,12 @@ volatile bool ep_tx_busy_flag = false;
 #define CDC_MAX_MPS 64
 #endif
 
-void usbd_configure_done_callback(void)
-{
+void usbd_configure_done_callback(void) {
     /* setup first out ep read transfer */
     usbd_ep_start_read(CDC_OUT_EP, read_buffer, sizeof(read_buffer));
 }
 
-void usbd_cdc_acm_bulk_out(uint8_t ep, uint32_t nbytes)
-{
+void usbd_cdc_acm_bulk_out(uint8_t ep, uint32_t nbytes) {
     cdc_acm_rx_buf_t *rx_buf = &client_rx_buf;
     if (nbytes && rx_buf->buf) {
         const uint8_t *buf = read_buffer;
@@ -122,8 +120,7 @@ void usbd_cdc_acm_bulk_out(uint8_t ep, uint32_t nbytes)
     usbd_ep_start_read(CDC_OUT_EP, read_buffer, sizeof(read_buffer));
 }
 
-void usbd_cdc_acm_bulk_in(uint8_t ep, uint32_t nbytes)
-{
+void usbd_cdc_acm_bulk_in(uint8_t ep, uint32_t nbytes) {
     if ((nbytes % CDC_MAX_MPS) == 0 && nbytes) {
         /* send zlp */
         usbd_ep_start_write(CDC_IN_EP, NULL, 0);
@@ -140,8 +137,7 @@ struct usbd_endpoint cdc_in_ep = {.ep_addr = CDC_IN_EP, .ep_cb = usbd_cdc_acm_bu
 struct usbd_interface intf0;
 struct usbd_interface intf1;
 
-void cdc_acm_init(cdc_acm_rx_buf_t rx_buf)
-{
+void cdc_acm_init(cdc_acm_rx_buf_t rx_buf) {
     // client_rx_buf = rx_buf;
     memcpy(&client_rx_buf, &rx_buf, sizeof(cdc_acm_rx_buf_t));
     *client_rx_buf.write_pointer = 0;
@@ -156,8 +152,7 @@ void cdc_acm_init(cdc_acm_rx_buf_t rx_buf)
 
 volatile uint8_t dtr_enable = 0;
 
-void usbd_cdc_acm_set_dtr(uint8_t intf, bool dtr)
-{
+void usbd_cdc_acm_set_dtr(uint8_t intf, bool dtr) {
     if (dtr) {
         dtr_enable = 1;
     } else {
@@ -165,8 +160,7 @@ void usbd_cdc_acm_set_dtr(uint8_t intf, bool dtr)
     }
 }
 
-void cdc_acm_data_send_with_dtr(const uint8_t *buf, uint32_t size)
-{
+void cdc_acm_data_send_with_dtr(const uint8_t *buf, uint32_t size) {
     if (dtr_enable && 0 != size) {
         ep_tx_busy_flag = true;
         usbd_ep_start_write(CDC_IN_EP, buf, size);
@@ -175,8 +169,7 @@ void cdc_acm_data_send_with_dtr(const uint8_t *buf, uint32_t size)
     }
 }
 
-void cdc_acm_data_send_with_dtr_async(const uint8_t *buf, uint32_t size)
-{
+void cdc_acm_data_send_with_dtr_async(const uint8_t *buf, uint32_t size) {
     if (0 != size) {
         usbd_ep_start_write(CDC_IN_EP, buf, size);
     }

@@ -32,8 +32,7 @@
 #include "ui/ui.h"
 #include "ui/status.h"
 
-static void convertTime(uint8_t *line, uint8_t type)
-{
+static void convertTime(uint8_t *line, uint8_t type) {
     uint16_t t = (type == 0) ? (gTxTimerCountdown_500ms / 2) : (3600 - gRxTimerCountdown_500ms / 2);
 
     uint8_t m = t / 60;
@@ -49,8 +48,7 @@ static void convertTime(uint8_t *line, uint8_t type)
     gUpdateStatus = true;
 }
 
-void UI_DisplayStatus()
-{
+void UI_DisplayStatus() {
     char str[8] = "";
 
     gUpdateStatus = false;

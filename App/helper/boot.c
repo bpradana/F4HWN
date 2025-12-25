@@ -28,8 +28,7 @@
 #include "ui/menu.h"
 #include "ui/ui.h"
 
-BOOT_Mode_t BOOT_GetMode(void)
-{
+BOOT_Mode_t BOOT_GetMode(void) {
     unsigned int i;
     KEY_Code_t Keys[2];
 
@@ -60,8 +59,7 @@ BOOT_Mode_t BOOT_GetMode(void)
     return BOOT_MODE_NORMAL;
 }
 
-void BOOT_ProcessMode(BOOT_Mode_t Mode)
-{
+void BOOT_ProcessMode(BOOT_Mode_t Mode) {
     if (Mode == BOOT_MODE_F_LOCK) {
         gEeprom.CURRENT_STATE = 0; // Don't resume is active...
         GUI_SelectNextDisplay(DISPLAY_MENU);

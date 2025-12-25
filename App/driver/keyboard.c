@@ -35,8 +35,7 @@ bool gWasFKeyPressed = false;
 #define PIN_MASK_ROWS (LL_GPIO_PIN_15 | LL_GPIO_PIN_14 | LL_GPIO_PIN_13 | LL_GPIO_PIN_12)
 #define PIN_MASK_ROW(n) (1u << (15 - (n)))
 
-static inline uint32_t read_rows()
-{
+static inline uint32_t read_rows() {
     return PIN_MASK_ROWS & LL_GPIO_ReadInputPort(GPIOx);
 }
 
@@ -80,8 +79,7 @@ static const KEY_Code_t keyboard[5][4] = {
         KEY_F,
     }};
 
-KEY_Code_t KEYBOARD_Poll(void)
-{
+KEY_Code_t KEYBOARD_Poll(void) {
     KEY_Code_t Key = KEY_INVALID;
 
     //  if (!GPIO_CheckBit(&GPIOC->DATA, GPIOC_PIN_PTT))

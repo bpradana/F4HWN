@@ -41,8 +41,7 @@
 #include "ui/ui.h"
 #include <stdlib.h>
 
-static void toggle_chan_scanlist(void)
-{ // toggle the selected channels scanlist setting
+static void toggle_chan_scanlist(void) { // toggle the selected channels scanlist setting
 
     if (SCANNER_IsScanning())
         return;
@@ -76,8 +75,7 @@ static void toggle_chan_scanlist(void)
     gFlagResetVfos = true;
 }
 
-static void processFKeyFunction(const KEY_Code_t Key, const bool beep)
-{
+static void processFKeyFunction(const KEY_Code_t Key, const bool beep) {
     uint8_t Vfo = gEeprom.TX_VFO;
 
     if (gEeprom.MENU_LOCK == true) {
@@ -278,8 +276,7 @@ static void processFKeyFunction(const KEY_Code_t Key, const bool beep)
     }
 }
 
-void channelMove(uint16_t Channel)
-{
+void channelMove(uint16_t Channel) {
     const uint8_t Vfo = gEeprom.TX_VFO;
 
     if (!RADIO_CheckValidChannel(Channel, false, 0)) {
@@ -306,8 +303,7 @@ void channelMove(uint16_t Channel)
     return;
 }
 
-void channelMoveSwitch(void)
-{
+void channelMoveSwitch(void) {
     if (IS_MR_CHANNEL(gTxVfo->CHANNEL_SAVE)) { // user is entering channel number
         uint16_t Channel = 0;
 
@@ -348,8 +344,7 @@ void channelMoveSwitch(void)
     }
 }
 
-static void MAIN_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+static void MAIN_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     if (bKeyHeld) { // key held down
         if (bKeyPressed) {
             if (gScreenToDisplay == DISPLAY_MAIN) {
@@ -498,8 +493,7 @@ static void MAIN_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     processFKeyFunction(Key, true);
 }
 
-static void MAIN_Key_EXIT(bool bKeyPressed, bool bKeyHeld)
-{
+static void MAIN_Key_EXIT(bool bKeyPressed, bool bKeyHeld) {
     if (!bKeyHeld && bKeyPressed) { // exit key pressed
         gBeepToPlay = BEEP_1KHZ_60MS_OPTIONAL;
 
@@ -538,8 +532,7 @@ static void MAIN_Key_EXIT(bool bKeyPressed, bool bKeyHeld)
     }
 }
 
-static void MAIN_Key_MENU(bool bKeyPressed, bool bKeyHeld)
-{
+static void MAIN_Key_MENU(bool bKeyPressed, bool bKeyHeld) {
     if (bKeyPressed && !bKeyHeld) // menu key pressed
         gBeepToPlay = BEEP_1KHZ_60MS_OPTIONAL;
 
@@ -600,8 +593,7 @@ static void MAIN_Key_MENU(bool bKeyPressed, bool bKeyHeld)
     }
 }
 
-static void MAIN_Key_STAR(bool bKeyPressed, bool bKeyHeld)
-{
+static void MAIN_Key_STAR(bool bKeyPressed, bool bKeyHeld) {
     if (gEeprom.MENU_LOCK == true) {
         return; // prevent F function if MENU LOCK is true
     }
@@ -671,8 +663,7 @@ static void MAIN_Key_STAR(bool bKeyPressed, bool bKeyHeld)
     gUpdateStatus = true;
 }
 
-static void MAIN_Key_UP_DOWN(bool bKeyPressed, bool bKeyHeld, int8_t Direction)
-{
+static void MAIN_Key_UP_DOWN(bool bKeyPressed, bool bKeyHeld, int8_t Direction) {
     if (gWasFKeyPressed) {
         switch (Direction) {
         case 1:
@@ -750,8 +741,7 @@ static void MAIN_Key_UP_DOWN(bool bKeyPressed, bool bKeyHeld, int8_t Direction)
     gPttWasReleased = true;
 }
 
-void MAIN_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+void MAIN_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     if (gFmRadioMode && Key != KEY_PTT && Key != KEY_EXIT) {
         if (!bKeyHeld && bKeyPressed)
             gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;

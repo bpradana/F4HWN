@@ -51,13 +51,11 @@
 
 #include "external/printf/printf.h"
 
-void _putchar(__attribute__((unused)) char c)
-{
+void _putchar(__attribute__((unused)) char c) {
     UART_Send((uint8_t *)&c, 1);
 }
 
-void Main(void)
-{
+void Main(void) {
     SYSTICK_Init();
     BOARD_Init();
 

@@ -20,8 +20,7 @@
 #include "bsp/dp32g030/saradc.h"
 #include "bsp/dp32g030/syscon.h"
 
-uint8_t ADC_GetChannelNumber(ADC_CH_MASK Mask)
-{
+uint8_t ADC_GetChannelNumber(ADC_CH_MASK Mask) {
     if (Mask & ADC_CH15)
         return 15U;
     if (Mask & ADC_CH14)
@@ -58,18 +57,15 @@ uint8_t ADC_GetChannelNumber(ADC_CH_MASK Mask)
     return 0U;
 }
 
-void ADC_Disable(void)
-{
+void ADC_Disable(void) {
     SARADC_CFG = (SARADC_CFG & ~SARADC_CFG_ADC_EN_MASK) | SARADC_CFG_ADC_EN_BITS_DISABLE;
 }
 
-void ADC_Enable(void)
-{
+void ADC_Enable(void) {
     SARADC_CFG = (SARADC_CFG & ~SARADC_CFG_ADC_EN_MASK) | SARADC_CFG_ADC_EN_BITS_ENABLE;
 }
 
-void ADC_SoftReset(void)
-{
+void ADC_SoftReset(void) {
     SARADC_START =
         (SARADC_START & ~SARADC_START_SOFT_RESET_MASK) | SARADC_START_SOFT_RESET_BITS_ASSERT;
     SARADC_START =
@@ -80,8 +76,7 @@ void ADC_SoftReset(void)
 #define FW_R_SARADC_SMPL_SHIFT 7
 #define FW_R_SARADC_SMPL_MASK (3U << FW_R_SARADC_SMPL_SHIFT)
 
-uint32_t ADC_GetClockConfig(void)
-{
+uint32_t ADC_GetClockConfig(void) {
     uint32_t Value;
 
     Value = SYSCON_CLK_SEL;
@@ -95,8 +90,7 @@ uint32_t ADC_GetClockConfig(void)
     return Value;
 }
 
-void ADC_Configure(ADC_Config_t *pAdc)
-{
+void ADC_Configure(ADC_Config_t *pAdc) {
     SYSCON_DEV_CLK_GATE = (SYSCON_DEV_CLK_GATE & ~SYSCON_DEV_CLK_GATE_SARADC_MASK) |
                           SYSCON_DEV_CLK_GATE_SARADC_BITS_ENABLE;
 
@@ -154,21 +148,18 @@ void ADC_Configure(ADC_Config_t *pAdc)
     }
 }
 
-void ADC_Start(void)
-{
+void ADC_Start(void) {
     SARADC_START = (SARADC_START & ~SARADC_START_START_MASK) | SARADC_START_START_BITS_ENABLE;
 }
 
-bool ADC_CheckEndOfConversion(ADC_CH_MASK Mask)
-{
+bool ADC_CheckEndOfConversion(ADC_CH_MASK Mask) {
     volatile ADC_Channel_t *pChannels = (volatile ADC_Channel_t *)&SARADC_CH0;
     uint8_t Channel = ADC_GetChannelNumber(Mask);
 
     return (pChannels[Channel].STAT & ADC_CHx_STAT_EOC_MASK) >> ADC_CHx_STAT_EOC_SHIFT;
 }
 
-uint16_t ADC_GetValue(ADC_CH_MASK Mask)
-{
+uint16_t ADC_GetValue(ADC_CH_MASK Mask) {
     volatile ADC_Channel_t *pChannels = (volatile ADC_Channel_t *)&SARADC_CH0;
     uint8_t Channel = ADC_GetChannelNumber(Mask);
 

@@ -32,8 +32,7 @@
 
 BEEP_Type_t gBeepToPlay = BEEP_NONE;
 
-void AUDIO_PlayBeep(BEEP_Type_t Beep)
-{
+void AUDIO_PlayBeep(BEEP_Type_t Beep) {
     if (Beep != BEEP_880HZ_60MS_DOUBLE_BEEP && Beep != BEEP_500HZ_60MS_DOUBLE_BEEP &&
         Beep != BEEP_440HZ_500MS && Beep != BEEP_400HZ_30MS && Beep != BEEP_500HZ_30MS &&
         Beep != BEEP_600HZ_30MS && !gEeprom.BEEP_CONTROL)

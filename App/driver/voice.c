@@ -31,8 +31,7 @@
 
 static uint16_t DAC_Buf[VOICE_BUF_LEN * 2];
 
-static inline void DMA_Init()
-{
+static inline void DMA_Init() {
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
 
@@ -61,16 +60,14 @@ static inline void DMA_Init()
     NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
 }
 
-static inline void TIM_Init()
-{
+static inline void TIM_Init() {
     // Update freq = 48 MHz / 4 / 1500 == 8 KHz
     LL_TIM_SetPrescaler(TIMx, 3);
     LL_TIM_SetAutoReload(TIMx, 1499);
     LL_TIM_SetTriggerOutput(TIMx, LL_TIM_TRGO_UPDATE);
 }
 
-void VOICE_Init()
-{
+void VOICE_Init() {
     DMA_Init();
 
     // Channel 1: PA4
@@ -90,8 +87,7 @@ void VOICE_Init()
     LL_DAC_EnableTrigger(DAC1, DAC_CHANNEL);
 }
 
-void VOICE_Start()
-{
+void VOICE_Start() {
     LL_DAC_Enable(DAC1, DAC_CHANNEL);
     LL_TIM_DisableCounter(TIMx);
 
@@ -122,15 +118,13 @@ void VOICE_Start()
     LL_TIM_EnableCounter(TIMx);
 }
 
-void VOICE_Stop()
-{
+void VOICE_Stop() {
     LL_TIM_DisableCounter(TIMx);
     LL_DMA_DisableChannel(DMA1, DMA_CHANNEL);
     LL_DAC_Disable(DAC1, DAC_CHANNEL);
 }
 
-void DMA1_Channel2_3_IRQHandler()
-{
+void DMA1_Channel2_3_IRQHandler() {
     if (LL_DMA_IsActiveFlag_HT3(DMA1)) {
         LL_DMA_ClearFlag_HT3(DMA1);
         if (gVoiceBufLen > 0) {

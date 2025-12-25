@@ -47,8 +47,7 @@ const char gModulationStr[MODULATION_UKNOWN][4] = {
 
 };
 
-bool RADIO_CheckValidChannel(uint16_t channel, bool checkScanList, uint8_t scanList)
-{
+bool RADIO_CheckValidChannel(uint16_t channel, bool checkScanList, uint8_t scanList) {
     // return true if the channel appears valid
     if (!IS_MR_CHANNEL(channel))
         return false;
@@ -104,8 +103,7 @@ bool RADIO_CheckValidChannel(uint16_t channel, bool checkScanList, uint8_t scanL
     return PriorityCh1 != channel && PriorityCh2 != channel;
 }
 
-uint8_t RADIO_FindNextChannel(uint8_t Channel, int8_t Direction, bool bCheckScanList, uint8_t VFO)
-{
+uint8_t RADIO_FindNextChannel(uint8_t Channel, int8_t Direction, bool bCheckScanList, uint8_t VFO) {
     for (unsigned int i = 0; IS_MR_CHANNEL(i); i++, Channel += Direction) {
         if (Channel == 0xFF) {
             Channel = MR_CHANNEL_LAST;
@@ -121,8 +119,7 @@ uint8_t RADIO_FindNextChannel(uint8_t Channel, int8_t Direction, bool bCheckScan
     return 0xFF;
 }
 
-void RADIO_InitInfo(VFO_Info_t *pInfo, const uint8_t ChannelSave, const uint32_t Frequency)
-{
+void RADIO_InitInfo(VFO_Info_t *pInfo, const uint8_t ChannelSave, const uint32_t Frequency) {
     memset(pInfo, 0, sizeof(*pInfo));
 
     pInfo->Band = FREQUENCY_GetBand(Frequency);
@@ -149,8 +146,7 @@ void RADIO_InitInfo(VFO_Info_t *pInfo, const uint8_t ChannelSave, const uint32_t
     RADIO_ConfigureSquelchAndOutputPower(pInfo);
 }
 
-void RADIO_ConfigureChannel(const unsigned int VFO, const unsigned int configure)
-{
+void RADIO_ConfigureChannel(const unsigned int VFO, const unsigned int configure) {
     VFO_Info_t *pVfo = &gEeprom.VfoInfo[VFO];
 
     if (!gSetting_350EN) {
@@ -389,8 +385,7 @@ void RADIO_ConfigureChannel(const unsigned int VFO, const unsigned int configure
     RADIO_ConfigureSquelchAndOutputPower(pVfo);
 }
 
-void RADIO_ConfigureSquelchAndOutputPower(VFO_Info_t *pInfo)
-{
+void RADIO_ConfigureSquelchAndOutputPower(VFO_Info_t *pInfo) {
     // *******************************
     // squelch
 
@@ -554,8 +549,7 @@ void RADIO_ConfigureSquelchAndOutputPower(VFO_Info_t *pInfo)
     // *******************************
 }
 
-void RADIO_ApplyOffset(VFO_Info_t *pInfo)
-{
+void RADIO_ApplyOffset(VFO_Info_t *pInfo) {
     uint32_t Frequency = pInfo->freq_config_RX.Frequency;
 
     switch (pInfo->TX_OFFSET_FREQUENCY_DIRECTION) {
@@ -572,8 +566,7 @@ void RADIO_ApplyOffset(VFO_Info_t *pInfo)
     pInfo->freq_config_TX.Frequency = Frequency;
 }
 
-static void RADIO_SelectCurrentVfo(void)
-{
+static void RADIO_SelectCurrentVfo(void) {
     // if crossband is active and DW not the gCurrentVfo is gTxVfo (gTxVfo/TX_VFO is only ever
     // changed by the user) otherwise it is set to gRxVfo which is set to gTxVfo in RADIO_SelectVfos
     // so in the end gCurrentVfo is equal to gTxVfo unless dual watch changes it on incomming
@@ -585,8 +578,7 @@ static void RADIO_SelectCurrentVfo(void)
             : gTxVfo;
 }
 
-void RADIO_SelectVfos(void)
-{
+void RADIO_SelectVfos(void) {
     // if crossband without DW is used then RX_VFO is the opposite to the TX_VFO
     gEeprom.RX_VFO =
         (gEeprom.CROSS_BAND_RX_TX == CROSS_BAND_OFF || gEeprom.DUAL_WATCH != DUAL_WATCH_OFF)
@@ -599,8 +591,7 @@ void RADIO_SelectVfos(void)
     RADIO_SelectCurrentVfo();
 }
 
-void RADIO_SetupRegisters(bool switchToForeground)
-{
+void RADIO_SetupRegisters(bool switchToForeground) {
     BK4819_FilterBandwidth_t Bandwidth = gRxVfo->CHANNEL_BANDWIDTH;
 
     if (Bandwidth == BK4819_FILTER_BW_NARROW && gSetting_set_nfm == 1) {
@@ -740,8 +731,7 @@ void RADIO_SetupRegisters(bool switchToForeground)
 }
 
 
-void RADIO_SetTxParameters(void)
-{
+void RADIO_SetTxParameters(void) {
     BK4819_FilterBandwidth_t Bandwidth = gCurrentVfo->CHANNEL_BANDWIDTH;
 
     if (Bandwidth == BK4819_FILTER_BW_NARROW && gSetting_set_nfm == 1) {
@@ -805,8 +795,7 @@ void RADIO_SetTxParameters(void)
     }
 }
 
-void RADIO_SetModulation(ModulationMode_t modulation)
-{
+void RADIO_SetModulation(ModulationMode_t modulation) {
     BK4819_AF_Type_t mod;
     switch (modulation) {
     default:
@@ -858,8 +847,7 @@ void RADIO_SetModulation(ModulationMode_t modulation)
     RADIO_SetupAGC(modulation == MODULATION_AM, false);
 }
 
-void RADIO_SetupAGC(bool listeningAM, bool disable)
-{
+void RADIO_SetupAGC(bool listeningAM, bool disable) {
     static uint8_t lastSettings;
     uint8_t newSettings = (listeningAM << 1) | disable;
     if (lastSettings == newSettings)
@@ -878,8 +866,7 @@ void RADIO_SetupAGC(bool listeningAM, bool disable)
     }
 }
 
-void RADIO_SetVfoState(VfoState_t State)
-{
+void RADIO_SetVfoState(VfoState_t State) {
     if (State == VFO_STATE_NORMAL) {
         VfoState[0] = VFO_STATE_NORMAL;
         VfoState[1] = VFO_STATE_NORMAL;
@@ -899,8 +886,7 @@ void RADIO_SetVfoState(VfoState_t State)
 }
 
 
-void RADIO_PrepareTX(void)
-{
+void RADIO_PrepareTX(void) {
     VfoState_t State = VFO_STATE_NORMAL; // default to OK to TX
 
     if (gEeprom.DUAL_WATCH != DUAL_WATCH_OFF) { // dual-RX is enabled
@@ -983,8 +969,7 @@ void RADIO_PrepareTX(void)
     gRTTECountdown_10ms = 0;
 }
 
-void RADIO_SendCssTail(void)
-{
+void RADIO_SendCssTail(void) {
     switch (gCurrentVfo->pTX->CodeType) {
     case CODE_TYPE_DIGITAL:
     case CODE_TYPE_REVERSE_DIGITAL:
@@ -998,8 +983,7 @@ void RADIO_SendCssTail(void)
     SYSTEM_DelayMs(200);
 }
 
-void RADIO_SendEndOfTransmission(void)
-{
+void RADIO_SendEndOfTransmission(void) {
     BK4819_PlayRoger();
     DTMF_SendEndOfTransmission();
 
@@ -1009,8 +993,7 @@ void RADIO_SendEndOfTransmission(void)
     RADIO_SetupRegisters(false);
 }
 
-void RADIO_PrepareCssTX(void)
-{
+void RADIO_PrepareCssTX(void) {
     RADIO_PrepareTX();
 
     SYSTEM_DelayMs(200);

@@ -47,8 +47,7 @@ static uint32_t RxOnVfofrequency;
 
 bool isMainOnlyInputDTMF = false;
 
-static bool isMainOnly()
-{
+static bool isMainOnly() {
     return (gEeprom.DUAL_WATCH == DUAL_WATCH_OFF) && (gEeprom.CROSS_BAND_RX_TX == CROSS_BAND_OFF);
 }
 
@@ -72,8 +71,7 @@ const char *VfoStateStr[] = {[VFO_STATE_NORMAL] = "",
 
 // ***************************************************************************
 
-static void DrawSmallAntennaAndBars(uint8_t *p, unsigned int level)
-{
+static void DrawSmallAntennaAndBars(uint8_t *p, unsigned int level) {
     if (level > 6)
         level = 6;
 
@@ -85,8 +83,7 @@ static void DrawSmallAntennaAndBars(uint8_t *p, unsigned int level)
     }
 }
 
-static void DrawLevelBar(uint8_t xpos, uint8_t line, uint8_t level, uint8_t bars)
-{
+static void DrawLevelBar(uint8_t xpos, uint8_t line, uint8_t level, uint8_t bars) {
     uint8_t *p_line = gFrameBuffer[line];
     level = MIN(level, bars);
 
@@ -115,8 +112,7 @@ static void DrawLevelBar(uint8_t xpos, uint8_t line, uint8_t level, uint8_t bars
 }
 
 // Approximation of a logarithmic scale using integer arithmetic
-uint8_t log2_approx(unsigned int value)
-{
+uint8_t log2_approx(unsigned int value) {
     uint8_t log = 0;
     while (value >>= 1) {
         log++;
@@ -124,8 +120,7 @@ uint8_t log2_approx(unsigned int value)
     return log;
 }
 
-void UI_DisplayAudioBar(void)
-{
+void UI_DisplayAudioBar(void) {
     if (gSetting_mic_bar) {
         if (gLowBattery && !gLowBatteryConfirmed)
             return;
@@ -171,8 +166,7 @@ void UI_DisplayAudioBar(void)
     }
 }
 
-void DisplayRSSIBar(const bool now)
-{
+void DisplayRSSIBar(const bool now) {
     const unsigned int txt_width = 7 * 8;         // 8 text chars
     const unsigned int bar_x = 2 + txt_width + 4; // X coord of bar graph
 
@@ -268,8 +262,7 @@ void DisplayRSSIBar(const bool now)
         ST7565_BlitLine(line);
 }
 
-void UI_MAIN_TimeSlice500ms(void)
-{
+void UI_MAIN_TimeSlice500ms(void) {
     if (gScreenToDisplay == DISPLAY_MAIN) {
         if (FUNCTION_IsRx()) {
             DisplayRSSIBar(true);
@@ -314,8 +307,7 @@ void UI_MAIN_TimeSlice500ms(void)
 
 // ***************************************************************************
 
-void UI_DisplayMain(void)
-{
+void UI_DisplayMain(void) {
     char String[22];
 
     center_line = CENTER_LINE_NONE;
@@ -564,8 +556,7 @@ void UI_DisplayMain(void)
                         memcpy(p_line0 + 127 - (1 * 6), BITMAP_ScanListE, sizeof(BITMAP_ScanListE));
                     }
 
-                    {
-                    }
+                    {}
                 }
 
                 // compander symbol

@@ -48,8 +48,7 @@ const uint8_t value[] = {0, 3, 6, 9, 15, 24, 38, 62, 100, 159, 255};
 
 uint16_t gSleepModeCountdown_500ms = 0;
 
-void BACKLIGHT_InitHardware()
-{
+void BACKLIGHT_InitHardware() {
     LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM7);
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
 
@@ -81,8 +80,7 @@ void BACKLIGHT_InitHardware()
     LL_DMA_SetDataLength(DMA1, DMA_CHANNEL, sizeof(dutyCycle) / sizeof(uint32_t));
 }
 
-static void BACKLIGHT_Sound(void)
-{
+static void BACKLIGHT_Sound(void) {
     if (gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_SOUND ||
         gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_ALL) {
         AUDIO_PlayBeep(BEEP_880HZ_60MS_DOUBLE_BEEP);
@@ -93,8 +91,7 @@ static void BACKLIGHT_Sound(void)
 }
 
 
-void BACKLIGHT_TurnOn(void)
-{
+void BACKLIGHT_TurnOn(void) {
     gSleepModeCountdown_500ms = gSetting_set_off * 120;
 
     gBacklightBrightnessOld = BACKLIGHT_GetBrightness();
@@ -128,22 +125,19 @@ void BACKLIGHT_TurnOn(void)
     }
 }
 
-void BACKLIGHT_TurnOff()
-{
+void BACKLIGHT_TurnOff() {
     BACKLIGHT_SetBrightness(gEeprom.BACKLIGHT_MIN);
     gBacklightCountdown_500ms = 0;
     backlightOn = false;
 }
 
-bool BACKLIGHT_IsOn()
-{
+bool BACKLIGHT_IsOn() {
     return backlightOn;
 }
 
 static uint8_t currentBrightness = 0;
 
-void BACKLIGHT_SetBrightness(uint8_t brigtness)
-{
+void BACKLIGHT_SetBrightness(uint8_t brigtness) {
     // printf("BL: %d\n", brigtness);
 
     if (currentBrightness == brigtness) {
@@ -176,7 +170,6 @@ void BACKLIGHT_SetBrightness(uint8_t brigtness)
     currentBrightness = brigtness;
 }
 
-uint8_t BACKLIGHT_GetBrightness(void)
-{
+uint8_t BACKLIGHT_GetBrightness(void) {
     return currentBrightness;
 }

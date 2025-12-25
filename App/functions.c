@@ -37,14 +37,12 @@
 
 FUNCTION_Type_t gCurrentFunction;
 
-bool FUNCTION_IsRx()
-{
+bool FUNCTION_IsRx() {
     return gCurrentFunction == FUNCTION_MONITOR || gCurrentFunction == FUNCTION_INCOMING ||
            gCurrentFunction == FUNCTION_RECEIVE;
 }
 
-void FUNCTION_Init(void)
-{
+void FUNCTION_Init(void) {
     g_CxCSS_TAIL_Found = false;
     g_CDCSS_Lost = false;
     g_CTCSS_Lost = false;
@@ -68,8 +66,7 @@ void FUNCTION_Init(void)
     gUpdateStatus = true;
 }
 
-void FUNCTION_Foreground(const FUNCTION_Type_t PreviousFunction)
-{
+void FUNCTION_Foreground(const FUNCTION_Type_t PreviousFunction) {
     if (PreviousFunction == FUNCTION_TRANSMIT) {
         ST7565_FixInterfGlitch();
         gVFO_RSSI_bar_level[0] = 0;
@@ -84,8 +81,7 @@ void FUNCTION_Foreground(const FUNCTION_Type_t PreviousFunction)
     gUpdateStatus = true;
 }
 
-void FUNCTION_PowerSave()
-{
+void FUNCTION_PowerSave() {
     if (gWakeUp) {
         gPowerSave_10ms = gEeprom.BATTERY_SAVE * 200; // deep sleep now indexed on BatSav
     } else {
@@ -108,8 +104,7 @@ void FUNCTION_PowerSave()
         GUI_SelectNextDisplay(DISPLAY_MAIN);
 }
 
-void FUNCTION_Transmit()
-{
+void FUNCTION_Transmit() {
     // if DTMF is enabled when TX'ing, it changes the TX audio filtering !! .. 1of11
     BK4819_DisableDTMF();
 
@@ -180,8 +175,7 @@ void FUNCTION_Transmit()
 }
 
 
-void FUNCTION_Select(FUNCTION_Type_t Function)
-{
+void FUNCTION_Select(FUNCTION_Type_t Function) {
     const FUNCTION_Type_t PreviousFunction = gCurrentFunction;
     const bool bWasPowerSave = PreviousFunction == FUNCTION_POWER_SAVE;
 

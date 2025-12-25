@@ -42,18 +42,15 @@ static uint8_t SectorCache[SECTOR_SIZE];
 static uint8_t BlackHole[1];
 static volatile bool TC_Flag;
 
-static inline void CS_Assert()
-{
+static inline void CS_Assert() {
     GPIO_ResetOutputPin(CS_PIN);
 }
 
-static inline void CS_Release()
-{
+static inline void CS_Release() {
     GPIO_SetOutputPin(CS_PIN);
 }
 
-static void SPI_Init()
-{
+static void SPI_Init() {
     LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_SPI2);
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
     LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
@@ -101,8 +98,7 @@ static void SPI_Init()
     LL_SPI_Enable(SPIx);
 }
 
-static void SPI_ReadBuf(uint8_t *Buf, uint32_t Size)
-{
+static void SPI_ReadBuf(uint8_t *Buf, uint32_t Size) {
     LL_SPI_Disable(SPIx);
     LL_DMA_DisableChannel(DMA1, CHANNEL_RD);
     LL_DMA_DisableChannel(DMA1, CHANNEL_WR);
@@ -150,8 +146,7 @@ static void SPI_ReadBuf(uint8_t *Buf, uint32_t Size)
         ;
 }
 
-static void SPI_WriteBuf(const uint8_t *Buf, uint32_t Size)
-{
+static void SPI_WriteBuf(const uint8_t *Buf, uint32_t Size) {
     LL_SPI_Disable(SPIx);
     LL_DMA_DisableChannel(DMA1, CHANNEL_RD);
     LL_DMA_DisableChannel(DMA1, CHANNEL_WR);
@@ -199,8 +194,7 @@ static void SPI_WriteBuf(const uint8_t *Buf, uint32_t Size)
         ;
 }
 
-static uint8_t SPI_WriteByte(uint8_t Value)
-{
+static uint8_t SPI_WriteByte(uint8_t Value) {
     while (!LL_SPI_IsActiveFlag_TXE(SPIx))
         ;
     LL_SPI_TransmitData8(SPIx, Value);
@@ -217,14 +211,12 @@ static void SectorErase(uint32_t Addr);
 static void SectorProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size);
 static void PageProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size);
 
-void PY25Q16_Init()
-{
+void PY25Q16_Init() {
     CS_Release();
     SPI_Init();
 }
 
-void PY25Q16_ReadBuffer(uint32_t Address, void *pBuffer, uint32_t Size)
-{
+void PY25Q16_ReadBuffer(uint32_t Address, void *pBuffer, uint32_t Size) {
 #ifdef DEBUG
     printf("spi flash read: %06x %ld\n", Address, Size);
 #endif
@@ -244,8 +236,7 @@ void PY25Q16_ReadBuffer(uint32_t Address, void *pBuffer, uint32_t Size)
     CS_Release();
 }
 
-void PY25Q16_WriteBuffer(uint32_t Address, const void *pBuffer, uint32_t Size, bool Append)
-{
+void PY25Q16_WriteBuffer(uint32_t Address, const void *pBuffer, uint32_t Size, bool Append) {
 #ifdef DEBUG
     printf("spi flash write: %06x %ld %d\n", Address, Size, Append);
 #endif
@@ -299,8 +290,7 @@ void PY25Q16_WriteBuffer(uint32_t Address, const void *pBuffer, uint32_t Size, b
     } // while
 }
 
-void PY25Q16_SectorErase(uint32_t Address)
-{
+void PY25Q16_SectorErase(uint32_t Address) {
     Address -= (Address % SECTOR_SIZE);
     SectorErase(Address);
     if (SectorCacheAddr == Address) {
@@ -308,15 +298,13 @@ void PY25Q16_SectorErase(uint32_t Address)
     }
 }
 
-static inline void WriteAddr(uint32_t Addr)
-{
+static inline void WriteAddr(uint32_t Addr) {
     SPI_WriteByte(0xff & (Addr >> 16));
     SPI_WriteByte(0xff & (Addr >> 8));
     SPI_WriteByte(0xff & Addr);
 }
 
-static uint8_t ReadStatusReg(uint32_t Which)
-{
+static uint8_t ReadStatusReg(uint32_t Which) {
     uint8_t Cmd;
     switch (Which) {
     case 0:
@@ -340,8 +328,7 @@ static uint8_t ReadStatusReg(uint32_t Which)
     return Value;
 }
 
-static void WaitWIP()
-{
+static void WaitWIP() {
     for (int i = 0; i < 1000000; i++) {
         uint8_t Status = ReadStatusReg(0);
         if (1 & Status) // WIP
@@ -353,15 +340,13 @@ static void WaitWIP()
     }
 }
 
-static void WriteEnable()
-{
+static void WriteEnable() {
     CS_Assert();
     SPI_WriteByte(0x6);
     CS_Release();
 }
 
-static void SectorErase(uint32_t Addr)
-{
+static void SectorErase(uint32_t Addr) {
 #ifdef DEBUG
     printf("spi flash sector erase: %06x\n", Addr);
 #endif
@@ -376,8 +361,7 @@ static void SectorErase(uint32_t Addr)
     WaitWIP();
 }
 
-static void SectorProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size)
-{
+static void SectorProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size) {
     uint32_t Size1 = PAGE_SIZE - (Addr % PAGE_SIZE);
 
     while (Size) {
@@ -395,8 +379,7 @@ static void SectorProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size)
     }
 }
 
-static void PageProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size)
-{
+static void PageProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size) {
 #ifdef DEBUG
     printf("spi flash page program: %06x %ld\n", Addr, Size);
 #endif
@@ -422,8 +405,7 @@ static void PageProgram(uint32_t Addr, const uint8_t *Buf, uint32_t Size)
     WaitWIP();
 }
 
-void DMA1_Channel4_5_6_7_IRQHandler()
-{
+void DMA1_Channel4_5_6_7_IRQHandler() {
     if (LL_DMA_IsActiveFlag_TC4(DMA1) && LL_DMA_IsEnabledIT_TC(DMA1, CHANNEL_RD)) {
         LL_DMA_DisableIT_TC(DMA1, CHANNEL_RD);
         LL_DMA_ClearFlag_TC4(DMA1);

@@ -22,39 +22,32 @@
 #define PIN_SCL GPIO_MAKE_PIN(GPIOF, LL_GPIO_PIN_5)
 #define PIN_SDA GPIO_MAKE_PIN(GPIOF, LL_GPIO_PIN_6)
 
-static inline void SCL_Set()
-{
+static inline void SCL_Set() {
     GPIO_SetOutputPin(PIN_SCL);
 }
 
-static inline void SCL_Reset()
-{
+static inline void SCL_Reset() {
     GPIO_ResetOutputPin(PIN_SCL);
 }
 
-static inline void SDA_Set()
-{
+static inline void SDA_Set() {
     GPIO_SetOutputPin(PIN_SDA);
 }
 
-static inline void SDA_Reset()
-{
+static inline void SDA_Reset() {
     GPIO_ResetOutputPin(PIN_SDA);
 }
 
-static inline void SDA_SetDir(bool Output)
-{
+static inline void SDA_SetDir(bool Output) {
     LL_GPIO_SetPinMode(GPIO_PORT(PIN_SDA), GPIO_PIN_MASK(PIN_SDA),
                        Output ? LL_GPIO_MODE_OUTPUT : LL_GPIO_MODE_INPUT);
 }
 
-static inline bool SDA_IsSet()
-{
+static inline bool SDA_IsSet() {
     return GPIO_IsInputPinSet(PIN_SDA);
 }
 
-void I2C_Start(void)
-{
+void I2C_Start(void) {
     SDA_Set();
     SYSTICK_DelayUs(1);
     SCL_Set();
@@ -65,8 +58,7 @@ void I2C_Start(void)
     SYSTICK_DelayUs(1);
 }
 
-void I2C_Stop(void)
-{
+void I2C_Stop(void) {
     SDA_Reset();
     SYSTICK_DelayUs(1);
     SCL_Reset();
@@ -77,8 +69,7 @@ void I2C_Stop(void)
     SYSTICK_DelayUs(1);
 }
 
-uint8_t I2C_Read(bool bFinal)
-{
+uint8_t I2C_Read(bool bFinal) {
     uint8_t i, Data;
 
     SDA_SetDir(false);
@@ -115,8 +106,7 @@ uint8_t I2C_Read(bool bFinal)
     return Data;
 }
 
-int I2C_Write(uint8_t Data)
-{
+int I2C_Write(uint8_t Data) {
     uint8_t i;
     int ret = -1;
 
@@ -157,8 +147,7 @@ int I2C_Write(uint8_t Data)
     return ret;
 }
 
-int I2C_ReadBuffer(void *pBuffer, uint8_t Size)
-{
+int I2C_ReadBuffer(void *pBuffer, uint8_t Size) {
     uint8_t *pData = (uint8_t *)pBuffer;
     uint8_t i;
 
@@ -173,8 +162,7 @@ int I2C_ReadBuffer(void *pBuffer, uint8_t Size)
     return Size;
 }
 
-int I2C_WriteBuffer(const void *pBuffer, uint8_t Size)
-{
+int I2C_WriteBuffer(const void *pBuffer, uint8_t Size) {
     const uint8_t *pData = (const uint8_t *)pBuffer;
     uint8_t i;
 

@@ -33,48 +33,39 @@ enum GPIO_PINS {
     GPIO_PIN_AUDIO_PATH = GPIO_MAKE_PIN(GPIOA, LL_GPIO_PIN_8),
 };
 
-static inline void GPIO_SetOutputPin(uint32_t Pin)
-{
+static inline void GPIO_SetOutputPin(uint32_t Pin) {
     LL_GPIO_SetOutputPin(GPIO_PORT(Pin), GPIO_PIN_MASK(Pin));
 }
 
-static inline void GPIO_ResetOutputPin(uint32_t Pin)
-{
+static inline void GPIO_ResetOutputPin(uint32_t Pin) {
     LL_GPIO_ResetOutputPin(GPIO_PORT(Pin), GPIO_PIN_MASK(Pin));
 }
 
-static inline void GPIO_TogglePin(uint32_t Pin)
-{
+static inline void GPIO_TogglePin(uint32_t Pin) {
     LL_GPIO_TogglePin(GPIO_PORT(Pin), GPIO_PIN_MASK(Pin));
 }
 
-static inline bool GPIO_IsInputPinSet(uint32_t Pin)
-{
+static inline bool GPIO_IsInputPinSet(uint32_t Pin) {
     return !!LL_GPIO_IsInputPinSet(GPIO_PORT(Pin), GPIO_PIN_MASK(Pin));
 }
 
-static inline void GPIO_EnableAudioPath()
-{
+static inline void GPIO_EnableAudioPath() {
     GPIO_SetOutputPin(GPIO_PIN_AUDIO_PATH);
 }
 
-static inline void GPIO_DisableAudioPath()
-{
+static inline void GPIO_DisableAudioPath() {
     GPIO_ResetOutputPin(GPIO_PIN_AUDIO_PATH);
 }
 
-static inline void GPIO_TurnOnBacklight()
-{
+static inline void GPIO_TurnOnBacklight() {
     GPIO_SetOutputPin(GPIO_PIN_BACKLIGHT);
 }
 
-static inline void GPIO_TurnOffBacklight()
-{
+static inline void GPIO_TurnOffBacklight() {
     GPIO_ResetOutputPin(GPIO_PIN_BACKLIGHT);
 }
 
-static inline bool GPIO_IsPttPressed()
-{
+static inline bool GPIO_IsPttPressed() {
     return !GPIO_IsInputPinSet(GPIO_PIN_PTT);
 }
 

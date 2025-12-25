@@ -141,8 +141,7 @@ static uint16_t VCP_ReadIndex;
 // static bool     bIsEncrypted = true;
 #define bIsEncrypted true
 
-static void SendReply_VCP(void *pReply, uint16_t Size)
-{
+static void SendReply_VCP(void *pReply, uint16_t Size) {
     static uint8_t VCP_ReplyBuf[MAX_REPLY_SIZE + sizeof(Header_t) + sizeof(Footer_t)];
 
     // !!
@@ -183,8 +182,7 @@ static void SendReply_VCP(void *pReply, uint16_t Size)
     VCP_SendAsync(VCP_ReplyBuf, sizeof(Header_t) + Size + sizeof(Footer_t));
 }
 
-static void SendReply(uint32_t Port, void *pReply, uint16_t Size)
-{
+static void SendReply(uint32_t Port, void *pReply, uint16_t Size) {
     if (Port == UART_PORT_VCP) {
         SendReply_VCP(pReply, Size);
         return;
@@ -218,8 +216,7 @@ static void SendReply(uint32_t Port, void *pReply, uint16_t Size)
     UART_Send(&Footer, sizeof(Footer));
 }
 
-static void SendVersion(uint32_t Port)
-{
+static void SendVersion(uint32_t Port) {
     REPLY_0514_t Reply;
 
     Reply.Header.ID = 0x0515;
@@ -238,8 +235,7 @@ static void SendVersion(uint32_t Port)
 
 // session init, sends back version info and state
 // timestamp is a session id really
-static void CMD_0514(uint32_t Port, const uint8_t *pBuffer)
-{
+static void CMD_0514(uint32_t Port, const uint8_t *pBuffer) {
     const CMD_0514_t *pCmd = (const CMD_0514_t *)pBuffer;
 
     if (0) {
@@ -260,8 +256,7 @@ static void CMD_0514(uint32_t Port, const uint8_t *pBuffer)
 }
 
 // read eeprom
-static void CMD_051B(uint32_t Port, const uint8_t *pBuffer)
-{
+static void CMD_051B(uint32_t Port, const uint8_t *pBuffer) {
     const CMD_051B_t *pCmd = (const CMD_051B_t *)pBuffer;
     REPLY_051B_t Reply;
     bool bLocked = false;
@@ -301,8 +296,7 @@ static void CMD_051B(uint32_t Port, const uint8_t *pBuffer)
 }
 
 // write eeprom
-static void CMD_051D(uint32_t Port, const uint8_t *pBuffer)
-{
+static void CMD_051D(uint32_t Port, const uint8_t *pBuffer) {
     const CMD_051D_t *pCmd = (const CMD_051D_t *)pBuffer;
     REPLY_051D_t Reply;
     bool bReloadEeprom;
@@ -356,8 +350,7 @@ static void CMD_051D(uint32_t Port, const uint8_t *pBuffer)
 }
 
 
-bool UART_IsCommandAvailable(uint32_t Port)
-{
+bool UART_IsCommandAvailable(uint32_t Port) {
     uint16_t Index;
     uint16_t TailIndex;
     uint16_t Size;
@@ -464,8 +457,7 @@ bool UART_IsCommandAvailable(uint32_t Port)
     return CRC_Calculate(pUART_Command->Buffer, Size) == Crc;
 }
 
-void UART_HandleCommand(uint32_t Port)
-{
+void UART_HandleCommand(uint32_t Port) {
     UART_Command_t *pUART_Command;
 
     if (0) {

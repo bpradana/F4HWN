@@ -5,8 +5,7 @@
 #include "settings.h"
 #include "ui/ui.h"
 
-void COMMON_KeypadLockToggle()
-{
+void COMMON_KeypadLockToggle() {
     if (gScreenToDisplay != DISPLAY_MENU &&
         gCurrentFunction != FUNCTION_TRANSMIT) { // toggle the keyboad lock
 
@@ -17,8 +16,7 @@ void COMMON_KeypadLockToggle()
     }
 }
 
-void COMMON_SwitchVFOs()
-{
+void COMMON_SwitchVFOs() {
     gScanRangeStart = 0;
     gEeprom.TX_VFO ^= 1;
 
@@ -34,8 +32,7 @@ void COMMON_SwitchVFOs()
     gRequestDisplayScreen = DISPLAY_MAIN;
 }
 
-void COMMON_SwitchVFOMode()
-{
+void COMMON_SwitchVFOMode() {
     if (gEeprom.VFO_OPEN) {
         if (IS_MR_CHANNEL(gTxVfo->CHANNEL_SAVE)) { // swap to frequency mode
             gEeprom.ScreenChannel[gEeprom.TX_VFO] = gEeprom.FreqChannel[gEeprom.TX_VFO];

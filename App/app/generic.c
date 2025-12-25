@@ -35,8 +35,7 @@
 #include "ui/inputbox.h"
 #include "ui/ui.h"
 
-void GENERIC_Key_F(bool bKeyPressed, bool bKeyHeld)
-{
+void GENERIC_Key_F(bool bKeyPressed, bool bKeyHeld) {
     if (gInputBoxIndex > 0) {
         if (!bKeyHeld && bKeyPressed) // short pressed
             gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
@@ -80,8 +79,7 @@ void GENERIC_Key_F(bool bKeyPressed, bool bKeyHeld)
     }
 }
 
-void GENERIC_Key_PTT(bool bKeyPressed)
-{
+void GENERIC_Key_PTT(bool bKeyPressed) {
     gInputBoxIndex = 0;
 
     if (!bKeyPressed || SerialConfigInProgress()) { // PTT released

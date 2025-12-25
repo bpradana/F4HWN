@@ -33,8 +33,7 @@
 uint8_t gStatusLine[LCD_WIDTH];
 uint8_t gFrameBuffer[FRAME_LINES][LCD_WIDTH];
 
-static void SPI_Init()
-{
+static void SPI_Init() {
     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SPI1);
     LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
 
@@ -73,28 +72,23 @@ static void SPI_Init()
     LL_SPI_Enable(SPIx);
 }
 
-static inline void CS_Assert()
-{
+static inline void CS_Assert() {
     GPIO_ResetOutputPin(PIN_CS);
 }
 
-static inline void CS_Release()
-{
+static inline void CS_Release() {
     GPIO_SetOutputPin(PIN_CS);
 }
 
-static inline void A0_Set()
-{
+static inline void A0_Set() {
     GPIO_SetOutputPin(PIN_A0);
 }
 
-static inline void A0_Reset()
-{
+static inline void A0_Reset() {
     GPIO_ResetOutputPin(PIN_A0);
 }
 
-static uint8_t SPI_WriteByte(uint8_t Value)
-{
+static uint8_t SPI_WriteByte(uint8_t Value) {
     while (!LL_SPI_IsActiveFlag_TXE(SPIx))
         ;
 
@@ -106,8 +100,8 @@ static uint8_t SPI_WriteByte(uint8_t Value)
     return LL_SPI_ReceiveData8(SPIx);
 }
 
-static void DrawLine(uint8_t column, uint8_t line, const uint8_t *lineBuffer, unsigned size_defVal)
-{
+static void DrawLine(uint8_t column, uint8_t line, const uint8_t *lineBuffer,
+                     unsigned size_defVal) {
     ST7565_SelectColumnAndLine(column + 4, line);
     A0_Set();
     for (unsigned i = 0; i < size_defVal; i++) {
@@ -116,8 +110,7 @@ static void DrawLine(uint8_t column, uint8_t line, const uint8_t *lineBuffer, un
 }
 
 void ST7565_DrawLine(const unsigned int Column, const unsigned int Line, const uint8_t *pBitmap,
-                     const unsigned int Size)
-{
+                     const unsigned int Size) {
     CS_Assert();
     DrawLine(Column, Line, pBitmap, Size);
     CS_Release();
@@ -131,8 +124,7 @@ void ST7565_DrawLine(const unsigned int Column, const unsigned int Line, const u
 // ST7565_BlitScreen(8) = ST7565_BlitFullScreen()
 //
 
-static void ST7565_BlitScreen(uint8_t line)
-{
+static void ST7565_BlitScreen(uint8_t line) {
     CS_Assert();
     ST7565_WriteByte(0x40);
 
@@ -149,23 +141,19 @@ static void ST7565_BlitScreen(uint8_t line)
     CS_Release();
 }
 
-void ST7565_BlitFullScreen(void)
-{
+void ST7565_BlitFullScreen(void) {
     ST7565_BlitScreen(8);
 }
 
-void ST7565_BlitLine(unsigned line)
-{
+void ST7565_BlitLine(unsigned line) {
     ST7565_BlitScreen(line + 1);
 }
 
-void ST7565_BlitStatusLine(void)
-{
+void ST7565_BlitStatusLine(void) {
     ST7565_BlitScreen(0);
 }
 
-void ST7565_FillScreen(uint8_t value)
-{
+void ST7565_FillScreen(uint8_t value) {
     CS_Assert();
     for (unsigned i = 0; i < 8; i++) {
         // TODO: This is wrong
@@ -239,8 +227,7 @@ uint8_t cmds[] = {
     ST7565_CMD_DISPLAY_ON_OFF | 1,    // Display ON/OFF: ON
 };
 
-static void ST7565_Cmd(uint8_t i)
-{
+static void ST7565_Cmd(uint8_t i) {
     switch (i) {
     case 3:
         ST7565_WriteByte(ST7565_CMD_INVERSE_DISPLAY | gSetting_set_inv);
@@ -253,8 +240,7 @@ static void ST7565_Cmd(uint8_t i)
     }
 }
 
-void ST7565_ContrastAndInv(void)
-{
+void ST7565_ContrastAndInv(void) {
     CS_Assert();
     ST7565_WriteByte(ST7565_CMD_SOFTWARE_RESET); // software reset
 
@@ -265,14 +251,12 @@ void ST7565_ContrastAndInv(void)
     // TODO: Release CS??
 }
 
-int16_t map(int16_t x, int16_t in_min, int16_t in_max, int16_t out_min, int16_t out_max)
-{
+int16_t map(int16_t x, int16_t in_min, int16_t in_max, int16_t out_min, int16_t out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 // #if !defined(ENABLE_SPECTRUM) || !defined(ENABLE_FMRADIO)
-void ST7565_Gauge(uint8_t line, uint8_t min, uint8_t max, uint8_t value)
-{
+void ST7565_Gauge(uint8_t line, uint8_t min, uint8_t max, uint8_t value) {
     gFrameBuffer[line][54] = 0x0c;
     gFrameBuffer[line][55] = 0x12;
 
@@ -287,8 +271,7 @@ void ST7565_Gauge(uint8_t line, uint8_t min, uint8_t max, uint8_t value)
 }
 // #endif
 
-void ST7565_Init(void)
-{
+void ST7565_Init(void) {
     SPI_Init();
     ST7565_HardwareReset();
     CS_Assert();
@@ -317,8 +300,7 @@ void ST7565_Init(void)
     ST7565_FillScreen(0x00);
 }
 
-void ST7565_ShutDown(void)
-{
+void ST7565_ShutDown(void) {
     CS_Assert();
     ST7565_WriteByte(ST7565_CMD_POWER_CIRCUIT | 0b000); // VB=0 VR=1 VF=1
     ST7565_WriteByte(ST7565_CMD_SET_START_LINE | 0);    // line 0
@@ -326,8 +308,7 @@ void ST7565_ShutDown(void)
     CS_Release();
 }
 
-void ST7565_FixInterfGlitch(void)
-{
+void ST7565_FixInterfGlitch(void) {
     CS_Assert();
     for (uint8_t i = 0; i < ARRAY_SIZE(cmds); i++)
         ST7565_Cmd(i);
@@ -335,14 +316,12 @@ void ST7565_FixInterfGlitch(void)
     CS_Release();
 }
 
-void ST7565_HardwareReset(void)
-{
+void ST7565_HardwareReset(void) {
     // Not supported on K1
     // TODO: Delete this function
 }
 
-void ST7565_SelectColumnAndLine(uint8_t Column, uint8_t Line)
-{
+void ST7565_SelectColumnAndLine(uint8_t Column, uint8_t Line) {
     A0_Reset();
     SPI_WriteByte(Line + 176);
     SPI_WriteByte(((Column >> 4) & 0x0F) | 0x10);
@@ -352,8 +331,7 @@ void ST7565_SelectColumnAndLine(uint8_t Column, uint8_t Line)
 /**
  *  Write a command (rather than pixel data)
  */
-void ST7565_WriteByte(uint8_t Value)
-{
+void ST7565_WriteByte(uint8_t Value) {
     A0_Reset();
     SPI_WriteByte(Value);
 }

@@ -3,24 +3,20 @@
 #include "app/flashlight.h"
 #include <stdbool.h>
 
-static inline void Flashlight_TurnOn()
-{
+static inline void Flashlight_TurnOn() {
     GPIO_SetOutputPin(GPIO_PIN_FLASHLIGHT);
 }
-static inline void Flashlight_TurnOff()
-{
+static inline void Flashlight_TurnOff() {
     GPIO_ResetOutputPin(GPIO_PIN_FLASHLIGHT);
 }
-static inline void Flashlight_Toggle()
-{
+static inline void Flashlight_Toggle() {
     GPIO_TogglePin(GPIO_PIN_FLASHLIGHT);
 }
 
 #if !defined(ENABLE_FEAT_F4HWN) || defined(ENABLE_FEAT_F4HWN_RESCUE_OPS)
 enum FlashlightMode_t gFlashLightState;
 
-void FlashlightTimeSlice()
-{
+void FlashlightTimeSlice() {
     if (gFlashLightState == FLASHLIGHT_BLINK && (gFlashLightBlinkCounter & 15u) == 0) {
         Flashlight_Toggle();
         return;
@@ -57,8 +53,7 @@ void FlashlightTimeSlice()
     }
 }
 
-void ACTION_FlashLight(void)
-{
+void ACTION_FlashLight(void) {
     switch (gFlashLightState) {
     case FLASHLIGHT_OFF:
         gFlashLightState++;
@@ -75,8 +70,7 @@ void ACTION_FlashLight(void)
     }
 }
 #else
-void ACTION_FlashLight(void)
-{
+void ACTION_FlashLight(void) {
     static bool gFlashLightState = false;
 
     if (gFlashLightState) {

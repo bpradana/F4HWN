@@ -66,8 +66,7 @@ uint16_t t9_timeout_counter = 0; // 10ms unit counter (exposed for scheduler)
 #define T9_TIMEOUT_10MS 100 // 1000ms = 100 * 10ms
 
 
-void MENU_StartCssScan(void)
-{
+void MENU_StartCssScan(void) {
     SCANNER_Start(true);
     gUpdateStatus = true;
     gCssBackgroundScan = true;
@@ -75,8 +74,7 @@ void MENU_StartCssScan(void)
     gRequestDisplayScreen = DISPLAY_MENU;
 }
 
-void MENU_CssScanFound(void)
-{
+void MENU_CssScanFound(void) {
     if (gScanCssResultType == CODE_TYPE_DIGITAL ||
         gScanCssResultType == CODE_TYPE_REVERSE_DIGITAL) {
         gMenuCursor = UI_MENU_GetMenuIdx(MENU_R_DCS);
@@ -90,16 +88,14 @@ void MENU_CssScanFound(void)
     gUpdateDisplay = true;
 }
 
-void MENU_StopCssScan(void)
-{
+void MENU_StopCssScan(void) {
     gCssBackgroundScan = false;
 
     gUpdateDisplay = true;
     gUpdateStatus = true;
 }
 
-int MENU_GetLimits(uint8_t menu_id, int32_t *pMin, int32_t *pMax)
-{
+int MENU_GetLimits(uint8_t menu_id, int32_t *pMin, int32_t *pMax) {
     *pMin = 0;
 
     switch (menu_id) {
@@ -354,8 +350,7 @@ int MENU_GetLimits(uint8_t menu_id, int32_t *pMin, int32_t *pMax)
     return 0;
 }
 
-void MENU_AcceptSetting(void)
-{
+void MENU_AcceptSetting(void) {
     int32_t Min;
     int32_t Max;
     FREQ_Config_t *pConfig = &gTxVfo->freq_config_RX;
@@ -753,8 +748,7 @@ void MENU_AcceptSetting(void)
     gRequestSaveSettings = true;
 }
 
-static void MENU_ClampSelection(int8_t Direction)
-{
+static void MENU_ClampSelection(int8_t Direction) {
     int32_t Min;
     int32_t Max;
 
@@ -768,8 +762,7 @@ static void MENU_ClampSelection(int8_t Direction)
     }
 }
 
-void MENU_ShowCurrentSetting(void)
-{
+void MENU_ShowCurrentSetting(void) {
     switch (UI_MENU_GetCurrentMenuId()) {
     case MENU_SQL:
         gSubMenuSelection = gEeprom.SQUELCH_LEVEL;
@@ -1099,8 +1092,7 @@ void MENU_ShowCurrentSetting(void)
     }
 }
 
-static void MENU_Key_0_to_9(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+static void MENU_Key_0_to_9(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     uint8_t Offset;
     int32_t Min;
     int32_t Max;
@@ -1270,8 +1262,7 @@ static void MENU_Key_0_to_9(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
 }
 
-static void MENU_Key_EXIT(bool bKeyPressed, bool bKeyHeld)
-{
+static void MENU_Key_EXIT(bool bKeyPressed, bool bKeyHeld) {
     if (bKeyHeld || !bKeyPressed)
         return;
 
@@ -1315,8 +1306,7 @@ static void MENU_Key_EXIT(bool bKeyPressed, bool bKeyHeld)
     gPttWasReleased = true;
 }
 
-static void MENU_Key_MENU(const bool bKeyPressed, const bool bKeyHeld)
-{
+static void MENU_Key_MENU(const bool bKeyPressed, const bool bKeyHeld) {
     if (bKeyHeld || !bKeyPressed)
         return;
 
@@ -1426,8 +1416,7 @@ static void MENU_Key_MENU(const bool bKeyPressed, const bool bKeyHeld)
     gInputBoxIndex = 0;
 }
 
-static void MENU_Key_STAR(const bool bKeyPressed, const bool bKeyHeld)
-{
+static void MENU_Key_STAR(const bool bKeyPressed, const bool bKeyHeld) {
     if (bKeyHeld || !bKeyPressed)
         return;
 
@@ -1469,8 +1458,7 @@ static void MENU_Key_STAR(const bool bKeyPressed, const bool bKeyHeld)
     gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
 }
 
-static void MENU_Key_UP_DOWN(bool bKeyPressed, bool bKeyHeld, int8_t Direction)
-{
+static void MENU_Key_UP_DOWN(bool bKeyPressed, bool bKeyHeld, int8_t Direction) {
     uint8_t VFO;
     uint8_t Channel;
     bool bCheckScanList;
@@ -1578,8 +1566,7 @@ static void MENU_Key_UP_DOWN(bool bKeyPressed, bool bKeyHeld, int8_t Direction)
     gRequestDisplayScreen = DISPLAY_MENU;
 }
 
-void MENU_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
+void MENU_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     switch (Key) {
     case KEY_0:
     case KEY_1:

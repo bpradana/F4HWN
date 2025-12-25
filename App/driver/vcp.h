@@ -28,20 +28,17 @@ extern volatile uint32_t VCP_RxBufPointer;
 
 void VCP_Init();
 
-static inline void VCP_Send(const uint8_t *Buf, uint32_t Size)
-{
+static inline void VCP_Send(const uint8_t *Buf, uint32_t Size) {
     cdc_acm_data_send_with_dtr(Buf, Size);
 }
 
-static inline void VCP_SendStr(const char *Str)
-{
+static inline void VCP_SendStr(const char *Str) {
     if (Str) {
         cdc_acm_data_send_with_dtr((const uint8_t *)Str, strlen(Str));
     }
 }
 
-static inline void VCP_SendAsync(const uint8_t *Buf, uint32_t Size)
-{
+static inline void VCP_SendAsync(const uint8_t *Buf, uint32_t Size) {
     cdc_acm_data_send_with_dtr_async(Buf, Size);
 }
 

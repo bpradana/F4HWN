@@ -28,8 +28,7 @@
 #include "ui/inputbox.h"
 #include "ui/ui.h"
 
-void UI_DisplayFM(void)
-{
+void UI_DisplayFM(void) {
     char String[16] = {0};
     char *pPrintStr = String;
     UI_DisplayClear();

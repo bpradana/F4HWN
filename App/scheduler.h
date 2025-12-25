@@ -18,13 +18,11 @@
 
 #include "py32f0xx.h"
 
-static void inline SCHEDULER_Enable()
-{
+static void inline SCHEDULER_Enable() {
     NVIC_EnableIRQ(SysTick_IRQn);
 }
 
-static void inline SCHEDULER_Disable()
-{
+static void inline SCHEDULER_Disable() {
     NVIC_DisableIRQ(SysTick_IRQn);
 }
 

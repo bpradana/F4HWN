@@ -39,8 +39,7 @@
 #include "settings.h"
 
 
-void BOARD_GPIO_Init(void)
-{
+void BOARD_GPIO_Init(void) {
     LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA   //
                             | LL_IOP_GRP1_PERIPH_GPIOB //
                             | LL_IOP_GRP1_PERIPH_GPIOC //
@@ -106,8 +105,7 @@ void BOARD_GPIO_Init(void)
     LL_GPIO_Init(GPIOF, &InitStruct);
 }
 
-void BOARD_ADC_Init(void)
-{
+void BOARD_ADC_Init(void) {
     LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOB);
     LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_0 | LL_GPIO_PIN_1, LL_GPIO_MODE_ANALOG);
 
@@ -134,8 +132,7 @@ void BOARD_ADC_Init(void)
     LL_ADC_Enable(ADC1);
 }
 
-void BOARD_ADC_GetBatteryInfo(uint16_t *pVoltage, uint16_t *pCurrent)
-{
+void BOARD_ADC_GetBatteryInfo(uint16_t *pVoltage, uint16_t *pCurrent) {
     LL_ADC_REG_StartConversionSWStart(ADC1);
     while (!LL_ADC_IsActiveFlag_EOS(ADC1))
         ;
@@ -145,8 +142,7 @@ void BOARD_ADC_GetBatteryInfo(uint16_t *pVoltage, uint16_t *pCurrent)
     *pCurrent = 0;
 }
 
-void BOARD_Init(void)
-{
+void BOARD_Init(void) {
     BOARD_GPIO_Init();
     BACKLIGHT_InitHardware();
     BOARD_ADC_Init();

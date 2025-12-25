@@ -26,18 +26,15 @@
 #include "ui/helper.h"
 #include "ui/inputbox.h"
 
-static void set_bit(uint8_t *array, int bit_index)
-{
+static void set_bit(uint8_t *array, int bit_index) {
     array[bit_index / 8] |= (1 << (bit_index % 8));
 }
 
-static int get_bit(uint8_t *array, int bit_index)
-{
+static int get_bit(uint8_t *array, int bit_index) {
     return (array[bit_index / 8] >> (bit_index % 8)) & 1;
 }
 
-void UI_DisplayAircopy(void)
-{
+void UI_DisplayAircopy(void) {
     char String[16] = {0};
     char *pPrintStr = {0};
     uint16_t percent;

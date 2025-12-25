@@ -30,8 +30,7 @@
 
 #include "screenshot.h"
 
-void UI_DisplayReleaseKeys(void)
-{
+void UI_DisplayReleaseKeys(void) {
     memset(gStatusLine, 0, sizeof(gStatusLine));
     ST7565_ContrastAndInv();
     UI_DisplayClear();
@@ -43,8 +42,7 @@ void UI_DisplayReleaseKeys(void)
     ST7565_BlitFullScreen();
 }
 
-void UI_DisplayWelcome(void)
-{
+void UI_DisplayWelcome(void) {
     char WelcomeString0[16];
     char WelcomeString1[16];
     char WelcomeString2[16];

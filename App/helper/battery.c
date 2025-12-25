@@ -114,9 +114,8 @@ static_assert(
     );
 */
 
-unsigned int BATTERY_VoltsToPercent(const unsigned int voltage_10mV)
-{
-    const uint16_t (*crv)[2] = Voltage2PercentageTable[gEeprom.BATTERY_TYPE];
+unsigned int BATTERY_VoltsToPercent(const unsigned int voltage_10mV) {
+    const uint16_t(*crv)[2] = Voltage2PercentageTable[gEeprom.BATTERY_TYPE];
     const int mulipl = 1000;
     for (unsigned int i = 1; i < ARRAY_SIZE(Voltage2PercentageTable[BATTERY_TYPE_2200_MAH]); i++) {
         if (voltage_10mV > crv[i][0]) {
@@ -130,8 +129,7 @@ unsigned int BATTERY_VoltsToPercent(const unsigned int voltage_10mV)
     return 0;
 }
 
-void BATTERY_GetReadings(const bool bDisplayBatteryLevel)
-{
+void BATTERY_GetReadings(const bool bDisplayBatteryLevel) {
     const uint8_t PreviousBatteryLevel = gBatteryDisplayLevel;
     const uint16_t Voltage =
         (gBatteryVoltages[0] + gBatteryVoltages[1] + gBatteryVoltages[2] + gBatteryVoltages[3]) / 4;
@@ -205,8 +203,7 @@ void BATTERY_GetReadings(const bool bDisplayBatteryLevel)
     }
 }
 
-void BATTERY_TimeSlice500ms(void)
-{
+void BATTERY_TimeSlice500ms(void) {
     if (!gLowBattery) {
         return;
     }
