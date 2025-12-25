@@ -711,7 +711,6 @@ void UI_DisplayMain(void) {
 
     // show the modulation symbol
     const char *s = "";
-    const char *t = "";
     const ModulationMode_t mod = vfoInfo->Modulation;
     switch (mod) {
     case MODULATION_FM: {
@@ -721,12 +720,9 @@ void UI_DisplayMain(void) {
       const char *code_list[] = {"", "CT", "DC", "DC"};
       if (code_type < ARRAY_SIZE(code_list))
         s = code_list[code_type];
-      if (gCurrentFunction != FUNCTION_TRANSMIT || activeTxVFO != vfo_num)
-        t = gModulationStr[mod];
       break;
     }
     default:
-      t = gModulationStr[mod];
       break;
     }
 
