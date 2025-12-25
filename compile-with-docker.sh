@@ -79,7 +79,7 @@ case "$COMMAND" in
         echo "---------------------------------------------"
         
         docker run --rm -v "$PWD":/src -w /src "$IMAGE" \
-            bash -c "find App -name '*.c' -o -name '*.h' | xargs clang-format -i --style=file"
+            bash -c "find App -path 'App/external' -prune -o \( -name '*.c' -o -name '*.h' \) -print | xargs clang-format -i --style=file"
         
         echo ""
         echo "✅ Code formatting complete!"
