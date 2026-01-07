@@ -59,6 +59,54 @@ static APRS_DemodState_t gAprsDemod;
 static uint8_t gAprsSelectedIndex;
 static bool gAprsDetailView;
 static bool gAprsInputActive;
+static BK4819_AF_Type_t gAprsPrevAfMode;
+static BK4819_FilterBandwidth_t gAprsPrevBandwidth;
+static bool gAprsPrevAudioPathOn;
+static bool gAprsPrevSettingsValid;
+
+static BK4819_AF_Type_t APRS_GetCurrentAfMode(void)
+{
+    if (gCurrentVfo == NULL) {
+        return BK4819_AF_FM;
+    }
+
+    switch (gCurrentVfo->Modulation) {
+        default:
+        case MODULATION_FM:
+            return BK4819_AF_FM;
+        case MODULATION_AM:
+            return BK4819_AF_FM;
+        case MODULATION_USB:
+            return BK4819_AF_BASEBAND2;
+#ifdef ENABLE_BYP_RAW_DEMODULATORS
+        case MODULATION_BYP:
+            return BK4819_AF_UNKNOWN3;
+        case MODULATION_RAW:
+            return BK4819_AF_BASEBAND1;
+#endif
+    }
+}
+
+static BK4819_FilterBandwidth_t APRS_GetCurrentFilterBandwidth(void)
+{
+    BK4819_FilterBandwidth_t bandwidth = BK4819_FILTER_BW_WIDE;
+
+    if (gRxVfo != NULL) {
+        bandwidth = gRxVfo->CHANNEL_BANDWIDTH;
+
+#ifdef ENABLE_FEAT_F4HWN_NARROWER
+        if (bandwidth == BK4819_FILTER_BW_NARROW && gSetting_set_nfm == 1) {
+            bandwidth = BK4819_FILTER_BW_NARROWER;
+        }
+#endif
+
+        if (gRxVfo->Modulation == MODULATION_AM) {
+            bandwidth = BK4819_FILTER_BW_AM;
+        }
+    }
+
+    return bandwidth;
+}
 
 static void APRS_ResetDemod(void)
 {
@@ -298,6 +346,11 @@ void APRS_Init(void)
 
 void APRS_StartRx(void)
 {
+    gAprsPrevAfMode = APRS_GetCurrentAfMode();
+    gAprsPrevBandwidth = APRS_GetCurrentFilterBandwidth();
+    gAprsPrevAudioPathOn = gEnableSpeaker;
+    gAprsPrevSettingsValid = true;
+
     gAprsState = APRS_RECEIVING;
     APRS_ResetDemod();
     BK4819_SetRxAudioSampleCallback(APRS_OnAudioSamples);
@@ -311,6 +364,23 @@ void APRS_StopRx(void)
 {
     gAprsState = APRS_READY;
     BK4819_SetRxAudioSampleCallback(NULL);
+
+    if (gAprsPrevSettingsValid) {
+        BK4819_SetAF(gAprsPrevAfMode);
+#ifdef ENABLE_AM_FIX
+        BK4819_SetFilterBandwidth(gAprsPrevBandwidth, gRxVfo != NULL && gRxVfo->Modulation == MODULATION_AM && gSetting_AM_fix);
+#else
+        BK4819_SetFilterBandwidth(gAprsPrevBandwidth, false);
+#endif
+
+        if (gAprsPrevAudioPathOn) {
+            AUDIO_AudioPathOn();
+        } else {
+            AUDIO_AudioPathOff();
+        }
+
+        gAprsPrevSettingsValid = false;
+    }
 }
 
 void APRS_OnAudioSamples(const int16_t *samples, uint16_t count, uint32_t sample_rate, int16_t rssi)
@@ -507,6 +577,7 @@ static void APRS_Key_EXIT(bool bKeyPressed, bool bKeyHeld)
     }
 
     gAprsDetailView = false;
+    APRS_StopRx();
     gRequestDisplayScreen = DISPLAY_MAIN;
 }
 
