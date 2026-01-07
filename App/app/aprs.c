@@ -289,6 +289,7 @@ void APRS_StartRx(void)
 {
     gAprsState = APRS_RECEIVING;
     APRS_ResetDemod();
+    BK4819_SetRxAudioSampleCallback(APRS_OnAudioSamples);
     BK4819_SetAF(BK4819_AF_FM);
     BK4819_SetFilterBandwidth(BK4819_FILTER_BW_WIDE, false);
     BK4819_RX_TurnOn();
