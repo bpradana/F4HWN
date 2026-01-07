@@ -61,6 +61,17 @@ void UI_DisplayStatus()
     gUpdateStatus = false;
     memset(gStatusLine, 0, sizeof(gStatusLine));
 
+#ifdef ENABLE_FEAT_F4HWN_APRS
+    if (gScreenToDisplay == DISPLAY_APRS) {
+        GUI_DisplaySmallest("APRS MON", 0, 1, true, true);
+        uint8_t battery[sizeof(BITMAP_BatteryLevel1)];
+        UI_DrawBattery(battery, gBatteryDisplayLevel, gLowBatteryBlink);
+        memcpy(gStatusLine + (LCD_WIDTH - sizeof(battery)), battery, sizeof(battery));
+        ST7565_BlitStatusLine();
+        return;
+    }
+#endif
+
     uint8_t     *line = gStatusLine;
     unsigned int x    = 0;
 

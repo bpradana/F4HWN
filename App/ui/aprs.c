@@ -20,12 +20,9 @@
 #include <string.h>
 
 #include "app/aprs.h"
-#include "bitmaps.h"
 #include "driver/st7565.h"
 #include "external/printf/printf.h"
-#include "helper/battery.h"
 #include "radio.h"
-#include "ui/battery.h"
 #include "ui/helper.h"
 
 #define APRS_LIST_ROWS 3
@@ -33,18 +30,18 @@
 
 static void UI_DisplayAprsDetail(const AprsPacket_t *packet);
 static void UI_DisplayAprsList(uint8_t count);
-static void APRS_DrawHeader(uint32_t frequency);
+static void APRS_DrawFrequency(uint32_t frequency);
 
 void UI_DisplayAprs(void)
 {
     UI_DisplayClear();
 
     const uint32_t frequency = gRxVfo->freq_config_RX.Frequency;
-    APRS_DrawHeader(frequency);
+    APRS_DrawFrequency(frequency);
 
     const uint8_t count = APRS_GetPacketCount();
     if (count == 0) {
-        UI_PrintString("Waiting for packets...", 2, 127, 4, 8);
+        UI_PrintStringSmallNormal("Waiting for packets...", 0, 127, 2);
         ST7565_BlitFullScreen();
         return;
     }
@@ -86,15 +83,15 @@ static void UI_DisplayAprsList(uint8_t count)
                  (index == selection) ? '>' : ' ',
                  packet->source,
                  packet->destination);
-        UI_PrintStringSmallNormal(line, 0, 127, 4 + (row * 2));
+        UI_PrintStringSmallNormal(line, 0, 127, 2 + (row * 2));
 
         if (packet->path[0] != 0) {
             snprintf(line, sizeof(line), "via %.*s", APRS_PATH_DISPLAY_LEN, packet->path);
-            UI_PrintStringSmallNormal(line, 0, 127, 5 + (row * 2));
+            UI_PrintStringSmallNormal(line, 0, 127, 3 + (row * 2));
         } else if (packet->info[0] != 0) {
             strncpy(line, packet->info, sizeof(line) - 1);
             line[sizeof(line) - 1] = 0;
-            UI_PrintStringSmallNormal(line, 0, 127, 5 + (row * 2));
+            UI_PrintStringSmallNormal(line, 0, 127, 3 + (row * 2));
         }
     }
 }
@@ -103,18 +100,18 @@ static void UI_DisplayAprsDetail(const AprsPacket_t *packet)
 {
     char line[32];
     snprintf(line, sizeof(line), "%s>%s", packet->source, packet->destination);
-    UI_PrintStringSmallNormal(line, 0, 127, 4);
+    UI_PrintStringSmallNormal(line, 0, 127, 2);
 
     if (packet->path[0] != 0) {
         snprintf(line, sizeof(line), "via %.*s", APRS_PATH_DISPLAY_LEN, packet->path);
-        UI_PrintStringSmallNormal(line, 0, 127, 5);
+        UI_PrintStringSmallNormal(line, 0, 127, 3);
     } else {
         snprintf(line, sizeof(line), "RSSI %d dBm", packet->rssi);
-        UI_PrintStringSmallNormal(line, 0, 127, 5);
+        UI_PrintStringSmallNormal(line, 0, 127, 3);
     }
 
     const char *info = packet->info;
-    uint8_t lineIndex = 6;
+    uint8_t lineIndex = 4;
     while (*info != 0 && lineIndex < 10) {
         char snippet[22];
         uint8_t len = 0;
@@ -132,18 +129,9 @@ static void UI_DisplayAprsDetail(const AprsPacket_t *packet)
     }
 }
 
-static void APRS_DrawHeader(uint32_t frequency)
+static void APRS_DrawFrequency(uint32_t frequency)
 {
     char freqString[16];
-
-    memset(gStatusLine, 0, sizeof(gStatusLine));
-    GUI_DisplaySmallest("APRS MON", 0, 1, true, true);
-
-    uint8_t battery[sizeof(BITMAP_BatteryLevel1)];
-    UI_DrawBattery(battery, gBatteryDisplayLevel, gLowBatteryBlink);
-    memcpy(gStatusLine + (LCD_WIDTH - sizeof(battery)), battery, sizeof(battery));
-
-    ST7565_BlitStatusLine();
 
     snprintf(freqString, sizeof(freqString), "%3lu.%05lu",
              (unsigned long)(frequency / 100000UL),
