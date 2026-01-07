@@ -20,6 +20,7 @@ target_sources(App INTERFACE
     app/app.c
     app/chFrScanner.c
     app/common.c
+    app/aprs.c
     app/dtmf.c
     app/generic.c
     app/main.c
