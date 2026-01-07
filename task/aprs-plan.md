@@ -38,6 +38,7 @@
 | ☑ | Implement DSP pipeline: bandpass/pre-emphasis -> discriminators -> symbol timing -> NRZI decode -> AX.25 frame assembly. |
 | ☑ | Implement APRS packet parser producing concise structs for display/logging. |
 | ☑ | Build UI pages (list + detail) and integrate with key handling (EXIT to leave, F+7 to clear log, arrow keys to scroll). |
+| ☑ | Align APRS header/status row with spectrum layout (status line label/battery, small-font frequency). |
 | ☐ | Add optional settings menu entries if needed (enable APRS, set audio gain, filter options). |
 | ☐ | Test on hardware: tune to known APRS freq (144.390 MHz), capture logs, verify decode accuracy, measure CPU load, adjust buffers. |
 | ☐ | Update documentation (README, AGENTS.md, changelog) describing new APRS mode and key combination. |
@@ -70,7 +71,8 @@
   - Consider gating behind `gEeprom.MENU_LOCK` similar to Breakout due to RescueOps lock.
 - **UI/Display layer**
   - Add `DISPLAY_APRS` enum entry plus `UI_DisplayAprs` function pointer hook in `ui/ui.c`.
-  - Layout idea: header row shows `APRS MON` plus tuned frequency (reuse `UI_DisplayFrequency`), body lists last 4-5 packets with `SRC>DEST` and info snippet, bottom hints for `EXIT`, `F+7` actions.
+  - Initial layout used `UI_DisplayFrequency`; next iteration should mimic the spectrum UI: draw the header and battery into `gStatusLine`, print frequency with `UI_PrintStringSmallNormal`, and reuse `GUI_DisplaySmallest` badges. Reuse helpers from `app/spectrum.c` (e.g., `DrawF`, `ShowChannelName`) as templates for APRS-specific header text (`APRS MON`) and icons.
+  - Body remains a packet list/detail view starting at row 4, so the UX change only affects the top rows.
   - Additional detail view triggered by `MENU` to expand selected packet; optionally in same screen with scroll offset.
 - **APRS module structure**
   - `aprs.h` exports `void APRS_Run(void);`, `void APRS_Process(void);`, `void APRS_HandleEvent(KEY_Code_t key, bool pressed, bool held);`.

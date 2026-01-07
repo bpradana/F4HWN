@@ -20,9 +20,12 @@
 #include <string.h>
 
 #include "app/aprs.h"
+#include "bitmaps.h"
 #include "driver/st7565.h"
 #include "external/printf/printf.h"
+#include "helper/battery.h"
 #include "radio.h"
+#include "ui/battery.h"
 #include "ui/helper.h"
 
 #define APRS_LIST_ROWS 3
@@ -30,19 +33,14 @@
 
 static void UI_DisplayAprsDetail(const AprsPacket_t *packet);
 static void UI_DisplayAprsList(uint8_t count);
+static void APRS_DrawHeader(uint32_t frequency);
 
 void UI_DisplayAprs(void)
 {
-    char line[32];
-
     UI_DisplayClear();
-    UI_PrintString("APRS MON", 2, 127, 0, 8);
 
     const uint32_t frequency = gRxVfo->freq_config_RX.Frequency;
-    snprintf(line, sizeof(line), "%3lu.%05lu",
-             (unsigned long)(frequency / 100000UL),
-             (unsigned long)(frequency % 100000UL));
-    UI_DisplayFrequency(line, 16, 2, false);
+    APRS_DrawHeader(frequency);
 
     const uint8_t count = APRS_GetPacketCount();
     if (count == 0) {
@@ -132,6 +130,25 @@ static void UI_DisplayAprsDetail(const AprsPacket_t *packet)
             len++;
         info += len;
     }
+}
+
+static void APRS_DrawHeader(uint32_t frequency)
+{
+    char freqString[16];
+
+    memset(gStatusLine, 0, sizeof(gStatusLine));
+    GUI_DisplaySmallest("APRS MON", 0, 1, true, true);
+
+    uint8_t battery[sizeof(BITMAP_BatteryLevel1)];
+    UI_DrawBattery(battery, gBatteryDisplayLevel, gLowBatteryBlink);
+    memcpy(gStatusLine + (LCD_WIDTH - sizeof(battery)), battery, sizeof(battery));
+
+    ST7565_BlitStatusLine();
+
+    snprintf(freqString, sizeof(freqString), "%3lu.%05lu",
+             (unsigned long)(frequency / 100000UL),
+             (unsigned long)(frequency % 100000UL));
+    UI_PrintStringSmallNormal(freqString, 8, 127, 0);
 }
 
 #endif
