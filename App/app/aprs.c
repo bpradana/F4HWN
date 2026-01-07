@@ -40,6 +40,9 @@ typedef struct APRS_DemodState_t {
     int16_t sample_buffer[APRS_SAMPLE_BLOCK_MAX];
     bool last_tone_mark;
     bool have_last_tone;
+    float mark_coeff;
+    float space_coeff;
+    bool coeff_valid;
     uint8_t ones_count;
     uint8_t bit_shift;
     bool in_frame;
@@ -138,15 +141,31 @@ static void APRS_AddMessage(const char *source, const char *destination, const c
     }
 }
 
-static float APRS_GoertzelPower(const int16_t *samples, uint16_t count, float target_hz, uint32_t sample_rate)
+static void APRS_UpdateGoertzelCoeffs(void)
 {
-    if (count == 0 || sample_rate == 0) {
+    if (gAprsDemod.sample_rate == 0U || gAprsDemod.samples_per_symbol == 0U) {
+        gAprsDemod.coeff_valid = false;
+        return;
+    }
+
+    const float count = (float)gAprsDemod.samples_per_symbol;
+    const float sample_rate = (float)gAprsDemod.sample_rate;
+    const float k_mark = 0.5f + ((count * APRS_MARK_HZ) / sample_rate);
+    const float k_space = 0.5f + ((count * APRS_SPACE_HZ) / sample_rate);
+    const float omega_mark = (2.0f * 3.14159265f * k_mark) / count;
+    const float omega_space = (2.0f * 3.14159265f * k_space) / count;
+
+    gAprsDemod.mark_coeff = 2.0f * cosf(omega_mark);
+    gAprsDemod.space_coeff = 2.0f * cosf(omega_space);
+    gAprsDemod.coeff_valid = true;
+}
+
+static float APRS_GoertzelPower(const int16_t *samples, uint16_t count, float coeff)
+{
+    if (count == 0U) {
         return 0.0f;
     }
 
-    const float k = 0.5f + ((float)count * target_hz / (float)sample_rate);
-    const float omega = (2.0f * 3.14159265f * k) / (float)count;
-    const float coeff = 2.0f * cosf(omega);
     float q0 = 0.0f;
     float q1 = 0.0f;
     float q2 = 0.0f;
@@ -405,13 +424,21 @@ void APRS_OnAudioSamples(const int16_t *samples, uint16_t count, uint32_t sample
             gAprsDemod.samples_per_symbol = APRS_SAMPLE_BLOCK_MAX;
         }
         gAprsDemod.sample_index = 0;
+        APRS_UpdateGoertzelCoeffs();
+    }
+
+    if (!gAprsDemod.coeff_valid) {
+        APRS_UpdateGoertzelCoeffs();
+        if (!gAprsDemod.coeff_valid) {
+            return;
+        }
     }
 
     for (uint16_t i = 0; i < count; i++) {
         gAprsDemod.sample_buffer[gAprsDemod.sample_index++] = samples[i];
         if (gAprsDemod.sample_index >= gAprsDemod.samples_per_symbol) {
-            float mark_power = APRS_GoertzelPower(gAprsDemod.sample_buffer, gAprsDemod.samples_per_symbol, APRS_MARK_HZ, gAprsDemod.sample_rate);
-            float space_power = APRS_GoertzelPower(gAprsDemod.sample_buffer, gAprsDemod.samples_per_symbol, APRS_SPACE_HZ, gAprsDemod.sample_rate);
+            float mark_power = APRS_GoertzelPower(gAprsDemod.sample_buffer, gAprsDemod.samples_per_symbol, gAprsDemod.mark_coeff);
+            float space_power = APRS_GoertzelPower(gAprsDemod.sample_buffer, gAprsDemod.samples_per_symbol, gAprsDemod.space_coeff);
             bool tone_mark = mark_power >= space_power;
             APRS_ProcessSymbol(tone_mark);
             gAprsDemod.sample_index = 0;
