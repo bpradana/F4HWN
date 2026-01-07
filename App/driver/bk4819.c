@@ -1093,8 +1093,8 @@ void BK4819_TurnsOffTones_TurnsOnRX(void)
         BK4819_REG_30_ENABLE_RX_DSP);
 }
 
-#ifdef ENABLE_AIRCOPY
-    void BK4819_SetupAircopy(void)
+#if defined(ENABLE_AIRCOPY) || defined(ENABLE_FEAT_F4HWN_APRS)
+    static void BK4819_SetupFsk1200Registers(void)
     {
         BK4819_WriteRegister(BK4819_REG_70, 0x00E0);    // Enable Tone2, tuning gain 48
         BK4819_WriteRegister(BK4819_REG_72, 0x3065);    // Tone2 baudrate 1200
@@ -1102,6 +1102,20 @@ void BK4819_TurnsOffTones_TurnsOnRX(void)
                                                         // (FSK1.2K, FSK2.4K Rx and NOAA SAME Rx), TX Mode FSK 1.2K and FSK 2.4K Tx
         BK4819_WriteRegister(BK4819_REG_5C, 0x5665);    // Enable CRC among other things we don't know yet
         BK4819_WriteRegister(BK4819_REG_5D, 0x4700);    // FSK Data Length 72 Bytes (0xabcd + 2 byte length + 64 byte payload + 2 byte CRC + 0xdcba)
+    }
+#endif
+
+#ifdef ENABLE_AIRCOPY
+    void BK4819_SetupAircopy(void)
+    {
+        BK4819_SetupFsk1200Registers();
+    }
+#endif
+
+#ifdef ENABLE_FEAT_F4HWN_APRS
+    void BK4819_SetupAprsFsk(void)
+    {
+        BK4819_SetupFsk1200Registers();
     }
 #endif
 

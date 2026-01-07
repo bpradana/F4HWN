@@ -283,7 +283,7 @@ Examples:
 
 ```bash
 ./compile-with-docker.sh Bandscope -DENABLE_SPECTRUM=ON
-./compile-with-docker.sh Broadcast -DENABLE_FEAT_F4HWN_GAME=ON -DENABLE_NOAA=ON
+./compile-with-docker.sh Broadcast -DENABLE_FEAT_F4HWN_APRS=ON -DENABLE_NOAA=ON
 ./compile-with-docker.sh Bandscope -DSQL_TONE=600
 ```
 

@@ -7,7 +7,7 @@ set -euo pipefail
 # Examples:
 #   ./compile-with-docker.sh Custom
 #   ./compile-with-docker.sh Bandscope -DENABLE_SPECTRUM=ON
-#   ./compile-with-docker.sh Broadcast -DENABLE_FEAT_F4HWN_GAME=ON -DENABLE_NOAA=ON
+#   ./compile-with-docker.sh Broadcast -DENABLE_FEAT_F4HWN_APRS=ON -DENABLE_NOAA=ON
 #   ./compile-with-docker.sh All
 # Default preset: "Custom"
 # ---------------------------------------------

@@ -1097,7 +1097,7 @@ State[1] = 0
 #ifdef ENABLE_BYP_RAW_DEMODULATORS
     | (1 << 2)
 #endif
-#ifdef ENABLE_FEAT_F4HWN_GAME
+#ifdef ENABLE_FEAT_F4HWN_APRS
     | (1 << 3)
 #endif
 #ifdef ENABLE_AM_FIX

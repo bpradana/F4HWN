@@ -114,6 +114,9 @@ void     BK4819_TurnsOffTones_TurnsOnRX(void);
 #ifdef ENABLE_AIRCOPY
     void     BK4819_SetupAircopy(void);
 #endif
+#ifdef ENABLE_FEAT_F4HWN_APRS
+    void     BK4819_SetupAprsFsk(void);
+#endif
 void     BK4819_ResetFSK(void);
 void     BK4819_Idle(void);
 void     BK4819_ExitBypass(void);

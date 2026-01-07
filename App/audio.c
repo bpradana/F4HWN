@@ -54,8 +54,18 @@ void AUDIO_PlayBeep(BEEP_Type_t Beep)
        !gEeprom.BEEP_CONTROL)
         return;
 
+#if defined(ENABLE_AIRCOPY) || defined(ENABLE_FEAT_F4HWN_APRS)
+    if (
 #ifdef ENABLE_AIRCOPY
-    if (gScreenToDisplay == DISPLAY_AIRCOPY)
+        gScreenToDisplay == DISPLAY_AIRCOPY
+#endif
+#if defined(ENABLE_AIRCOPY) && defined(ENABLE_FEAT_F4HWN_APRS)
+        ||
+#endif
+#ifdef ENABLE_FEAT_F4HWN_APRS
+        gScreenToDisplay == DISPLAY_APRS
+#endif
+    )
         return;
 #endif
 

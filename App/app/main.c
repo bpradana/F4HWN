@@ -31,8 +31,8 @@
 #include "app/spectrum.h"
 #endif
 
-#ifdef ENABLE_FEAT_F4HWN_GAME
-#include "app/breakout.h"
+#ifdef ENABLE_FEAT_F4HWN_APRS
+    #include "app/aprs.h"
 #endif
 
 #include "audio.h"
@@ -408,6 +408,19 @@ static void MAIN_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
 {
     if (bKeyHeld) { // key held down
         if (bKeyPressed) {
+#ifdef ENABLE_FEAT_F4HWN_APRS
+            if (Key == KEY_7 && gScreenToDisplay == DISPLAY_MAIN) {
+            #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
+                if (gEeprom.MENU_LOCK) {
+                    return;
+                }
+            #endif
+                APRS_Enter();
+                gWasFKeyPressed = false;
+                gUpdateStatus   = true;
+                return;
+            }
+#endif
             if (gScreenToDisplay == DISPLAY_MAIN) {
                 if (gInputBoxIndex > 0) { // delete any inputted chars
                     gInputBoxIndex        = 0;
@@ -586,19 +599,6 @@ static void MAIN_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
         ACTION_BackLight();
         return;
     }
-    #ifdef ENABLE_FEAT_F4HWN_GAME
-    else if(Key == 7)
-    {
-        #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-            if(gEeprom.MENU_LOCK == true) {
-                return;
-            }
-        #endif
-        APP_RunBreakout();
-        return;
-    }
-    #endif
-
     processFKeyFunction(Key, true);
 }
 

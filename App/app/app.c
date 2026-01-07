@@ -24,6 +24,9 @@
 #ifdef ENABLE_AIRCOPY
     #include "app/aircopy.h"
 #endif
+#ifdef ENABLE_FEAT_F4HWN_APRS
+    #include "app/aprs.h"
+#endif
 #include "app/app.h"
 #include "app/chFrScanner.h"
 #include "app/dtmf.h"
@@ -97,6 +100,9 @@ void (*ProcessKeysFunctions[])(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) 
 
 #ifdef ENABLE_AIRCOPY
     [DISPLAY_AIRCOPY] = &AIRCOPY_ProcessKeys,
+#endif
+#ifdef ENABLE_FEAT_F4HWN_APRS
+    [DISPLAY_APRS] = &APRS_ProcessKeys,
 #endif
 };
 
@@ -785,6 +791,15 @@ static void CheckRadioInterrupts(void)
             g_SquelchLost = false;
             BK4819_ToggleGpioOut(BK4819_GPIO6_PIN2_GREEN, false);
         }
+
+#ifdef ENABLE_FEAT_F4HWN_APRS
+        if (interrupts.fskFifoAlmostFull &&
+            gScreenToDisplay == DISPLAY_APRS &&
+            APRS_IsActive())
+        {
+            APRS_HandleFskBurst();
+        }
+#endif
 
 #ifdef ENABLE_AIRCOPY
         if (interrupts.fskFifoAlmostFull &&
@@ -1625,10 +1640,17 @@ void APP_TimeSlice500ms(void)
         gWakeUp = false;
     }
 
+    #if defined(ENABLE_AIRCOPY) || defined(ENABLE_FEAT_F4HWN_APRS)
+    if (gCurrentFunction != FUNCTION_TRANSMIT && !FUNCTION_IsRx()
     #ifdef ENABLE_AIRCOPY
-    if(gCurrentFunction != FUNCTION_TRANSMIT && !FUNCTION_IsRx() && gScreenToDisplay != DISPLAY_AIRCOPY)
+        && gScreenToDisplay != DISPLAY_AIRCOPY
+    #endif
+    #ifdef ENABLE_FEAT_F4HWN_APRS
+        && gScreenToDisplay != DISPLAY_APRS
+    #endif
+    )
     #else
-    if(gCurrentFunction != FUNCTION_TRANSMIT && !FUNCTION_IsRx())
+    if (gCurrentFunction != FUNCTION_TRANSMIT && !FUNCTION_IsRx())
     #endif
     {
         if (gSleepModeCountdown_500ms > 0 && --gSleepModeCountdown_500ms == 0) {
@@ -1715,6 +1737,9 @@ void APP_TimeSlice500ms(void)
 #endif
 #ifdef ENABLE_AIRCOPY
         && gScreenToDisplay != DISPLAY_AIRCOPY
+#endif
+#ifdef ENABLE_FEAT_F4HWN_APRS
+        && gScreenToDisplay != DISPLAY_APRS
 #endif
     ) {
         if (gEeprom.AUTO_KEYPAD_LOCK && gKeyLockCountdown > 0 && !gDTMF_InputMode
@@ -2136,6 +2161,9 @@ static void ProcessKey(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     else if (!SCANNER_IsScanning()
 #ifdef ENABLE_AIRCOPY
             && gScreenToDisplay != DISPLAY_AIRCOPY
+#endif
+#ifdef ENABLE_FEAT_F4HWN_APRS
+            && gScreenToDisplay != DISPLAY_APRS
 #endif
     ) {
         ACTION_Handle(Key, bKeyPressed, bKeyHeld);

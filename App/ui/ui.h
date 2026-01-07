@@ -34,6 +34,10 @@ enum GUI_DisplayType_t
     DISPLAY_AIRCOPY,
 #endif
 
+#ifdef ENABLE_FEAT_F4HWN_APRS
+    DISPLAY_APRS,
+#endif
+
 #ifdef ENABLE_REGA
     DISPLAY_REGA,
 #endif
