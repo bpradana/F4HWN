@@ -80,8 +80,8 @@
     #include "screenshot.h"
 #endif
 
-#define RX_AUDIO_SAMPLE_COUNT 32U
-#define RX_AUDIO_SAMPLE_RATE 3200U
+#define RX_AUDIO_SAMPLE_COUNT 48U
+#define RX_AUDIO_SAMPLE_RATE 4800U
 
 static bool flagSaveVfo;
 static bool flagSaveSettings;
