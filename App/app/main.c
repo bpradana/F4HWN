@@ -26,6 +26,7 @@
 #include "app/generic.h"
 #include "app/main.h"
 #include "app/scanner.h"
+#include "app/aprs.h"
 
 #ifdef ENABLE_SPECTRUM
 #include "app/spectrum.h"
@@ -417,6 +418,30 @@ static void MAIN_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
                 gWasFKeyPressed = false;
                 gUpdateStatus   = true;
 
+#ifdef ENABLE_FEAT_F4HWN_GAME
+                if (Key == 9) {
+                    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
+                    if (gEeprom.MENU_LOCK == true) {
+                        return;
+                    }
+                    #endif
+                    APP_RunBreakout();
+                    return;
+                }
+#endif
+
+                if (Key == 7) {
+                    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
+                    if (gEeprom.MENU_LOCK == true) {
+                        return;
+                    }
+                    #endif
+                    APRS_Init();
+                    gRequestDisplayScreen = DISPLAY_APRS;
+                    APRS_StartRx();
+                    return;
+                }
+
                 processFKeyFunction(Key, false);
             }
         }
@@ -586,18 +611,6 @@ static void MAIN_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
         ACTION_BackLight();
         return;
     }
-    #ifdef ENABLE_FEAT_F4HWN_GAME
-    else if(Key == 7)
-    {
-        #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-            if(gEeprom.MENU_LOCK == true) {
-                return;
-            }
-        #endif
-        APP_RunBreakout();
-        return;
-    }
-    #endif
 
     processFKeyFunction(Key, true);
 }

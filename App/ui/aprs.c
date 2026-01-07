@@ -82,7 +82,7 @@ static void APRS_RenderList(const uint8_t message_count)
         UI_PrintStringSmallNormal(line, 0, 0, 5);
     }
 
-    UI_PrintStringSmallNormal("UP/DN Sel MENU View", 0, 0, 6);
+    UI_PrintStringSmallNormal("UP/DN Sel MENU H9 Brk", 0, 0, 6);
     UI_PrintStringSmallNormal("EXIT Back 5 Freq 7Clr", 0, 0, 7);
 }
 
