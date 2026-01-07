@@ -313,7 +313,7 @@ void APRS_StopRx(void)
     BK4819_SetRxAudioSampleCallback(NULL);
 }
 
-void APRS_OnAudioSamples(const int16_t *samples, size_t count, uint32_t sample_rate, int16_t rssi)
+void APRS_OnAudioSamples(const int16_t *samples, uint16_t count, uint32_t sample_rate, int16_t rssi)
 {
     if (gAprsState != APRS_RECEIVING || samples == NULL || count == 0U) {
         return;
@@ -337,7 +337,7 @@ void APRS_OnAudioSamples(const int16_t *samples, size_t count, uint32_t sample_r
         gAprsDemod.sample_index = 0;
     }
 
-    for (size_t i = 0; i < count; i++) {
+    for (uint16_t i = 0; i < count; i++) {
         gAprsDemod.sample_buffer[gAprsDemod.sample_index++] = samples[i];
         if (gAprsDemod.sample_index >= gAprsDemod.samples_per_symbol) {
             float mark_power = APRS_GoertzelPower(gAprsDemod.sample_buffer, gAprsDemod.samples_per_symbol, APRS_MARK_HZ, gAprsDemod.sample_rate);

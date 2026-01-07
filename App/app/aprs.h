@@ -43,7 +43,7 @@ typedef struct APRS_Message_t {
 void APRS_Init(void);
 void APRS_StartRx(void);
 void APRS_StopRx(void);
-void APRS_OnAudioSamples(const int16_t *samples, size_t count, uint32_t sample_rate, int16_t rssi);
+void APRS_OnAudioSamples(const int16_t *samples, uint16_t count, uint32_t sample_rate, int16_t rssi);
 uint8_t APRS_GetMessageCount(void);
 bool APRS_GetMessage(uint8_t index, APRS_Message_t *out_message);
 APRS_State_t APRS_GetState(void);
