@@ -20,6 +20,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "driver/keyboard.h"
+
 typedef enum APRS_State_t {
     APRS_READY = 0,
     APRS_RECEIVING,
@@ -45,5 +47,10 @@ void APRS_OnAudioSamples(const int16_t *samples, size_t count, uint32_t sample_r
 uint8_t APRS_GetMessageCount(void);
 bool APRS_GetMessage(uint8_t index, APRS_Message_t *out_message);
 APRS_State_t APRS_GetState(void);
+void APRS_ClearMessages(void);
+uint8_t APRS_GetSelectedIndex(void);
+bool APRS_IsDetailView(void);
+bool APRS_IsInputActive(void);
+void APRS_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld);
 
 #endif

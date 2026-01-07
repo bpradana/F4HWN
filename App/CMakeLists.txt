@@ -42,6 +42,7 @@ target_sources(App INTERFACE
     ui/battery.c
     ui/helper.c
     ui/inputbox.c
+    ui/aprs.c
     ui/main.c
     ui/menu.c
     ui/scanner.c
