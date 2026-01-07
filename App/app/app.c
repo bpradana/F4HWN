@@ -80,6 +80,9 @@
     #include "screenshot.h"
 #endif
 
+#define RX_AUDIO_SAMPLE_COUNT 32U
+#define RX_AUDIO_SAMPLE_RATE 3200U
+
 static bool flagSaveVfo;
 static bool flagSaveSettings;
 static bool flagSaveChannel;
@@ -804,6 +807,18 @@ static void CheckRadioInterrupts(void)
     }
 }
 
+static void CaptureRxAudioSamples(void)
+{
+    int16_t samples[RX_AUDIO_SAMPLE_COUNT];
+
+    for (uint16_t i = 0; i < RX_AUDIO_SAMPLE_COUNT; i++) {
+        uint16_t raw = BK4819_ReadRegister(BK4819_REG_64) & 0x7FFF;
+        samples[i] = (int16_t)raw - 0x4000;
+    }
+
+    BK4819_ProvideRxAudioSamples(samples, RX_AUDIO_SAMPLE_COUNT, RX_AUDIO_SAMPLE_RATE, BK4819_GetRSSI_dBm());
+}
+
 void APP_EndTransmission(void)
 {
     // back to RX mode
@@ -1386,6 +1401,10 @@ void APP_TimeSlice10ms(void)
 
     if (gCurrentFunction != FUNCTION_POWER_SAVE || !gRxIdleMode)
         CheckRadioInterrupts();
+
+    if (APRS_GetState() == APRS_RECEIVING) {
+        CaptureRxAudioSamples();
+    }
 
     if (gCurrentFunction == FUNCTION_TRANSMIT)
     {   // transmitting
