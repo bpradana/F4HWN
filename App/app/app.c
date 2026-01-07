@@ -64,6 +64,7 @@
 #include "misc.h"
 #include "radio.h"
 #include "settings.h"
+#include "app/aprs.h"
 
 #if defined(ENABLE_OVERLAY)
     #include "sram-overlay.h"
@@ -90,6 +91,7 @@ void (*ProcessKeysFunctions[])(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) 
     [DISPLAY_MAIN] = &MAIN_ProcessKeys,
     [DISPLAY_MENU] = &MENU_ProcessKeys,
     [DISPLAY_SCANNER] = &SCANNER_ProcessKeys,
+    [DISPLAY_APRS] = &APRS_ProcessKeys,
 
 #ifdef ENABLE_FMRADIO
     [DISPLAY_FM] = &FM_ProcessKeys,

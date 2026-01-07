@@ -20,6 +20,11 @@
 
 #include "audio.h"
 #include "driver/bk4819.h"
+#include "frequencies.h"
+#include "misc.h"
+#include "radio.h"
+#include "ui/inputbox.h"
+#include "ui/ui.h"
 
 #define APRS_SAMPLE_BLOCK_MAX 32
 #define APRS_FRAME_MAX 330
@@ -51,6 +56,9 @@ static uint8_t gAprsMessageHead;
 static uint8_t gAprsMessageCount;
 static uint32_t gAprsTimestampMs;
 static APRS_DemodState_t gAprsDemod;
+static uint8_t gAprsSelectedIndex;
+static bool gAprsDetailView;
+static bool gAprsInputActive;
 
 static void APRS_ResetDemod(void)
 {
@@ -75,6 +83,10 @@ static void APRS_AddMessage(const char *source, const char *destination, const c
     gAprsMessageHead = (gAprsMessageHead + 1U) % APRS_MAX_MESSAGES;
     if (gAprsMessageCount < APRS_MAX_MESSAGES) {
         gAprsMessageCount++;
+    }
+
+    if (gAprsMessageCount == 1U) {
+        gAprsSelectedIndex = 0;
     }
 }
 
@@ -278,9 +290,8 @@ static void APRS_ProcessSymbol(bool tone_mark)
 void APRS_Init(void)
 {
     gAprsState = APRS_READY;
-    gAprsMessageHead = 0;
-    gAprsMessageCount = 0;
     gAprsTimestampMs = 0;
+    APRS_ClearMessages();
     APRS_ResetDemod();
     BK4819_SetRxAudioSampleCallback(APRS_OnAudioSamples);
 }
@@ -358,4 +369,188 @@ bool APRS_GetMessage(uint8_t index, APRS_Message_t *out_message)
 APRS_State_t APRS_GetState(void)
 {
     return gAprsState;
+}
+
+void APRS_ClearMessages(void)
+{
+    gAprsMessageHead = 0;
+    gAprsMessageCount = 0;
+    gAprsSelectedIndex = 0;
+    gAprsDetailView = false;
+    gAprsInputActive = false;
+}
+
+uint8_t APRS_GetSelectedIndex(void)
+{
+    return gAprsSelectedIndex;
+}
+
+bool APRS_IsDetailView(void)
+{
+    return gAprsDetailView;
+}
+
+bool APRS_IsInputActive(void)
+{
+    return gAprsInputActive;
+}
+
+static void APRS_ApplyFrequency(void)
+{
+    uint32_t frequency = StrToUL(INPUTBOX_GetAscii()) * 100U;
+
+    for (unsigned int i = 0; i < BAND_N_ELEM; i++) {
+        if (frequency < frequencyBandTable[i].lower || frequency >= frequencyBandTable[i].upper) {
+            continue;
+        }
+
+        if (TX_freq_check(frequency)) {
+            continue;
+        }
+
+        frequency = FREQUENCY_RoundToStep(frequency, gRxVfo->StepFrequency);
+        gRxVfo->Band = i;
+        gRxVfo->freq_config_RX.Frequency = frequency;
+        gRxVfo->freq_config_TX.Frequency = frequency;
+        RADIO_ConfigureSquelchAndOutputPower(gRxVfo);
+        gCurrentVfo = gRxVfo;
+        RADIO_SetupRegisters(true);
+        gRequestDisplayScreen = DISPLAY_APRS;
+        return;
+    }
+
+    gRequestDisplayScreen = DISPLAY_APRS;
+}
+
+static void APRS_Key_DIGITS(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
+{
+    if (!gAprsInputActive) {
+        return;
+    }
+
+    if (bKeyHeld || !bKeyPressed) {
+        return;
+    }
+
+    INPUTBOX_Append(Key);
+    gRequestDisplayScreen = DISPLAY_APRS;
+
+    if (gInputBoxIndex < 6) {
+        return;
+    }
+
+    gInputBoxIndex = 0;
+    gAprsInputActive = false;
+    APRS_ApplyFrequency();
+}
+
+static void APRS_Key_UP_DOWN(bool bKeyPressed, bool bKeyHeld, int8_t direction)
+{
+    if (bKeyHeld) {
+        if (!bKeyPressed) {
+            return;
+        }
+    } else {
+        if (!bKeyPressed) {
+            return;
+        }
+    }
+
+    if (gAprsMessageCount == 0U) {
+        return;
+    }
+
+    if (gAprsSelectedIndex >= gAprsMessageCount) {
+        gAprsSelectedIndex = (uint8_t)(gAprsMessageCount - 1U);
+    }
+
+    gAprsSelectedIndex = (uint8_t)NUMBER_AddWithWraparound(
+        gAprsSelectedIndex,
+        direction,
+        0,
+        gAprsMessageCount - 1U);
+
+    gRequestDisplayScreen = DISPLAY_APRS;
+}
+
+static void APRS_Key_MENU(bool bKeyPressed, bool bKeyHeld)
+{
+    if (bKeyHeld || !bKeyPressed) {
+        return;
+    }
+
+    if (gAprsMessageCount == 0U) {
+        return;
+    }
+
+    gAprsDetailView = !gAprsDetailView;
+    gRequestDisplayScreen = DISPLAY_APRS;
+}
+
+static void APRS_Key_EXIT(bool bKeyPressed, bool bKeyHeld)
+{
+    if (bKeyHeld || !bKeyPressed) {
+        return;
+    }
+
+    if (gAprsInputActive && gInputBoxIndex > 0U) {
+        gInputBox[--gInputBoxIndex] = 10;
+        gRequestDisplayScreen = DISPLAY_APRS;
+        return;
+    }
+
+    if (gAprsInputActive) {
+        gAprsInputActive = false;
+        gInputBoxIndex = 0;
+        gRequestDisplayScreen = DISPLAY_APRS;
+        return;
+    }
+
+    gAprsDetailView = false;
+    gRequestDisplayScreen = DISPLAY_MAIN;
+}
+
+static void APRS_Key_FREQ(bool bKeyPressed, bool bKeyHeld)
+{
+    if (bKeyHeld || !bKeyPressed) {
+        return;
+    }
+
+    gAprsInputActive = true;
+    gInputBoxIndex = 0;
+    gRequestDisplayScreen = DISPLAY_APRS;
+}
+
+void APRS_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
+{
+    if (Key == KEY_7 && bKeyHeld && bKeyPressed) {
+        APRS_ClearMessages();
+        gRequestDisplayScreen = DISPLAY_APRS;
+        return;
+    }
+
+    if (Key == KEY_5 && !gAprsInputActive) {
+        APRS_Key_FREQ(bKeyPressed, bKeyHeld);
+        return;
+    }
+
+    switch (Key) {
+        case KEY_0...KEY_9:
+            APRS_Key_DIGITS(Key, bKeyPressed, bKeyHeld);
+            break;
+        case KEY_MENU:
+            APRS_Key_MENU(bKeyPressed, bKeyHeld);
+            break;
+        case KEY_UP:
+            APRS_Key_UP_DOWN(bKeyPressed, bKeyHeld, -1);
+            break;
+        case KEY_DOWN:
+            APRS_Key_UP_DOWN(bKeyPressed, bKeyHeld, 1);
+            break;
+        case KEY_EXIT:
+            APRS_Key_EXIT(bKeyPressed, bKeyHeld);
+            break;
+        default:
+            break;
+    }
 }
