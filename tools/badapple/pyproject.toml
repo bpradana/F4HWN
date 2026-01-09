@@ -1,0 +1,10 @@
+[project]
+name = "badapple"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "opencv-python>=4.12.0.88",
+    "pillow>=12.1.0",
+]

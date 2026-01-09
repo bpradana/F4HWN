@@ -4,6 +4,7 @@
 Extracts frames from a video, converts to 128x64 1-bit bitmaps, compresses
 with RLE, and emits a C header for firmware use.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -51,6 +52,12 @@ def parse_args() -> argparse.Namespace:
         default=127,
         help="Threshold for B/W conversion (0-255, default: 127).",
     )
+    parser.add_argument(
+        "--end-second",
+        type=int,
+        default=None,
+        help="End of video",
+    )
     return parser.parse_args()
 
 
@@ -58,7 +65,13 @@ def ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def extract_frames(video_path: Path, frames_dir: Path, target_fps: float, threshold: int) -> List[Path]:
+def extract_frames(
+    video_path: Path,
+    frames_dir: Path,
+    target_fps: float,
+    threshold: int,
+    end_second: float | None = None,
+) -> List[Path]:
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         raise RuntimeError(f"Unable to open video: {video_path}")
@@ -66,6 +79,14 @@ def extract_frames(video_path: Path, frames_dir: Path, target_fps: float, thresh
     input_fps = cap.get(cv2.CAP_PROP_FPS) or 0.0
     if input_fps <= 0:
         raise RuntimeError("Unable to determine input FPS from video.")
+
+    input_fps = cap.get(cv2.CAP_PROP_FPS) or 0.0
+    if input_fps <= 0:
+        raise RuntimeError("Unable to determine input FPS from video.")
+
+    max_frame = None
+    if end_second is not None:
+        max_frame = int(end_second * input_fps)
 
     frame_skip = max(int(round(input_fps / target_fps)), 1)
 
@@ -79,8 +100,13 @@ def extract_frames(video_path: Path, frames_dir: Path, target_fps: float, thresh
         if not success:
             break
 
+        if max_frame is not None and frame_index >= max_frame:
+            break
+
         if frame_index % frame_skip == 0:
-            resized = cv2.resize(frame, (LCD_WIDTH, LCD_HEIGHT), interpolation=cv2.INTER_LANCZOS4)
+            resized = cv2.resize(
+                frame, (LCD_WIDTH, LCD_HEIGHT), interpolation=cv2.INTER_LANCZOS4
+            )
             gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
             _, bw = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)
 
@@ -153,26 +179,30 @@ def generate_c_header(
         comma = "," if index + 1 < total_frames else ""
         header_lines.append(f"    {offset}{comma}")
 
-    header_lines.extend([
-        "};",
-        "",
-        "const uint8_t frames_data[] = {",
-    ])
+    header_lines.extend(
+        [
+            "};",
+            "",
+            "const uint8_t frames_data[] = {",
+        ]
+    )
 
     for frame_index, frame_data in enumerate(compressed_frames):
         header_lines.append(f"    // Frame {frame_index}")
         for i in range(0, len(frame_data), 16):
-            chunk = ", ".join(str(b) for b in frame_data[i:i + 16])
+            chunk = ", ".join(str(b) for b in frame_data[i : i + 16])
             header_lines.append(f"    {chunk},")
 
-    header_lines.extend([
-        "};",
-        "",
-        "const uint32_t total_data_size = sizeof(frames_data);",
-        "",
-        "#endif",
-        "",
-    ])
+    header_lines.extend(
+        [
+            "};",
+            "",
+            "const uint32_t total_data_size = sizeof(frames_data);",
+            "",
+            "#endif",
+            "",
+        ]
+    )
 
     header_path.write_text("\n".join(header_lines), encoding="utf-8")
 
@@ -191,7 +221,9 @@ def generate_c_header(
 
 def main() -> None:
     args = parse_args()
-    frames = extract_frames(args.video, args.frames_dir, args.fps, args.threshold)
+    frames = extract_frames(
+        args.video, args.frames_dir, args.fps, args.threshold, args.end_second
+    )
     if not frames:
         raise RuntimeError("No frames extracted.")
 

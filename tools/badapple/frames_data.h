@@ -1,5 +1,5 @@
-#ifndef BAD_APPLE_FRAMES_H
-#define BAD_APPLE_FRAMES_H
+#ifndef FRAMES_DATA_H
+#define FRAMES_DATA_H
 
 #include <stdint.h>
 

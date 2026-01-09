@@ -29,9 +29,6 @@
 
 static bool BAD_APPLE_ShouldExit(void)
 {
-    if (GPIO_IsPttPressed())
-        return true;
-
     return KEYBOARD_Poll() == KEY_EXIT;
 }
 
