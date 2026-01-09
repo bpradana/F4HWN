@@ -23,6 +23,9 @@
 #include "driver/keyboard.h"
 #include "driver/gpio.h"
 #include "driver/system.h"
+#ifdef ENABLE_BAD_APPLE
+    #include "app/bad_apple.h"
+#endif
 #include "helper/boot.h"
 #include "misc.h"
 #include "radio.h"
@@ -59,6 +62,11 @@ BOOT_Mode_t BOOT_GetMode(void)
 
         if (Keys[0] == KEY_SIDE1)
             return BOOT_MODE_F_LOCK;
+
+        #ifdef ENABLE_BAD_APPLE
+            if (Keys[0] == KEY_STAR)
+                return BOOT_MODE_BAD_APPLE;
+        #endif
 
         #ifdef ENABLE_AIRCOPY
             if (Keys[0] == KEY_SIDE2)
@@ -118,6 +126,13 @@ void BOOT_ProcessMode(BOOT_Mode_t Mode)
             #endif 
 
             GUI_SelectNextDisplay(DISPLAY_AIRCOPY);
+        }
+    #endif
+    #ifdef ENABLE_BAD_APPLE
+        else if (Mode == BOOT_MODE_BAD_APPLE)
+        {
+            BAD_APPLE_Play();
+            GUI_SelectNextDisplay(DISPLAY_MAIN);
         }
     #endif
     else

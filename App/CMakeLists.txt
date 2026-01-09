@@ -205,6 +205,11 @@ enable_feature(ENABLE_FEAT_F4HWN_GMRS_FRS_MURS)
 enable_feature(ENABLE_FEAT_F4HWN_CA)
 enable_feature(ENABLE_FEAT_F4HWN_DEBUG)
 
+# ---- EXPERIMENTS ----
+enable_feature(ENABLE_BAD_APPLE
+    app/bad_apple.c
+)
+
 # ---- DEBUGGING ----
 
 enable_feature(ENABLE_AM_FIX_SHOW_DATA)

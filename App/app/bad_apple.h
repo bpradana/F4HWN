@@ -1,5 +1,4 @@
-/* Copyright 2023 Dual Tachyon
- * https://github.com/DualTachyon
+/* Copyright 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +13,9 @@
  *     limitations under the License.
  */
 
-#ifndef HELPER_BOOT_H
-#define HELPER_BOOT_H
+#ifndef APP_BAD_APPLE_H
+#define APP_BAD_APPLE_H
 
-#include <stdint.h>
-#include "driver/keyboard.h"
-
-enum BOOT_Mode_t
-{
-    BOOT_MODE_NORMAL = 0,
-    BOOT_MODE_F_LOCK,
-    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-        BOOT_MODE_RESCUE_OPS,
-    #endif
-    #ifdef ENABLE_BAD_APPLE
-        BOOT_MODE_BAD_APPLE,
-    #endif
-    #ifdef ENABLE_AIRCOPY
-        BOOT_MODE_AIRCOPY
-    #endif
-};
-
-typedef enum BOOT_Mode_t BOOT_Mode_t;
-
-BOOT_Mode_t BOOT_GetMode(void);
-void BOOT_ProcessMode(BOOT_Mode_t Mode);
+void BAD_APPLE_Play(void);
 
 #endif
