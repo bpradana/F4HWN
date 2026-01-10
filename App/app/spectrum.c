@@ -948,10 +948,18 @@ static uint8_t Rssi2WaterfallLevel(uint16_t rssi)
         return 0;
     }
 
-    int dbm = clamp(Rssi2DBm(rssi), settings.dbMin, settings.dbMax);
-    int level = (dbm - settings.dbMin) * 4 / range;
+    int dbm = Rssi2DBm(rssi);
+    dbm = clamp(dbm, settings.dbMin, settings.dbMax);
 
-    return clamp(level, 0, 3);
+    int norm = (dbm - settings.dbMin) * 100 / range;
+
+    if (norm >= 60)
+        return 3;
+    if (norm >= 40)
+        return 2;
+    if (norm >= 20)
+        return 1;
+    return 0;
 }
 
 static bool WaterfallPixelOn(uint8_t level, uint8_t x, uint8_t phase)
@@ -1052,7 +1060,7 @@ static void DrawWaterfall()
         for (uint8_t i = 0; i < bars; ++i)
         {
             uint16_t rssi = rssiHistory[(bars>128) ? i >> settings.stepsCount : i];
-            
+
             uint8_t x = GetSpectrumBarX(i, bars, steps);
 
             if (rssi != RSSI_MAX_VALUE)
@@ -1121,7 +1129,7 @@ static void DrawStatus()
 static void ShowChannelName(uint32_t f)
 {
     static uint32_t channelF = 0;
-    static char channelName[12]; 
+    static char channelName[12];
 
     if (isListening)
     {
@@ -1193,19 +1201,19 @@ static void DrawNums()
         sprintf(String, "%u.%05u \x7F%u.%02uk", currentFreq / 100000,
                 currentFreq % 100000, settings.frequencyChangeStep / 100,
                 settings.frequencyChangeStep % 100);
-        GUI_DisplaySmallest(String, 36, 49, false, true);
+        GUI_DisplaySmallest(String, 36, 51, false, true);
     }
     else
     {
         sprintf(String, "%u.%05u", GetFStart() / 100000, GetFStart() % 100000);
-        GUI_DisplaySmallest(String, 0, 49, false, true);
+        GUI_DisplaySmallest(String, 0, 51, false, true);
 
         sprintf(String, "\x7F%u.%02uk", settings.frequencyChangeStep / 100,
                 settings.frequencyChangeStep % 100);
-        GUI_DisplaySmallest(String, 48, 49, false, true);
+        GUI_DisplaySmallest(String, 48, 51, false, true);
 
         sprintf(String, "%u.%05u", GetFEnd() / 100000, GetFEnd() % 100000);
-        GUI_DisplaySmallest(String, 93, 49, false, true);
+        GUI_DisplaySmallest(String, 93, 51, false, true);
     }
 }
 
@@ -1233,33 +1241,33 @@ static void DrawTicks()
         (f % 50000) < step && (barValue |= 0b00000100);
         (f % 100000) < step && (barValue |= 0b00011000);
 
-        gFrameBuffer[5][i] |= barValue;
+        gFrameBuffer[6][i] |= barValue;
     }
 
     // center
     if (IsCenterMode())
     {
-        memset(gFrameBuffer[5] + 62, 0x80, 5);
-        gFrameBuffer[5][64] = 0xff;
+        memset(gFrameBuffer[6] + 62, 0x80, 5);
+        gFrameBuffer[6][64] = 0xff;
     }
     else
     {
-        memset(gFrameBuffer[5] + 1, 0x80, 3);
-        memset(gFrameBuffer[5] + 124, 0x80, 3);
+        memset(gFrameBuffer[6] + 1, 0x80, 3);
+        memset(gFrameBuffer[6] + 124, 0x80, 3);
 
-        gFrameBuffer[5][0] = 0xff;
-        gFrameBuffer[5][127] = 0xff;
+        gFrameBuffer[6][0] = 0xff;
+        gFrameBuffer[6][127] = 0xff;
     }
 }
 
 static void DrawArrow(uint8_t x)
 {
-    for (signed i = -2; i <= 2; ++i)
+    for (signed i = -1; i <= 1; ++i)
     {
         signed v = x + i;
         if (!(v & 128))
         {
-            gFrameBuffer[5][v] |= (0b01111000 << my_abs(i)) & 0b01111000;
+            gFrameBuffer[6][v] |= (0b00111000 << my_abs(i)) & 0b00111000;
         }
     }
 }
