@@ -98,6 +98,8 @@ char freqInputString[11];
 
 uint8_t menuState = 0;
 uint16_t listenT = 0;
+static uint8_t waterfallBuffer[WaterfallHeight][128];
+static uint8_t waterfallPhase = 0;
 
 RegisterSpec registerSpecs[] = {
     {},
@@ -571,6 +573,8 @@ static void RelaunchScan()
 #endif
     preventKeypress = true;
     scanInfo.rssiMin = RSSI_MAX_VALUE;
+    memset(waterfallBuffer, 0, sizeof(waterfallBuffer));
+    waterfallPhase = 0;
 }
 
 static void UpdateScanInfo()
@@ -931,6 +935,112 @@ uint8_t Rssi2Y(uint16_t rssi)
     return DrawingEndY - Rssi2PX(rssi, 0, DrawingEndY);
 }
 
+static uint8_t Rssi2WaterfallLevel(uint16_t rssi)
+{
+    if (rssi == RSSI_MAX_VALUE)
+    {
+        return 0;
+    }
+
+    int range = settings.dbMax - settings.dbMin;
+    if (range <= 0)
+    {
+        return 0;
+    }
+
+    int dbm = clamp(Rssi2DBm(rssi), settings.dbMin, settings.dbMax);
+    int level = (dbm - settings.dbMin) * 4 / range;
+
+    return clamp(level, 0, 3);
+}
+
+static bool WaterfallPixelOn(uint8_t level, uint8_t x, uint8_t phase)
+{
+    switch (level)
+    {
+    case 3:
+        return true;
+    case 2:
+        return ((x + phase) & 1u) == 0;
+    case 1:
+        return ((x + phase) & 3u) == 0;
+    default:
+        return false;
+    }
+}
+
+static uint8_t GetSpectrumBarX(uint8_t i, uint8_t bars, uint16_t steps)
+{
+#ifdef ENABLE_SCAN_RANGES
+    if (gScanRangeStart && bars > 1)
+    {
+        // Total width units = (bars - 1) full bars + 2 half bars = bars
+        // First bar: half width, middle bars: full width, last bar: half width
+        // Scale: 128 pixels / (bars - 1) = pixels per full bar
+        uint16_t fullWidth = 128 * 2 / (bars - 1);  // x2 for precision
+
+        if (i == 0)
+        {
+            return fullWidth / 4;  // half of half (because fullWidth is x2)
+        }
+
+        uint8_t x = fullWidth / 4 + (uint16_t)i * fullWidth / 2;
+        if (i == bars - 1)
+            x = 128;  // Last bar ends at screen edge
+        return x;
+    }
+#endif
+    uint8_t shift_graph = 64 / steps + 1;
+    return i * 128 / bars + shift_graph;
+}
+
+static void UpdateWaterfall()
+{
+    uint16_t steps = GetStepsCount();
+    uint8_t bars = (steps > 128) ? 128 : steps;
+
+    for (int row = WaterfallHeight - 1; row > 0; --row)
+    {
+        memcpy(waterfallBuffer[row], waterfallBuffer[row - 1], sizeof(waterfallBuffer[row]));
+    }
+
+    memset(waterfallBuffer[0], 0, sizeof(waterfallBuffer[0]));
+
+    uint8_t ox = 0;
+    for (uint8_t i = 0; i < bars; ++i)
+    {
+        uint16_t rssi = rssiHistory[(bars > 128) ? i >> settings.stepsCount : i];
+        uint8_t x = GetSpectrumBarX(i, bars, steps);
+
+        if (rssi != RSSI_MAX_VALUE)
+        {
+            uint8_t level = Rssi2WaterfallLevel(rssi);
+            for (uint8_t xx = ox; xx < x && xx < 128; ++xx)
+            {
+                waterfallBuffer[0][xx] = WaterfallPixelOn(level, xx, waterfallPhase);
+            }
+        }
+        ox = x;
+    }
+
+    waterfallPhase++;
+}
+
+static void DrawWaterfall()
+{
+    for (uint8_t row = 0; row < WaterfallHeight; ++row)
+    {
+        uint8_t y = WaterfallTopY + row;
+        for (uint8_t x = 0; x < 128; ++x)
+        {
+            if (waterfallBuffer[row][x])
+            {
+                PutPixel(x, y, true);
+            }
+        }
+    }
+}
+
 #ifdef ENABLE_FEAT_F4HWN
     static void DrawSpectrum()
     {
@@ -943,32 +1053,7 @@ uint8_t Rssi2Y(uint16_t rssi)
         {
             uint16_t rssi = rssiHistory[(bars>128) ? i >> settings.stepsCount : i];
             
-#ifdef ENABLE_SCAN_RANGES
-            uint8_t x;
-            if (gScanRangeStart && bars > 1)
-            {
-                // Total width units = (bars - 1) full bars + 2 half bars = bars
-                // First bar: half width, middle bars: full width, last bar: half width
-                // Scale: 128 pixels / (bars - 1) = pixels per full bar
-                uint16_t fullWidth = 128 * 2 / (bars - 1);  // x2 for precision
-                
-                if (i == 0)
-                {
-                    x = fullWidth / 4;  // half of half (because fullWidth is x2)
-                }
-                else
-                {
-                    // Position = half + (i-1) full bars + current bar
-                    x = fullWidth / 4 + (uint16_t)i * fullWidth / 2;
-                    if (i == bars - 1) x = 128;  // Last bar ends at screen edge
-                }
-            }
-            else
-#endif
-            {
-                uint8_t shift_graph = 64 / steps + 1;
-                x = i * 128 / bars + shift_graph;
-            }
+            uint8_t x = GetSpectrumBarX(i, bars, steps);
 
             if (rssi != RSSI_MAX_VALUE)
             {
@@ -1434,6 +1519,7 @@ static void RenderSpectrum()
     DrawTicks();
     DrawArrow(128u * peak.i / GetStepsCount());
     DrawSpectrum();
+    DrawWaterfall();
     DrawRssiTriggerLevel();
     DrawF(peak.f);
     DrawNums();
@@ -1621,6 +1707,7 @@ static void UpdateScan()
         memset(&rssiHistory[scanInfo.measurementsCount], 0,
                sizeof(rssiHistory) - scanInfo.measurementsCount * sizeof(rssiHistory[0]));
 
+    UpdateWaterfall();
     redrawScreen = true;
     preventKeypress = false;
 
