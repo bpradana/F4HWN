@@ -44,7 +44,10 @@
 
 static const uint8_t DrawingEndY = 31;
 static const uint8_t WaterfallTopY = DrawingEndY + 1;
-static const uint8_t WaterfallHeight = 8;
+enum
+{
+    WaterfallHeight = 8
+};
 
 static const uint8_t U8RssiMap[] = {
     121,
