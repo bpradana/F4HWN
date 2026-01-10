@@ -63,6 +63,8 @@ enum BK4819_CssScanResult_t
 
 typedef enum BK4819_CssScanResult_t BK4819_CssScanResult_t;
 
+typedef void (*BK4819_RxAudioSampleCallback_t)(const int16_t *samples, uint16_t count, uint32_t sample_rate, int16_t rssi);
+
 // radio is asleep, not listening
 extern bool gRxIdleMode;
 
@@ -170,5 +172,8 @@ void     BK4819_Enable_AfDac_DiscMode_TxDsp(void);
 void     BK4819_GetVoxAmp(uint16_t *pResult);
 void     BK4819_SetScrambleFrequencyControlWord(uint32_t Frequency);
 void     BK4819_PlayDTMFEx(bool bLocalLoopback, char Code);
+
+void     BK4819_SetRxAudioSampleCallback(BK4819_RxAudioSampleCallback_t callback);
+void     BK4819_ProvideRxAudioSamples(const int16_t *samples, uint16_t count, uint32_t sample_rate, int16_t rssi);
 
 #endif

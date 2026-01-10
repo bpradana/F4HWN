@@ -20,6 +20,7 @@ target_sources(App INTERFACE
     app/app.c
     app/chFrScanner.c
     app/common.c
+    app/aprs.c
     app/dtmf.c
     app/generic.c
     app/main.c
@@ -41,6 +42,7 @@ target_sources(App INTERFACE
     ui/battery.c
     ui/helper.c
     ui/inputbox.c
+    ui/aprs.c
     ui/main.c
     ui/menu.c
     ui/scanner.c

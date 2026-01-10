@@ -64,6 +64,7 @@
 #include "misc.h"
 #include "radio.h"
 #include "settings.h"
+#include "app/aprs.h"
 
 #if defined(ENABLE_OVERLAY)
     #include "sram-overlay.h"
@@ -79,6 +80,9 @@
     #include "screenshot.h"
 #endif
 
+#define RX_AUDIO_SAMPLE_COUNT 48U
+#define RX_AUDIO_SAMPLE_RATE 4800U
+
 static bool flagSaveVfo;
 static bool flagSaveSettings;
 static bool flagSaveChannel;
@@ -90,6 +94,7 @@ void (*ProcessKeysFunctions[])(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) 
     [DISPLAY_MAIN] = &MAIN_ProcessKeys,
     [DISPLAY_MENU] = &MENU_ProcessKeys,
     [DISPLAY_SCANNER] = &SCANNER_ProcessKeys,
+    [DISPLAY_APRS] = &APRS_ProcessKeys,
 
 #ifdef ENABLE_FMRADIO
     [DISPLAY_FM] = &FM_ProcessKeys,
@@ -802,6 +807,18 @@ static void CheckRadioInterrupts(void)
     }
 }
 
+static void CaptureRxAudioSamples(void)
+{
+    int16_t samples[RX_AUDIO_SAMPLE_COUNT];
+
+    for (uint16_t i = 0; i < RX_AUDIO_SAMPLE_COUNT; i++) {
+        uint16_t raw = BK4819_ReadRegister(BK4819_REG_64) & 0x7FFF;
+        samples[i] = (int16_t)raw - 0x4000;
+    }
+
+    BK4819_ProvideRxAudioSamples(samples, RX_AUDIO_SAMPLE_COUNT, RX_AUDIO_SAMPLE_RATE, BK4819_GetRSSI_dBm());
+}
+
 void APP_EndTransmission(void)
 {
     // back to RX mode
@@ -1384,6 +1401,10 @@ void APP_TimeSlice10ms(void)
 
     if (gCurrentFunction != FUNCTION_POWER_SAVE || !gRxIdleMode)
         CheckRadioInterrupts();
+
+    if (APRS_GetState() == APRS_RECEIVING) {
+        CaptureRxAudioSamples();
+    }
 
     if (gCurrentFunction == FUNCTION_TRANSMIT)
     {   // transmitting

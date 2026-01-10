@@ -45,6 +45,8 @@ static uint16_t gBK4819_GpioOutState;
 
 bool gRxIdleMode;
 
+static BK4819_RxAudioSampleCallback_t gRxAudioSampleCallback;
+
 static inline void CS_Assert()
 {
     GPIO_ResetOutputPin(PIN_CSN);
@@ -233,6 +235,18 @@ void BK4819_WriteRegister(BK4819_REGISTER_t Register, uint16_t Data)
 
     SCL_Set();
     SDA_Set();
+}
+
+void BK4819_SetRxAudioSampleCallback(BK4819_RxAudioSampleCallback_t callback)
+{
+    gRxAudioSampleCallback = callback;
+}
+
+void BK4819_ProvideRxAudioSamples(const int16_t *samples, uint16_t count, uint32_t sample_rate, int16_t rssi)
+{
+    if (gRxAudioSampleCallback != NULL) {
+        gRxAudioSampleCallback(samples, count, sample_rate, rssi);
+    }
 }
 
 void BK4819_WriteU8(uint8_t Data)
