@@ -1250,14 +1250,6 @@ static void DrawTicks()
         memset(gFrameBuffer[6] + 62, 0x80, 5);
         gFrameBuffer[6][64] = 0xff;
     }
-    else
-    {
-        memset(gFrameBuffer[6] + 1, 0x80, 3);
-        memset(gFrameBuffer[6] + 124, 0x80, 3);
-
-        gFrameBuffer[6][0] = 0xff;
-        gFrameBuffer[6][127] = 0xff;
-    }
 }
 
 static void DrawArrow(uint8_t x)
